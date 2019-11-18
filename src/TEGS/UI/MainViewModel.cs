@@ -24,6 +24,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+#if TEGSUI
+
 using System;
 using System.IO;
 using System.Xml;
@@ -32,7 +34,7 @@ using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Ioc;
 using GalaSoft.MvvmLight.Command;
 
-namespace TEGS.ViewModels
+namespace TEGS.UI
 {
     public class MainViewModel : ViewModelBase
     {
@@ -145,3 +147,5 @@ namespace TEGS.ViewModels
         private RelayCommand _saveGraphAsAsync;
     }
 }
+
+#endif

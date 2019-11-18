@@ -20,7 +20,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DefineConstants>TRACE;DEBUG</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
@@ -52,14 +52,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\TEGS.Lua\TEGS.Lua.csproj">
-      <Project>{2b4c5dd6-8884-4523-9921-b584e971ad74}</Project>
-      <Name>TEGS.Lua</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\TEGS\TEGS.csproj">
-      <Project>{fda23a04-4283-47ae-997e-217a0a134b46}</Project>
-      <Name>TEGS</Name>
-    </ProjectReference>
+    <PackageReference Include="MoonSharp">
+      <Version>2.0.0</Version>
+    </PackageReference>
   </ItemGroup>
+  <Import Project="..\TEGS\TEGS.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

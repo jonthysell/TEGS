@@ -24,6 +24,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+#if TEGSUI
+
 using System;
 using System.Collections.ObjectModel;
 
@@ -31,7 +33,7 @@ using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using GalaSoft.MvvmLight.Ioc;
 
-namespace TEGS.ViewModels
+namespace TEGS.UI
 {
     public class ObservableGraph : ObservableObject
     {
@@ -163,3 +165,5 @@ namespace TEGS.ViewModels
         }
     }
 }
+
+#endif

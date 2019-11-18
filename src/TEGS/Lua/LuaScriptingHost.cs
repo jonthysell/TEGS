@@ -80,7 +80,7 @@ namespace TEGS.Lua
             Debug.Unindent();
         }
 
-        #region Execution
+#region Execution
 
         public override void Execute(string code)
         {
@@ -109,9 +109,9 @@ namespace TEGS.Lua
             return null;
         }
 
-        #endregion
+#endregion
 
-        #region Assignment
+#region Assignment
 
         public void Assign(string name, object value)
         {
@@ -159,9 +159,9 @@ namespace TEGS.Lua
             _script.Globals.Set(name, DynValue.NewString(value));
         }
 
-        #endregion
+#endregion
 
-        #region Getters
+#region Getters
 
         public override bool GetBoolean(string name)
         {
@@ -178,9 +178,9 @@ namespace TEGS.Lua
             return _script.Globals.Get(name).String;
         }
 
-        #endregion
+#endregion
 
-        #region Evaluators
+#region Evaluators
 
         public override bool EvaluateBoolean(string code)
         {
@@ -229,9 +229,9 @@ namespace TEGS.Lua
             }
         }
 
-        #endregion
+#endregion
 
-        #region Parameters
+#region Parameters
 
         public override void AssignParameters(string lhs, string rhs)
         {
@@ -298,16 +298,16 @@ namespace TEGS.Lua
             return false;
         }
 
-        #endregion
+#endregion
 
-        #region Seed
+#region Seed
 
         public override void SetSeed(int value)
         {
             Execute(string.Format("math.randomseed({0})", value));
         }
 
-        #endregion
+#endregion
 
         private const string ParamPrefix = @"t_param";
 

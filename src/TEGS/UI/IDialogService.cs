@@ -24,12 +24,14 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+#if TEGSUI
+
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 
-namespace TEGS.ViewModels
+namespace TEGS.UI
 {
     public interface IDialogService
     {
@@ -42,3 +44,5 @@ namespace TEGS.ViewModels
         Task<Stream> ShowPromptForOutputStreamAsync(string fileTypeName, IEnumerable<string> fileTypeExtensions);
     }
 }
+
+#endif

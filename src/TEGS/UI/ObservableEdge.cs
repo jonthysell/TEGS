@@ -1,5 +1,5 @@
 ﻿// 
-// ObservableVertex.cs
+// ObservableEdge.cs
 //  
 // Author:
 //       Jon Thysell <thysell@gmail.com>
@@ -24,27 +24,60 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+#if TEGSUI
+
 using System;
-using System.Collections.ObjectModel;
 
 using GalaSoft.MvvmLight;
 
-namespace TEGS.ViewModels
+namespace TEGS.UI
 {
-    public class ObservableVertex : ObservableObject
+    public class ObservableEdge : ObservableObject
     {
         public ObservableGraph Graph { get; private set; }
 
-        public string Name
+        public ObservableVertex Source
         {
             get
             {
-                return Vertex.Name;
+                foreach (ObservableVertex ov in Graph.Verticies)
+                {
+                    if (ov.Vertex == Edge.Source)
+                    {
+                        return ov;
+                    }
+                }
+
+                return null;
+            }
+        }
+
+        public ObservableVertex Target
+        {
+            get
+            {
+                foreach (ObservableVertex ov in Graph.Verticies)
+                {
+                    if (ov.Vertex == Edge.Target)
+                    {
+                        return ov;
+                    }
+                }
+
+                return null;
+            }
+        }
+
+        public EdgeAction Action
+        {
+            get
+            {
+                return Edge.Action;
             }
             set
             {
-                Vertex.Name = value;
-                RaisePropertyChanged(nameof(Name));
+                Edge.Action = value;
+                RaisePropertyChanged(nameof(Action));
             }
         }
 
@@ -52,25 +85,51 @@ namespace TEGS.ViewModels
         {
             get
             {
-                return Vertex.Description;
+                return Edge.Description;
             }
             set
             {
-                Vertex.Description = value;
+                Edge.Description = value;
                 RaisePropertyChanged(nameof(Description));
             }
         }
 
-        public string Code
+        public string Condition
         {
             get
             {
-                return Vertex.Code;
+                return Edge.Condition;
             }
             set
             {
-                Vertex.Code = value;
-                RaisePropertyChanged(nameof(Code));
+                Edge.Condition = value;
+                RaisePropertyChanged(nameof(Condition));
+            }
+        }
+
+        public string Delay
+        {
+            get
+            {
+                return Edge.Delay;
+            }
+            set
+            {
+                Edge.Delay = value;
+                RaisePropertyChanged(nameof(Delay));
+            }
+        }
+
+        public string Priority
+        {
+            get
+            {
+                return Edge.Priority;
+            }
+            set
+            {
+                Edge.Priority = value;
+                RaisePropertyChanged(nameof(Priority));
             }
         }
 
@@ -78,71 +137,23 @@ namespace TEGS.ViewModels
         {
             get
             {
-                return Vertex.Parameters;
+                return Edge.Parameters;
             }
             set
             {
-                Vertex.Parameters = value;
+                Edge.Parameters = value;
                 RaisePropertyChanged(nameof(Parameters));
             }
         }
 
-        public bool IsStartingVertex
-        {
-            get
-            {
-                return Vertex.IsStartingVertex;
-            }
-        }
+        internal Edge Edge { get; private set; }
 
-        public int X
-        {
-            get
-            {
-                return Vertex.X;
-            }
-            set
-            {
-                Vertex.X = value;
-                RaisePropertyChanged(nameof(X));
-            }
-        }
-
-        public int Y
-        {
-            get
-            {
-                return Vertex.Y;
-            }
-            set
-            {
-                Vertex.Y = value;
-                RaisePropertyChanged(nameof(Y));
-            }
-        }
-
-        public ReadOnlyObservableCollection<ObservableEdge> Edges
-        {
-            get
-            {
-                ObservableCollection<ObservableEdge> edges = new ObservableCollection<ObservableEdge>();
-                foreach (ObservableEdge edge in Graph.Edges)
-                {
-                    if (edge.Source == this)
-                    {
-                        edges.Add(edge);
-                    }
-                }
-                return new ReadOnlyObservableCollection<ObservableEdge>(edges);
-            }
-        }
-
-        internal Vertex Vertex { get; private set; }
-
-        public ObservableVertex(ObservableGraph graph, Vertex vertex)
+        public ObservableEdge(ObservableGraph graph, Edge edge)
         {
             Graph = graph ?? throw new ArgumentNullException(nameof(graph));
-            Vertex = vertex ?? throw new ArgumentNullException(nameof(vertex));
+            Edge = edge ?? throw new ArgumentNullException(nameof(edge));
         }
     }
 }
+
+#endif

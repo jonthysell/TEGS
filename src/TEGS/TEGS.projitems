@@ -1,0 +1,36 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>ce581cf7-25a3-461f-b5b3-691086b847ca</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>TEGS</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)DebugLogger.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Edge.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Graph.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Lua\LuaScriptingHost.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Schedule.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ScheduledEvent.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ScriptingHost.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Simulation.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SimulationArgs.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)TraceVariable.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UI\IDialogService.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UI\MainViewModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UI\ObservableEdge.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UI\ObservableGraph.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)UI\ObservableVertex.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Vertex.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Lua\Scripts\Utility.lua" />
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Lua\Scripts\Variates.lua" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="$(MSBuildThisFileDirectory)Lua\Scripts\" />
+  </ItemGroup>
+</Project>
