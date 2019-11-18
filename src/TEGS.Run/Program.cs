@@ -25,6 +25,8 @@
 // THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Reflection;
 using System.Text;
 using System.Xml;
@@ -33,6 +35,8 @@ namespace TEGS.Run
 {
     class Program
     {
+        static ProgramArgs ProgramArgs { get; set; }
+
         static void Main(string[] args)
         {
             Console.OutputEncoding = Encoding.UTF8;
@@ -45,21 +49,22 @@ namespace TEGS.Run
             {
                 try
                 {
-                    ProgramArgs programArgs = ParseArgs(args);
+                    ProgramArgs = ParseArgs(args);
 
-                    Simulation simulation = new Simulation(programArgs.SimulationArgs);
+                    Simulation simulation = new Simulation(ProgramArgs.SimulationArgs);
 
-                    bool hasHeader = false;
-                    simulation.VertexFired += (sender, e) =>
+                    if (ProgramArgs.ShowOutput)
                     {
-                        if (!hasHeader)
-                        {
-                            Console.WriteLine(string.Join("\t", "Clock", "Event"));
-                            hasHeader = true;
-                        }
+                        Console.WriteLine("TEGS.Run v{0}", Assembly.GetEntryAssembly().GetName().Version.ToString());
+                        Console.WriteLine();
 
-                        Console.WriteLine(string.Join("\t", e.Clock, e.Vertex));
-                    };
+                        simulation.VertexFired += MakeOutputToConsoleEventHandler();
+                    }
+
+                    if (null != ProgramArgs.OutputWriter)
+                    {
+                        simulation.VertexFired += MakeOutputToOutputFileEventHandler();
+                    }
 
                     simulation.Run();
                 }
@@ -75,7 +80,98 @@ namespace TEGS.Run
                 {
                     PrintException(ex);
                 }
+                finally
+                {
+                    ProgramArgs?.OutputWriter?.Flush();
+                    ProgramArgs?.OutputWriter?.Close();
+                }
             }
+        }
+
+        static VertexFiredEventHandler MakeOutputToConsoleEventHandler()
+        {
+            bool hasHeader = false;
+            int columnWidth = 8;
+
+            List<object> headerItems = new List<object>()
+            {
+                "Clock", "Event"
+            };
+
+            return (sender, e) =>
+            {
+                List<object> dataItems = new List<object>()
+                {
+                    e.Clock, e.Vertex.Name,
+                };
+
+                if (null != e.TraceVariables)
+                {
+                    foreach (TraceVariable tv in e.TraceVariables)
+                    {
+                        if (!hasHeader)
+                        {
+                            headerItems.Add(tv.Name);
+                        }
+                        dataItems.Add(tv.Value);
+                    }
+                }
+
+                if (!hasHeader)
+                {
+                    Console.WriteLine(GetLine(" ", columnWidth, headerItems));
+                    hasHeader = true;
+                }
+
+                Console.WriteLine(GetLine(" ", columnWidth, dataItems));
+            };
+        }
+
+        private static string GetLine(string seperator, int columnWidth, IList<object> items)
+        {
+            StringBuilder sb = new StringBuilder();
+
+            for (int i = 0; i < items.Count; i++)
+            {
+                if (i > 0)
+                {
+                    sb.Append(seperator);
+                }
+                sb.Append(items[i].ToString().PadRight(columnWidth).Substring(0, columnWidth));
+            }
+
+            return sb.ToString();
+        }
+
+        static VertexFiredEventHandler MakeOutputToOutputFileEventHandler()
+        {
+            bool hasHeader = false;
+            string outputHeaderLine = string.Join("\t", "Clock", "Event");
+
+            return (sender, e) =>
+            {
+                string outputDataLine = string.Join("\t", e.Clock, e.Vertex);
+
+                if (null != e.TraceVariables)
+                {
+                    foreach (TraceVariable tv in e.TraceVariables)
+                    {
+                        if (!hasHeader)
+                        {
+                            outputHeaderLine += "\t" + tv.Name;
+                        }
+                        outputDataLine += "\t" + tv.Value.ToString();
+                    }
+                }
+
+                if (!hasHeader)
+                {
+                    ProgramArgs.OutputWriter.WriteLine(outputHeaderLine);
+                    hasHeader = true;
+                }
+
+                ProgramArgs.OutputWriter.WriteLine(outputDataLine);
+            };
         }
 
         static void ShowHelp()
@@ -84,12 +180,14 @@ namespace TEGS.Run
             Console.WriteLine();
 
             Console.WriteLine("Usage:");
-            Console.WriteLine("TEGS.ConsoleApp [options] graph.xml");
+            Console.WriteLine("TEGS.Run.exe [options] graph.xml");
             Console.WriteLine();
 
             Console.WriteLine("Options:");
 
+            Console.WriteLine("-o, --output-file [file]     Write simulation output to the given file.");
             Console.WriteLine("--seed [int]                 The starting seed for the simulation.");
+            Console.WriteLine("--show-output                Show simulation output to the console.");
             Console.WriteLine("--start-parameters [string]  The simulation start parameters.");
             Console.WriteLine("--stop-condition [string]    The simulation stop condition.");
             Console.WriteLine();
@@ -114,10 +212,6 @@ namespace TEGS.Run
 
         static ProgramArgs ParseArgs(string[] args)
         {
-            int? startingSeed = null;
-            string startParameters = null;
-            string stopCondition = null;
-
             Graph graph = null;
 
             try
@@ -134,14 +228,28 @@ namespace TEGS.Run
                 throw new Exception("Unable to load graph.", ex);
             }
 
+            
+            string outputFile = null;
+            bool showOutput = false;
+            int? startingSeed = null;
+            string startParameters = null;
+            string stopCondition = null;
+
             try
             {
                 for (int i = 0; i < args.Length - 1; i++)
                 {
                     switch (args[i].ToLower())
                     {
+                        case "-o":
+                        case "--output-file":
+                            outputFile = args[++i];
+                            break;
                         case "--seed":
                             startingSeed = int.Parse(args[++i]);
+                            break;
+                        case "--show-output":
+                            showOutput = true;
                             break;
                         case "--start-parameters":
                             startParameters = args[++i];
@@ -160,6 +268,13 @@ namespace TEGS.Run
             }
 
             ProgramArgs programArgs = new ProgramArgs(graph);
+
+            programArgs.ShowOutput = showOutput;
+
+            if (!string.IsNullOrWhiteSpace(outputFile))
+            {
+                programArgs.OutputWriter = new StreamWriter(new FileStream(outputFile, FileMode.Create), Encoding.UTF8);
+            }
 
             programArgs.SimulationArgs.StartingSeed = startingSeed;
             programArgs.SimulationArgs.StartParameters = startParameters;

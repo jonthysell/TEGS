@@ -24,6 +24,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System.IO;
+
 using TEGS.Lua;
 
 namespace TEGS.Run
@@ -31,6 +33,10 @@ namespace TEGS.Run
     class ProgramArgs
     {
         public SimulationArgs SimulationArgs { get; private set; }
+
+        public bool ShowOutput { get; set; } = false;
+
+        public StreamWriter OutputWriter { get; set; } = null;
 
         public ProgramArgs(Graph graph)
         {
