@@ -75,15 +75,17 @@ namespace TEGS
         {
             get
             {
-                return ScriptingHost.GetDouble("t_clock");
+                return _cachedClock ?? (_cachedClock = ScriptingHost.GetDouble("t_clock")).Value;
             }
 
             set
             {
                 ScriptingHost.AssignDouble("t_clock", value);
+                _cachedClock = value;
                 OnClockChanged();
             }
         }
+        private double? _cachedClock;
 
         public event SimulationStateChangedEventHandler SimulationStateChanged;
 
@@ -204,6 +206,9 @@ namespace TEGS
             // Execute event
             ScriptingHost.Execute(nextEvent.Target.Code);
 
+            // Evaluate trace variables
+            EvaluateTraces();
+
             OnVertexFired(nextEvent.Target);
 
             // Evaluate edges
@@ -247,33 +252,23 @@ namespace TEGS
             return Schedule.EventCount > 0 && !ScriptingHost.EvaluateBoolean(Args.StopCondition, false);
         }
 
-        private IList<TraceVariable> EvaluateTraces()
+        private void EvaluateTraces()
         {
-            if (TraceVariables.Count > 0)
+            for (int i = 0; i < TraceVariables.Count; i++)
             {
-                List<TraceVariable> traceVariables = new List<TraceVariable>(TraceVariables.Count);
-                foreach (TraceVariable tv in TraceVariables)
+                switch (TraceVariables[i].Type)
                 {
-                    switch (tv.Type)
-                    {
-                        case TraceVariableType.Boolean:
-                            tv.Value = ScriptingHost.GetBoolean(tv.Name);
-                            break;
-                        case TraceVariableType.Double:
-                            tv.Value = ScriptingHost.GetDouble(tv.Name);
-                            break;
-                        case TraceVariableType.String:
-                            tv.Value = ScriptingHost.GetString(tv.Name);
-                            break;
-                    }
-
-                    traceVariables.Add(tv.Clone());
+                    case TraceVariableType.Boolean:
+                        TraceVariables[i].Value = ScriptingHost.GetBoolean(TraceVariables[i].Name);
+                        break;
+                    case TraceVariableType.Double:
+                        TraceVariables[i].Value = ScriptingHost.GetDouble(TraceVariables[i].Name);
+                        break;
+                    case TraceVariableType.String:
+                        TraceVariables[i].Value = ScriptingHost.GetString(TraceVariables[i].Name);
+                        break;
                 }
-
-                return traceVariables;
             }
-
-            return null;
         }
 
         private void OnSimulationStateChanged()
@@ -293,7 +288,7 @@ namespace TEGS
 
         private void OnVertexFired(Vertex vertex)
         {
-            VertexFired?.Invoke(this, new VertexEventArgs(Clock, vertex, EvaluateTraces()));
+            VertexFired?.Invoke(this, new VertexEventArgs(Clock, vertex, TraceVariables));
         }
 
         private void OnEdgeFiring(Edge edge)

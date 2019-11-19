@@ -40,14 +40,7 @@ namespace TEGS
             }
             set
             {
-                if (string.IsNullOrWhiteSpace(value))
-                {
-                    _name = null;
-                }
-                else
-                {
-                    _name = value.Trim();
-                }
+                _name = value?.Trim();
             }
         }
         private string _name = null;
@@ -60,14 +53,7 @@ namespace TEGS
             }
             set
             {
-                if (string.IsNullOrWhiteSpace(value))
-                {
-                    _description = null;
-                }
-                else
-                {
-                    _description = value.Trim();
-                }
+                _description = value?.Trim();
             }
         }
         private string _description = null;
@@ -133,12 +119,10 @@ namespace TEGS
 
         public bool HasVertex(string name)
         {
-            if (string.IsNullOrWhiteSpace(name))
+            if (string.IsNullOrEmpty(name))
             {
                 throw new ArgumentNullException(nameof(name));
             }
-
-            name = name.Trim();
 
             foreach (Vertex v in _verticies)
             {

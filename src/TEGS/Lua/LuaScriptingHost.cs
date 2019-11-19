@@ -88,10 +88,8 @@ namespace TEGS.Lua
 
         private DynValue ExecuteInternal(string code, bool cache)
         {
-            if (!string.IsNullOrWhiteSpace(code))
+            if (!string.IsNullOrEmpty(code))
             {
-                code = code.Trim();
-
                 if (!_cachedFunctions.TryGetValue(code, out DynValue func))
                 {
                     func = _script.LoadFunction(string.Format("function() {0} end", code));
@@ -113,10 +111,9 @@ namespace TEGS.Lua
 
         public void Assign(string name, object value)
         {
-            if (!string.IsNullOrWhiteSpace(name))
+            if (!string.IsNullOrEmpty(name))
             {
                 // LHS is not null
-                name = name.Trim();
 
                 if (null == value)
                 {
@@ -197,12 +194,10 @@ namespace TEGS.Lua
 
         private DynValue Evaluate(string code, bool cache = true)
         {
-            if (string.IsNullOrWhiteSpace(code))
+            if (string.IsNullOrEmpty(code))
             {
-                throw new ArgumentNullException(nameof(code));
+                return null;
             }
-
-            code = code.Trim();
 
             try
             {
@@ -251,7 +246,7 @@ namespace TEGS.Lua
 
         public override string EvaluateParameters(string parameters)
         {
-            if (string.IsNullOrWhiteSpace(parameters))
+            if (string.IsNullOrEmpty(parameters))
             {
                 return null;
             }

@@ -174,7 +174,7 @@ namespace TEGS
 
         public bool EvaluateBoolean(string code, bool defaultValue)
         {
-            if (TryEvaluate(code, out bool result))
+            if (!string.IsNullOrEmpty(code) && TryEvaluate(code, out bool result))
             {
                 return result;
             }
@@ -184,7 +184,7 @@ namespace TEGS
 
         public double EvaluateDouble(string code, double defaultValue)
         {
-            if (TryEvaluate(code, out double result))
+            if (!string.IsNullOrEmpty(code) && TryEvaluate(code, out double result))
             {
                 return result;
             }
@@ -194,7 +194,7 @@ namespace TEGS
 
         public string EvaluateString(string code, string defaultValue)
         {
-            if (TryEvaluate(code, out string result))
+            if (!string.IsNullOrEmpty(code) && TryEvaluate(code, out string result))
             {
                 return result;
             }

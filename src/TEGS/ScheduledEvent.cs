@@ -65,12 +65,7 @@ namespace TEGS
 
         public override string ToString()
         {
-            if (!string.IsNullOrWhiteSpace(Target.Name))
-            {
-                return string.Format("{0} @ {1:f3}", Target.Name, Time);
-            }
-
-            return base.ToString();
+            return $"{Target.Name} @ {Time:f3}";
         }
     }
 }

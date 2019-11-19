@@ -30,46 +30,13 @@ namespace TEGS
 {
     public class TraceVariable
     {
-        public string Name { get; private set; }
+        public string Name;
 
-        public TraceVariableType Type { get; private set; }
+        public TraceVariableType Type;
 
-        public object Value
-        {
-            get
-            {
-                return _value;
-            }
-            set
-            {
-                if (null == value)
-                {
-                    _value = null;
-                }
-                else
-                {
-                    if ((null != value as bool?) && (Type == TraceVariableType.Boolean))
-                    {
-                        _value = value;
-                    }
-                    else if ((null != value as double?) && (Type == TraceVariableType.Double))
-                    {
-                        _value = value;
-                    }
-                    else if ((null != value as string) && (Type == TraceVariableType.String))
-                    {
-                        _value = value;
-                    }
-                    else
-                    {
-                        throw new ArgumentException();
-                    }
-                }
-            }
-        }
-        private object _value = null;
+        public object Value;
 
-        TraceVariable(string name)
+        public TraceVariable(string name, TraceVariableType type, object value = null)
         {
             if (string.IsNullOrWhiteSpace(name))
             {
@@ -77,10 +44,6 @@ namespace TEGS
             }
 
             Name = name.Trim();
-        }
-
-        public TraceVariable(string name, TraceVariableType type, object value = null) : this(name)
-        {
             Type = type;
             Value = value;
         }
@@ -90,11 +53,6 @@ namespace TEGS
         public TraceVariable(string name, double value) : this(name, TraceVariableType.Double, value) { }
 
         public TraceVariable(string name, string value) : this(name, TraceVariableType.String, value) { }
-
-        public TraceVariable Clone()
-        {
-            return new TraceVariable(Name, Type, Value);
-        }
     }
 
     public enum TraceVariableType

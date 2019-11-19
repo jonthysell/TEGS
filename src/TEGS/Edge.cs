@@ -46,25 +46,62 @@ namespace TEGS
             }
             set
             {
-                if (string.IsNullOrWhiteSpace(value))
-                {
-                    _description = null;
-                }
-                else
-                {
-                    _description = value.Trim();
-                }
+                _description = value?.Trim();
             }
         }
         private string _description = null;
 
-        public string Condition { get; set; } = null;
+        public string Condition
+        {
+            get
+            {
+                return _condition;
+            }
+            set
+            {
+                _condition = value?.Trim();
+            }
+        }
+        private string _condition = null;
 
-        public string Delay { get; set; } = null;
+        public string Delay
+        {
+            get
+            {
+                return _delay;
+            }
+            set
+            {
+                _delay = value?.Trim();
+            }
+        }
+        private string _delay = null;
 
-        public string Priority { get; set; } = null;
+        public string Priority
+        {
+            get
+            {
+                return _priority;
+            }
+            set
+            {
+                _priority = value?.Trim();
+            }
+        }
+        private string _priority = null;
 
-        public string Parameters { get; set; } = null;
+        public string Parameters
+        {
+            get
+            {
+                return _parameters;
+            }
+            set
+            {
+                _parameters = value?.Trim();
+            }
+        }
+        private string _parameters = null;
 
         public Edge(Graph graph, Vertex source, Vertex target)
         {

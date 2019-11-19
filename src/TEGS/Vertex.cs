@@ -66,21 +66,36 @@ namespace TEGS
             }
             set
             {
-                if (string.IsNullOrWhiteSpace(value))
-                {
-                    _description = null;
-                }
-                else
-                {
-                    _description = value.Trim();
-                }
+                _description = value?.Trim();
             }
         }
         private string _description = null;
 
-        public string Code { get; set; } = null;
+        public string Code
+        {
+            get
+            {
+                return _code;
+            }
+            set
+            {
+                _code = value?.Trim();
+            }
+        }
+        private string _code = null;
 
-        public string Parameters { get; set; } = null;
+        public string Parameters
+        {
+            get
+            {
+                return _parameters;
+            }
+            set
+            {
+                _parameters = value?.Trim();
+            }
+        }
+        private string _parameters = null;
 
         public bool IsStartingVertex => (this == Graph.StartingVertex);
 
@@ -110,17 +125,7 @@ namespace TEGS
 
         public override string ToString()
         {
-            if (!string.IsNullOrWhiteSpace(Name))
-            {
-                return Name;
-            }
-
-            if (!string.IsNullOrWhiteSpace(Description))
-            {
-                return Description;
-            }
-
-            return base.ToString();
+            return Name;
         }
     }
 

@@ -97,15 +97,15 @@ namespace TEGS.Run
             bool hasHeader = false;
 
             string[] headerItems = new string[numTraceVariables + 2];
-            headerItems[0] = "Clock";
-            headerItems[1] = "Event";
+            headerItems[0] = Truncate("Clock", columnWidth);
+            headerItems[1] = Truncate("Event", columnWidth);
 
             string[] dataItems = new string[numTraceVariables + 2];
 
             return (sender, e) =>
             {
-                dataItems[0] = e.Clock.ToString();
-                dataItems[1] = e.Vertex.Name.ToString();
+                dataItems[0] = Truncate(e.Clock.ToString(), columnWidth);
+                dataItems[1] = Truncate(e.Vertex.Name.ToString(), columnWidth);
 
                 if (null != e.TraceVariables)
                 {
@@ -114,38 +114,37 @@ namespace TEGS.Run
                     {
                         if (!hasHeader)
                         {
-                            headerItems[i + 2] = e.TraceVariables[i].Name;
+                            headerItems[i + 2] = Truncate(e.TraceVariables[i].Name, columnWidth);
                         }
-                        dataItems[i + 2] = e.TraceVariables[i].Value.ToString();
+                        dataItems[i + 2] = Truncate(e.TraceVariables[i].Value.ToString(), columnWidth);
                     }
                 }
 
                 if (!hasHeader)
                 {
-                    writeLine(GetLine(headerItems, seperator, columnWidth));
+                    writeLine(string.Join(seperator, headerItems));
                     hasHeader = true;
                 }
 
-                writeLine(GetLine(dataItems, seperator, columnWidth));
+                writeLine(string.Join(seperator, dataItems));
             };
         }
 
-        private static string GetLine(string[] items, string seperator, int? columnWidth)
+        private static string Truncate(string s, int? width)
         {
-            StringBuilder sb = new StringBuilder();
-
-            for (int i = 0; i < items.Length; i++)
+            if (width.HasValue)
             {
-                if (i > 0)
+                if (s.Length > width.Value)
                 {
-                    sb.Append(seperator);
+                    return s.Substring(0, width.Value);
                 }
-
-                string value = columnWidth.HasValue ? items[i].PadRight(columnWidth.Value).Substring(0, columnWidth.Value) : items[i];
-                sb.Append(value);
+                else if (s.Length < width.Value)
+                {
+                    return s.PadRight(width.Value);
+                }
             }
 
-            return sb.ToString();
+            return s;
         }
 
         static void ShowHelp()
