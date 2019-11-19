@@ -255,9 +255,10 @@ namespace TEGS.Run
                 throw new Exception("Unable to parse options.", ex);
             }
 
-            ProgramArgs programArgs = new ProgramArgs(graph);
-
-            programArgs.ShowOutput = showOutput;
+            ProgramArgs programArgs = new ProgramArgs(graph)
+            {
+                ShowOutput = showOutput
+            };
 
             if (!string.IsNullOrWhiteSpace(outputFile))
             {

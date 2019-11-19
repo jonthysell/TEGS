@@ -124,6 +124,7 @@ namespace TEGS
         }
     }
 
+    [Serializable]
     public class VertexNameAlreadyExistsException : Exception
     {
         public string Name { get; private set; }

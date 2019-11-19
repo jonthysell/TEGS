@@ -146,7 +146,7 @@ namespace TEGS.Lua
 
         public override void AssignBoolean(string name, bool value)
         {
-            _script.Globals.Set(name, DynValue.NewBoolean(value));
+            _script.Globals.Set(name, value ? DynValue.True : DynValue.False);
         }
 
         public override void AssignDouble(string name, double value)

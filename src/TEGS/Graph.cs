@@ -369,16 +369,19 @@ namespace TEGS
         }
     }
 
+    [Serializable]
     public class GraphMismatchException : Exception
     {
         public GraphMismatchException() : base() { }
     }
 
+    [Serializable]
     public class VertexNotInGraphException : Exception
     {
         public VertexNotInGraphException() : base() { }
     }
 
+    [Serializable]
     public class CannotRemoveVertexWithEdgesException : Exception
     {
         public CannotRemoveVertexWithEdgesException() : base() { }
