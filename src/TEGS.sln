@@ -15,9 +15,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TEGS.Test", "TEGS.Test\TEGS.Test.csproj", "{9757C0A6-9315-4AFD-8666-3634E373DFE4}"
 EndProject
 Global
-	GlobalSection(Performance) = preSolution
-		HasPerformanceSessions = true
-	EndGlobalSection
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		TEGS\TEGS.projitems*{65d675fd-3028-47e5-8358-1264bba47479}*SharedItemsImports = 4
 		TEGS\TEGS.projitems*{9757c0a6-9315-4afd-8666-3634e373dfe4}*SharedItemsImports = 4
@@ -42,5 +39,8 @@ Global
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {1A0536E0-FBEC-4DD8-BF2D-5A92D930FC34}
+	EndGlobalSection
+	GlobalSection(Performance) = preSolution
+		HasPerformanceSessions = true
 	EndGlobalSection
 EndGlobal

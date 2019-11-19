@@ -28,7 +28,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Reflection;
 
 using MoonSharp.Interpreter;
 
@@ -93,8 +92,7 @@ namespace TEGS.Lua
             {
                 code = code.Trim();
 
-                DynValue func = null;
-                if (!_cachedFunctions.TryGetValue(code, out func))
+                if (!_cachedFunctions.TryGetValue(code, out DynValue func))
                 {
                     func = _script.LoadFunction(string.Format("function() {0} end", code));
                     if (cache)
@@ -208,14 +206,13 @@ namespace TEGS.Lua
 
             try
             {
-                DynamicExpression exp = null;
-
-                if (_cachedDynamicExpressions.TryGetValue(code, out exp))
+                if (_cachedDynamicExpressions.TryGetValue(code, out DynamicExpression exp))
                 {
                     return exp.Evaluate();
                 }
 
                 exp = _script.CreateDynamicExpression(code);
+
                 DynValue result = exp.Evaluate();
                 if (cache)
                 {
@@ -225,7 +222,7 @@ namespace TEGS.Lua
             }
             catch (DynamicExpressionException)
             {
-                return ExecuteInternal(string.Format("return {0}", code), cache);
+                return ExecuteInternal($"return {code}", cache);
             }
         }
 
