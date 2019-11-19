@@ -53,17 +53,21 @@ namespace TEGS.Run
 
                     Simulation simulation = new Simulation(ProgramArgs.SimulationArgs);
 
+                    int numTraceVariables = ProgramArgs.SimulationArgs.TraceVariables.Count;
+
                     if (ProgramArgs.ShowOutput)
                     {
                         Console.WriteLine("TEGS.Run v{0}", Assembly.GetEntryAssembly().GetName().Version.ToString());
                         Console.WriteLine();
 
-                        simulation.VertexFired += MakeOutputToConsoleEventHandler();
+                        int? columnWidth = (Console.WindowWidth / (numTraceVariables + 2)) - 1; // 
+
+                        simulation.VertexFired += MakeOutputEventHandler(Console.WriteLine, numTraceVariables, " ", columnWidth);
                     }
 
                     if (null != ProgramArgs.OutputWriter)
                     {
-                        simulation.VertexFired += MakeOutputToOutputFileEventHandler();
+                        simulation.VertexFired += MakeOutputEventHandler(ProgramArgs.OutputWriter.WriteLine, numTraceVariables);
                     }
 
                     simulation.Run();
@@ -88,90 +92,60 @@ namespace TEGS.Run
             }
         }
 
-        static VertexFiredEventHandler MakeOutputToConsoleEventHandler()
+        private static VertexFiredEventHandler MakeOutputEventHandler(Action<string> writeLine, int numTraceVariables, string seperator = "\t", int? columnWidth = null)
         {
             bool hasHeader = false;
-            int columnWidth = 8;
 
-            List<object> headerItems = new List<object>()
-            {
-                "Clock", "Event"
-            };
+            string[] headerItems = new string[numTraceVariables + 2];
+            headerItems[0] = "Clock";
+            headerItems[1] = "Event";
+
+            string[] dataItems = new string[numTraceVariables + 2];
 
             return (sender, e) =>
             {
-                List<object> dataItems = new List<object>()
-                {
-                    e.Clock, e.Vertex.Name,
-                };
+                dataItems[0] = e.Clock.ToString();
+                dataItems[1] = e.Vertex.Name.ToString();
 
                 if (null != e.TraceVariables)
                 {
-                    foreach (TraceVariable tv in e.TraceVariables)
+
+                    for (int i = 0; i < e.TraceVariables.Count; i++)
                     {
                         if (!hasHeader)
                         {
-                            headerItems.Add(tv.Name);
+                            headerItems[i + 2] = e.TraceVariables[i].Name;
                         }
-                        dataItems.Add(tv.Value);
+                        dataItems[i + 2] = e.TraceVariables[i].Value.ToString();
                     }
                 }
 
                 if (!hasHeader)
                 {
-                    Console.WriteLine(GetLine(" ", columnWidth, headerItems));
+                    writeLine(GetLine(headerItems, seperator, columnWidth));
                     hasHeader = true;
                 }
 
-                Console.WriteLine(GetLine(" ", columnWidth, dataItems));
+                writeLine(GetLine(dataItems, seperator, columnWidth));
             };
         }
 
-        private static string GetLine(string seperator, int columnWidth, IList<object> items)
+        private static string GetLine(string[] items, string seperator, int? columnWidth)
         {
             StringBuilder sb = new StringBuilder();
 
-            for (int i = 0; i < items.Count; i++)
+            for (int i = 0; i < items.Length; i++)
             {
                 if (i > 0)
                 {
                     sb.Append(seperator);
                 }
-                sb.Append(items[i].ToString().PadRight(columnWidth).Substring(0, columnWidth));
+
+                string value = columnWidth.HasValue ? items[i].PadRight(columnWidth.Value).Substring(0, columnWidth.Value) : items[i];
+                sb.Append(value);
             }
 
             return sb.ToString();
-        }
-
-        static VertexFiredEventHandler MakeOutputToOutputFileEventHandler()
-        {
-            bool hasHeader = false;
-            string outputHeaderLine = string.Join("\t", "Clock", "Event");
-
-            return (sender, e) =>
-            {
-                string outputDataLine = string.Join("\t", e.Clock, e.Vertex);
-
-                if (null != e.TraceVariables)
-                {
-                    foreach (TraceVariable tv in e.TraceVariables)
-                    {
-                        if (!hasHeader)
-                        {
-                            outputHeaderLine += "\t" + tv.Name;
-                        }
-                        outputDataLine += "\t" + tv.Value.ToString();
-                    }
-                }
-
-                if (!hasHeader)
-                {
-                    ProgramArgs.OutputWriter.WriteLine(outputHeaderLine);
-                    hasHeader = true;
-                }
-
-                ProgramArgs.OutputWriter.WriteLine(outputDataLine);
-            };
         }
 
         static void ShowHelp()
@@ -190,6 +164,9 @@ namespace TEGS.Run
             Console.WriteLine("--show-output                Show simulation output to the console.");
             Console.WriteLine("--start-parameters [string]  The simulation start parameters.");
             Console.WriteLine("--stop-condition [string]    The simulation stop condition.");
+            Console.WriteLine("--trace-boolean [string]     Adds a boolean trace variable by name.");
+            Console.WriteLine("--trace-double [string]      Adds a double trace variable by name.");
+            Console.WriteLine("--trace-string [string]      Adds a string trace variable by name.");
             Console.WriteLine();
         }
 
@@ -235,6 +212,8 @@ namespace TEGS.Run
             string startParameters = null;
             string stopCondition = null;
 
+            List<TraceVariable> traceVariables = new List<TraceVariable>();
+
             try
             {
                 for (int i = 0; i < args.Length - 1; i++)
@@ -256,6 +235,15 @@ namespace TEGS.Run
                             break;
                         case "--stop-condition":
                             stopCondition = args[++i];
+                            break;
+                        case "--trace-boolean":
+                            traceVariables.Add(new TraceVariable(args[++i], TraceVariableType.Boolean));
+                            break;
+                        case "--trace-double":
+                            traceVariables.Add(new TraceVariable(args[++i], TraceVariableType.Double));
+                            break;
+                        case "--trace-string":
+                            traceVariables.Add(new TraceVariable(args[++i], TraceVariableType.String));
                             break;
                         default:
                             throw new Exception($"Did not recognize option \"{args[i]}\"");
@@ -279,6 +267,8 @@ namespace TEGS.Run
             programArgs.SimulationArgs.StartingSeed = startingSeed;
             programArgs.SimulationArgs.StartParameters = startParameters;
             programArgs.SimulationArgs.StopCondition = stopCondition;
+
+            programArgs.SimulationArgs.TraceVariables.AddRange(traceVariables);
 
             return programArgs;
         }

@@ -37,22 +37,10 @@ namespace TEGS
     {
         public Graph Graph { get; private set; }
 
-        public IEnumerable<ScheduledEvent> Events
-        {
-           get
-            {
-                return _events;
-            }
-        }
+        public IEnumerable<ScheduledEvent> Events => _events;
         private List<ScheduledEvent> _events = new List<ScheduledEvent>();
 
-        public int EventCount
-        {
-            get
-            {
-                return _events.Count;
-            }
-        }
+        public int EventCount => _events.Count;
 
         public event ScheduleChangedEventHandler ScheduleChanged;
 

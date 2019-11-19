@@ -44,21 +44,9 @@ namespace TEGS
 
     public class Simulation
     {
-        public Graph Graph
-        {
-            get
-            {
-                return Args.Graph;
-            }
-        }
+        public Graph Graph => Args.Graph;
 
-        public IList<TraceVariable> TraceVariables
-        {
-            get
-            {
-                return Args.TraceVariables;
-            }
-        }
+        public IList<TraceVariable> TraceVariables => Args.TraceVariables;
 
         public ScriptingHost ScriptingHost => Args.ScriptingHost;
 
@@ -261,7 +249,7 @@ namespace TEGS
 
         private IList<TraceVariable> EvaluateTraces()
         {
-            if (null != Args.TraceVariables && TraceVariables.Count > 0)
+            if (TraceVariables.Count > 0)
             {
                 List<TraceVariable> traceVariables = new List<TraceVariable>(TraceVariables.Count);
                 foreach (TraceVariable tv in TraceVariables)

@@ -89,39 +89,15 @@ namespace TEGS
         }
         private Vertex _startingVertex = null;
 
-        public IEnumerable<Vertex> Verticies
-        {
-            get
-            {
-                return _verticies;
-            }
-        }
+        public IEnumerable<Vertex> Verticies => _verticies;
         private List<Vertex> _verticies = new List<Vertex>();
 
-        public int VertexCount
-        {
-            get
-            {
-                return _verticies.Count;
-            }
-        }
+        public int VertexCount => _verticies.Count;
 
-        public IEnumerable<Edge> Edges
-        {
-            get
-            {
-                return _edges;
-            }
-        }
+        public IEnumerable<Edge> Edges => _edges;
         private List<Edge> _edges = new List<Edge>();
 
-        public int EdgeCount
-        {
-            get
-            {
-                return _edges.Count;
-            }
-        }
+        public int EdgeCount => _edges.Count;
 
         public Vertex AddVertex(string name)
         {

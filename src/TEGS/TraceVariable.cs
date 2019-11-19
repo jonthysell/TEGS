@@ -69,7 +69,7 @@ namespace TEGS
         }
         private object _value = null;
 
-        public TraceVariable(string name, TraceVariableType type, object value = null)
+        TraceVariable(string name)
         {
             if (string.IsNullOrWhiteSpace(name))
             {
@@ -77,9 +77,19 @@ namespace TEGS
             }
 
             Name = name.Trim();
+        }
+
+        public TraceVariable(string name, TraceVariableType type, object value = null) : this(name)
+        {
             Type = type;
             Value = value;
         }
+
+        public TraceVariable(string name, bool value) : this(name, TraceVariableType.Boolean, value) { }
+
+        public TraceVariable(string name, double value) : this(name, TraceVariableType.Double, value) { }
+
+        public TraceVariable(string name, string value) : this(name, TraceVariableType.String, value) { }
 
         public TraceVariable Clone()
         {

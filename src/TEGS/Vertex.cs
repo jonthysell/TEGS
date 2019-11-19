@@ -82,13 +82,7 @@ namespace TEGS
 
         public string Parameters { get; set; } = null;
 
-        public bool IsStartingVertex
-        {
-            get
-            {
-                return (this == Graph.StartingVertex);
-            }
-        }
+        public bool IsStartingVertex => (this == Graph.StartingVertex);
 
         public int X { get; set; } = 0;
 

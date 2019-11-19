@@ -41,14 +41,7 @@ namespace TEGS
 
         public string StopCondition { get; set; } = null;
 
-        public IList<TraceVariable> TraceVariables
-        {
-            get
-            {
-                return _traceVariables;
-            }
-        }
-        private List<TraceVariable> _traceVariables = new List<TraceVariable>();
+        public List<TraceVariable> TraceVariables { get; private set; } = new List<TraceVariable>();
 
         public SimulationArgs(Graph graph, ScriptingHost scriptingHost)
         {
