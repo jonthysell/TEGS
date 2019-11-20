@@ -107,17 +107,13 @@ namespace TEGS.Run
                 dataItems[0] = Truncate(e.Clock.ToString(), columnWidth);
                 dataItems[1] = Truncate(e.Vertex.Name.ToString(), columnWidth);
 
-                if (null != e.TraceVariables)
+                for (int i = 0; i < e.TraceVariables.Count; i++)
                 {
-
-                    for (int i = 0; i < e.TraceVariables.Count; i++)
+                    if (!hasHeader)
                     {
-                        if (!hasHeader)
-                        {
-                            headerItems[i + 2] = Truncate(e.TraceVariables[i].Name, columnWidth);
-                        }
-                        dataItems[i + 2] = Truncate(e.TraceVariables[i].Value.ToString(), columnWidth);
+                        headerItems[i + 2] = Truncate(e.TraceVariables[i].Name, columnWidth);
                     }
+                    dataItems[i + 2] = Truncate(e.TraceVariables[i].Value.ToString(), columnWidth);
                 }
 
                 if (!hasHeader)

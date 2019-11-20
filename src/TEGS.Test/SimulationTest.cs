@@ -166,24 +166,23 @@ namespace TEGS.Test
             Assert.AreEqual(SimulationState.None, s.State);
 
             bool hasHeader = false;
+            string headerLine = string.Join("\t", "Clock", "Event");
+
             s.VertexFired += (sender, e) =>
             {
-                string headerLine = !hasHeader ? "" : string.Join("\t", "Clock", "Event");
-
                 string line = string.Join("\t", e.Clock, e.Vertex);
 
-                foreach (TraceVariable tv in e.TraceVariables)
+                for (int i = 0; i < e.TraceVariables.Count; i++)
                 {
                     if (!hasHeader)
                     {
-                        headerLine += "\t" + tv.Name;
+                        headerLine += "\t" + e.TraceVariables[i].Name;
                     }
-                    line += "\t" + tv.Value.ToString();
+                    line += "\t" + e.TraceVariables[i].Value.ToString();
                 }
 
                 if (!hasHeader)
                 {
-                    headerLine = string.Join("\t", "Clock", "Event") + headerLine;
                     Trace.WriteLine(headerLine);
                     hasHeader = true;
                 }
