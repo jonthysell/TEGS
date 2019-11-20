@@ -63,10 +63,7 @@ namespace TEGS.Test
             Assert.IsNotNull(graph);
 
             MemoryStream ms = new MemoryStream();
-            using (XmlWriter xw = XmlWriter.Create(ms, new XmlWriterSettings() { Encoding = Encoding.UTF8 }))
-            {
-                graph.SaveXml(xw);
-            }
+            graph.SaveXml(ms);
 
             Assert.IsNotNull(ms);
             string graphXml = Encoding.UTF8.GetString(ms.ToArray());
@@ -78,9 +75,9 @@ namespace TEGS.Test
         {
             Graph graph = null;
 
-            using (StreamReader sr = new StreamReader(new FileStream(fileName, FileMode.Open), Encoding.UTF8))
+            using (FileStream fs = new FileStream(fileName, FileMode.Open))
             {
-                graph = Graph.LoadXml(XmlReader.Create(sr));
+                graph = Graph.LoadXml(fs);
             }
 
             return graph;

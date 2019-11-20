@@ -194,9 +194,9 @@ namespace TEGS.Run
             {
                 string graphFile = args[args.Length - 1];
 
-                using (XmlReader reader = XmlReader.Create(graphFile))
+                using (FileStream fs = new FileStream(graphFile, FileMode.Open))
                 {
-                    graph = Graph.LoadXml(reader);
+                    graph = Graph.LoadXml(fs);
                 }
             }
             catch (Exception ex)

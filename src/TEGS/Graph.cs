@@ -25,7 +25,9 @@
 // THE SOFTWARE.
 
 using System;
+using System.IO;
 using System.Collections.Generic;
+using System.Text;
 using System.Xml;
 
 namespace TEGS
@@ -167,16 +169,11 @@ namespace TEGS
             return _edges.Remove(item);
         }
 
-        public static Graph LoadXml(XmlReader xmlReader)
+        public static Graph LoadXml(Stream inputStream)
         {
-            if (null == xmlReader)
+            if (null == inputStream)
             {
-                throw new ArgumentNullException(nameof(xmlReader));
-            }
-
-            if (!xmlReader.IsStartElement() || xmlReader.Name != "graph")
-            {
-                throw new ArgumentOutOfRangeException(nameof(xmlReader));
+                throw new ArgumentNullException(nameof(inputStream));
             }
 
             Graph graph = new Graph();
@@ -186,16 +183,18 @@ namespace TEGS
 
             int? startingVertexId = null;
 
-            using (xmlReader)
+            using (XmlReader xmlReader = XmlReader.Create(inputStream))
             {
-                graph.Name = xmlReader.GetAttribute("name");
-                graph.Description = xmlReader.GetAttribute("description");
-
-                do
+                while (xmlReader.Read())
                 {
                     if (xmlReader.IsStartElement())
                     {
-                        if (xmlReader.Name == "vertex")
+                        if (xmlReader.Name == "graph")
+                        {
+                            graph.Name = xmlReader.GetAttribute("name");
+                            graph.Description = xmlReader.GetAttribute("description");
+                        }
+                        else if (xmlReader.Name == "vertex")
                         {
                             int id = int.Parse(xmlReader.GetAttribute("id"));
                             string name = xmlReader.GetAttribute("name");
@@ -255,7 +254,6 @@ namespace TEGS
                         }
                     }
                 }
-                while (xmlReader.Read());
             }
 
             foreach (KeyValuePair<int, Vertex> kvp in verticies)
@@ -275,14 +273,20 @@ namespace TEGS
             return graph;
         }
 
-        public void SaveXml(XmlWriter xmlWriter)
+        public void SaveXml(Stream outputStream)
         {
-            if (null == xmlWriter)
+            if (null == outputStream)
             {
-                throw new ArgumentNullException(nameof(xmlWriter));
+                throw new ArgumentNullException(nameof(outputStream));
             }
+
+            XmlWriterSettings outputSettings = new XmlWriterSettings()
+            {
+                Encoding = Encoding.UTF8,
+                NewLineHandling = NewLineHandling.Entitize
+            };
             
-            using (xmlWriter)
+            using (XmlWriter xmlWriter = XmlWriter.Create(outputStream, outputSettings))
             {
                 xmlWriter.WriteStartElement("graph");
                 xmlWriter.WriteAttributeString("description", Description);
@@ -338,8 +342,6 @@ namespace TEGS
 
                 xmlWriter.WriteEndElement(); // graph
             }
-
-            xmlWriter.Flush();
         }
 
         public override string ToString()

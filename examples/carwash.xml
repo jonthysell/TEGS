@@ -1,82 +1,16 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <graph description="An automatic carwash">
-    <verticies>
-        <vertex code=""
-                description="The simulation run is started"
-                id="0"
-                name="RUN"
-                parameters="QUEUE, SERVERS"
-                starting="True"
-                x="0"
-                y="0" />
-        <vertex code="QUEUE = QUEUE + 1"
-                description="Cars enter the line"
-                id="1"
-                name="ENTER"
-                parameters=""
-                x="0"
-                y="0" />
-        <vertex code="SERVERS = SERVERS - 1
- QUEUE = QUEUE - 1"
-                description="Service starts"
-                id="2"
-                name="START"
-                parameters=""
-                x="0"
-                y="0" />
-        <vertex code="SERVERS = SERVERS + 1"
-                description="Cars leave"
-                id="3"
-                name="LEAVE"
-                parameters=""
-                x="0"
-                y="0" />
-    </verticies>
-    <edges>
-        <edge action="Schedule"
-              condition=""
-              delay=""
-              description="The car will enter the line"
-              id="0"
-              parameters=""
-              priority="5"
-              source="0"
-              target="1" />
-        <edge action="Schedule"
-              condition=""
-              delay="t_uniformvariate(3, 8)"
-              description="The next customer enters in 3 to 8 minutes"
-              id="1"
-              parameters=""
-              priority="6"
-              source="1"
-              target="1" />
-        <edge action="Schedule"
-              condition="SERVERS &gt; 0"
-              delay=""
-              description="There are available servers to start washing the car"
-              id="2"
-              parameters=""
-              priority="5"
-              source="1"
-              target="2" />
-        <edge action="Schedule"
-              condition=""
-              delay="t_uniformvariate(5, 20)"
-              description="The car will be in service for at least 5 minutes"
-              id="3"
-              parameters=""
-              priority="6"
-              source="2"
-              target="3" />
-        <edge action="Schedule"
-              condition="QUEUE &gt; 0"
-              delay=""
-              description="There are cars in queue, start service for the next car in line"
-              id="4"
-              parameters=""
-              priority="5"
-              source="3"
-              target="2" />
-    </edges>
+  <verticies>
+    <vertex id="0" name="RUN" description="The simulation run is started" code="" parameters="QUEUE, SERVERS" x="0" y="0" starting="True" />
+    <vertex id="1" name="ENTER" description="Cars enter the line" code="QUEUE = QUEUE + 1" parameters="" x="0" y="0" />
+    <vertex id="2" name="START" description="Service starts" code="SERVERS = SERVERS - 1&#xD;&#xA;QUEUE = QUEUE - 1" parameters="" x="0" y="0" />
+    <vertex id="3" name="LEAVE" description="Cars leave" code="SERVERS = SERVERS + 1" parameters="" x="0" y="0" />
+  </verticies>
+  <edges>
+    <edge id="0" source="0" target="1" action="Schedule" description="The car will enter the line" condition="" delay="" priority="5" parameters="" />
+    <edge id="1" source="1" target="1" action="Schedule" description="The next customer enters in 3 to 8 minutes" condition="" delay="t_uniformvariate(3, 8)" priority="6" parameters="" />
+    <edge id="2" source="1" target="2" action="Schedule" description="There are available servers to start washing the car" condition="SERVERS &gt; 0" delay="" priority="5" parameters="" />
+    <edge id="3" source="2" target="3" action="Schedule" description="The car will be in service for at least 5 minutes" condition="" delay="t_uniformvariate(5, 20)" priority="6" parameters="" />
+    <edge id="4" source="3" target="2" action="Schedule" description="There are cars in queue, start service for the next car in line" condition="QUEUE &gt; 0" delay="" priority="5" parameters="" />
+  </edges>
 </graph>
