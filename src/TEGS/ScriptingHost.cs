@@ -55,6 +55,8 @@ namespace TEGS
 
         public abstract void AssignBoolean(string name, bool value);
 
+        public abstract void AssignInteger(string name, int value);
+
         public abstract void AssignDouble(string name, double value);
 
         public abstract void AssignString(string name, string value);
@@ -64,6 +66,21 @@ namespace TEGS
             try
             {
                 AssignBoolean(name, value);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                DebugLogger.LogException(ex);
+            }
+
+            return false;
+        }
+
+        public bool TryAssign(string name, int value)
+        {
+            try
+            {
+                AssignInteger(name, value);
                 return true;
             }
             catch (Exception ex)
@@ -110,6 +127,8 @@ namespace TEGS
 
         public abstract bool GetBoolean(string name);
 
+        public abstract int GetInteger(string name);
+
         public abstract double GetDouble(string name);
 
         public abstract string GetString(string name);
@@ -127,6 +146,22 @@ namespace TEGS
             }
 
             result = default(bool);
+            return false;
+        }
+
+        public bool TryGet(string name, out int result)
+        {
+            try
+            {
+                result = GetInteger(name);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                DebugLogger.LogException(ex);
+            }
+
+            result = default(int);
             return false;
         }
 
@@ -162,11 +197,30 @@ namespace TEGS
             return false;
         }
 
+        public TraceVariable GetTraceVariable(TraceVariable traceVariable)
+        {
+            switch (traceVariable.Type)
+            {
+                case TraceVariableType.Boolean:
+                    return new TraceVariable(traceVariable.Name, GetBoolean(traceVariable.Name));
+                case TraceVariableType.Integer:
+                    return new TraceVariable(traceVariable.Name, GetInteger(traceVariable.Name));
+                case TraceVariableType.Double:
+                    return new TraceVariable(traceVariable.Name, GetDouble(traceVariable.Name));
+                case TraceVariableType.String:
+                    return new TraceVariable(traceVariable.Name, GetString(traceVariable.Name));
+            }
+
+            throw new ArgumentOutOfRangeException(nameof(traceVariable));
+        }
+
         #endregion
 
         #region Evaluators
 
         public abstract bool EvaluateBoolean(string code);
+
+        public abstract int EvaluateInteger(string code);
 
         public abstract double EvaluateDouble(string code);
 
@@ -175,6 +229,16 @@ namespace TEGS
         public bool EvaluateBoolean(string code, bool defaultValue)
         {
             if (!string.IsNullOrEmpty(code) && TryEvaluate(code, out bool result))
+            {
+                return result;
+            }
+
+            return defaultValue;
+        }
+
+        public double EvaluateInteger(string code, int defaultValue)
+        {
+            if (!string.IsNullOrEmpty(code) && TryEvaluate(code, out int result))
             {
                 return result;
             }
@@ -215,6 +279,22 @@ namespace TEGS
             }
 
             result = default(bool);
+            return false;
+        }
+
+        public bool TryEvaluate(string code, out int result)
+        {
+            try
+            {
+                result = EvaluateInteger(code);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                DebugLogger.LogException(ex);
+            }
+
+            result = default(int);
             return false;
         }
 

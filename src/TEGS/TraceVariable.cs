@@ -25,18 +25,28 @@
 // THE SOFTWARE.
 
 using System;
+using System.Runtime.InteropServices;
 
 namespace TEGS
 {
-    public class TraceVariable
+    public struct TraceVariable
     {
-        public string Name;
+        public readonly string Name;
 
-        public TraceVariableType Type;
+        public readonly TraceVariableType Type;
 
-        public object Value;
+        public bool BooleanValue => _value.BooleanValue;
 
-        public TraceVariable(string name, TraceVariableType type, object value = null)
+        public int IntegerValue => _value.IntegerValue;
+
+        public double DoubleValue => _value.DoubleValue;
+
+        public string StringValue => (string)_objectValue;
+
+        private readonly PrimitiveUnionValue _value;
+        private readonly object _objectValue;
+
+        public TraceVariable(string name, TraceVariableType type)
         {
             if (string.IsNullOrWhiteSpace(name))
             {
@@ -45,19 +55,63 @@ namespace TEGS
 
             Name = name.Trim();
             Type = type;
-            Value = value;
+            _value = new PrimitiveUnionValue();
+            _objectValue = null;
         }
 
-        public TraceVariable(string name, bool value) : this(name, TraceVariableType.Boolean, value) { }
+        public TraceVariable(string name, bool value) : this(name, TraceVariableType.Boolean)
+        {
+            _value.BooleanValue = value;
+        }
 
-        public TraceVariable(string name, double value) : this(name, TraceVariableType.Double, value) { }
+        public TraceVariable(string name, int value) : this(name, TraceVariableType.Integer)
+        {
+            _value.IntegerValue = value;
+        }
 
-        public TraceVariable(string name, string value) : this(name, TraceVariableType.String, value) { }
+        public TraceVariable(string name, double value) : this(name, TraceVariableType.Double)
+        {
+            _value.DoubleValue = value;
+        }
+
+        public TraceVariable(string name, string value) : this(name, TraceVariableType.String)
+        {
+            _objectValue = value;
+        }
+
+        public string GetValueString()
+        {
+            switch (Type)
+            {
+                case TraceVariableType.Boolean:
+                    return _value.BooleanValue.ToString();
+                case TraceVariableType.Integer:
+                    return _value.IntegerValue.ToString();
+                case TraceVariableType.Double:
+                    return _value.DoubleValue.ToString();
+                default:
+                    return _objectValue?.ToString();
+            }
+        }
+
+        public override string ToString()
+        {
+            return $"{Name} = {GetValueString()}";
+        }
+
+        [StructLayout(LayoutKind.Explicit)]
+        private struct PrimitiveUnionValue
+        {
+            [FieldOffset(0)] public bool BooleanValue;
+            [FieldOffset(0)] public int IntegerValue;
+            [FieldOffset(0)] public double DoubleValue;
+        }
     }
 
     public enum TraceVariableType
     {
         Boolean,
+        Integer,
         Double,
         String
     }

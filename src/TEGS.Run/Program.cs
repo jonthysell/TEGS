@@ -113,7 +113,7 @@ namespace TEGS.Run
                     {
                         headerItems[i + 2] = Truncate(e.TraceVariables[i].Name, columnWidth);
                     }
-                    dataItems[i + 2] = Truncate(e.TraceVariables[i].Value.ToString(), columnWidth);
+                    dataItems[i + 2] = Truncate(e.TraceVariables[i].GetValueString(), columnWidth);
                 }
 
                 if (!hasHeader)
@@ -160,8 +160,9 @@ namespace TEGS.Run
             Console.WriteLine("--start-parameters [string]  The simulation start parameters.");
             Console.WriteLine("--stop-condition [string]    The simulation stop condition.");
             Console.WriteLine("--trace-boolean [string]     Adds a boolean trace variable by name.");
-            Console.WriteLine("--trace-double [string]      Adds a double trace variable by name.");
-            Console.WriteLine("--trace-string [string]      Adds a string trace variable by name.");
+            Console.WriteLine("--trace-integer [string]     Adds an integer trace variable by name.");
+            Console.WriteLine("--trace-double  [string]     Adds a double trace variable by name.");
+            Console.WriteLine("--trace-string  [string]     Adds a string trace variable by name.");
             Console.WriteLine();
         }
 
@@ -233,6 +234,9 @@ namespace TEGS.Run
                             break;
                         case "--trace-boolean":
                             traceVariables.Add(new TraceVariable(args[++i], TraceVariableType.Boolean));
+                            break;
+                        case "--trace-integer":
+                            traceVariables.Add(new TraceVariable(args[++i], TraceVariableType.Integer));
                             break;
                         case "--trace-double":
                             traceVariables.Add(new TraceVariable(args[++i], TraceVariableType.Double));

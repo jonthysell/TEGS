@@ -144,6 +144,11 @@ namespace TEGS.Lua
             _script.Globals.Set(name, value ? DynValue.True : DynValue.False);
         }
 
+        public override void AssignInteger(string name, int value)
+        {
+            _script.Globals.Set(name, DynValue.NewNumber(value));
+        }
+
         public override void AssignDouble(string name, double value)
         {
             _script.Globals.Set(name, DynValue.NewNumber(value));
@@ -163,6 +168,11 @@ namespace TEGS.Lua
             return _script.Globals.Get(name).Boolean;
         }
 
+        public override int GetInteger(string name)
+        {
+            return (int)_script.Globals.Get(name).Number;
+        }
+
         public override double GetDouble(string name)
         {
             return _script.Globals.Get(name).Number;
@@ -180,6 +190,11 @@ namespace TEGS.Lua
         public override bool EvaluateBoolean(string code)
         {
             return Evaluate(code).Boolean;
+        }
+
+        public override int EvaluateInteger(string code)
+        {
+            return (int)Evaluate(code).Number;
         }
 
         public override double EvaluateDouble(string code)

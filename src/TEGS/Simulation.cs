@@ -256,18 +256,7 @@ namespace TEGS
         {
             for (int i = 0; i < TraceVariables.Count; i++)
             {
-                switch (TraceVariables[i].Type)
-                {
-                    case TraceVariableType.Boolean:
-                        TraceVariables[i].Value = ScriptingHost.GetBoolean(TraceVariables[i].Name);
-                        break;
-                    case TraceVariableType.Double:
-                        TraceVariables[i].Value = ScriptingHost.GetDouble(TraceVariables[i].Name);
-                        break;
-                    case TraceVariableType.String:
-                        TraceVariables[i].Value = ScriptingHost.GetString(TraceVariables[i].Name);
-                        break;
-                }
+                TraceVariables[i] = ScriptingHost.GetTraceVariable(TraceVariables[i]);
             }
         }
 

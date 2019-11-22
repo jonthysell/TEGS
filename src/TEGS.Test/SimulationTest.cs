@@ -178,7 +178,7 @@ namespace TEGS.Test
                     {
                         headerLine += "\t" + e.TraceVariables[i].Name;
                     }
-                    line += "\t" + e.TraceVariables[i].Value.ToString();
+                    line += "\t" + e.TraceVariables[i].GetValueString();
                 }
 
                 if (!hasHeader)
