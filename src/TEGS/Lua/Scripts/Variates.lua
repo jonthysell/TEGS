@@ -24,17 +24,17 @@
 -- OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 -- THE SOFTWARE.
 
-t_uniformvariate = function(alpha, beta)
+function t_uniformvariate(alpha, beta)
     alpha = alpha or 0.0
     beta = beta or 1.0
     return alpha + (beta - alpha) * math.random()
 end
 
-t_expovariate = function (lambda)
+function t_expovariate(lambda)
     return (-math.log(1.0 - t_uniformvariate()) / lambda)
 end
 
-t_normalvariate = function (mu, sigma)
+function t_normalvariate(mu, sigma)
     local z = 0
     while(true)
     do
@@ -47,6 +47,6 @@ t_normalvariate = function (mu, sigma)
     return mu + z * sigma
 end
 
-t_lognormalvariate = function (mu, sigma)
+function t_lognormalvariate(mu, sigma)
     return math.exp(t_normalvariate(mu, sigma))
 end

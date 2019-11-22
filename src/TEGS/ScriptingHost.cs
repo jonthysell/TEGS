@@ -332,6 +332,12 @@ namespace TEGS
 
         #endregion
 
+        #region Delegates
+
+        public abstract void AssignDelegate(string name, Delegate @delegate);
+
+        #endregion
+
         #region Parameters
 
         public abstract void AssignParameters(string lhs, string rhs);
