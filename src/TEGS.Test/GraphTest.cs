@@ -26,7 +26,6 @@
 
 using System.IO;
 using System.Text;
-using System.Xml;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
