@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27004.2002
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Examples", "Examples", "{D68F037F-7248-4A42-B63D-341D94EBF7EA}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Example Graphs", "Example Graphs", "{D68F037F-7248-4A42-B63D-341D94EBF7EA}"
 	ProjectSection(SolutionItems) = preProject
 		..\examples\breakdown.xml = ..\examples\breakdown.xml
 		..\examples\carwash.xml = ..\examples\carwash.xml
@@ -14,6 +14,10 @@ EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "TEGS", "TEGS\TEGS.shproj", "{CE581CF7-25A3-461F-B5B3-691086B847CA}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TEGS.Test", "TEGS.Test\TEGS.Test.csproj", "{9757C0A6-9315-4AFD-8666-3634E373DFE4}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "NativeExamples", "NativeExamples", "{7A230B6C-BC82-4778-BAEF-ABF790363088}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Carwash", "NativeExamples\Carwash\Carwash.csproj", "{094DA8BD-E6B1-4E40-8B7B-A7E5F29A0281}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
@@ -34,9 +38,16 @@ Global
 		{9757C0A6-9315-4AFD-8666-3634E373DFE4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9757C0A6-9315-4AFD-8666-3634E373DFE4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9757C0A6-9315-4AFD-8666-3634E373DFE4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{094DA8BD-E6B1-4E40-8B7B-A7E5F29A0281}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{094DA8BD-E6B1-4E40-8B7B-A7E5F29A0281}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{094DA8BD-E6B1-4E40-8B7B-A7E5F29A0281}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{094DA8BD-E6B1-4E40-8B7B-A7E5F29A0281}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{094DA8BD-E6B1-4E40-8B7B-A7E5F29A0281} = {7A230B6C-BC82-4778-BAEF-ABF790363088}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {1A0536E0-FBEC-4DD8-BF2D-5A92D930FC34}
