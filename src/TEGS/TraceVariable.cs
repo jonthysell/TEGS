@@ -25,7 +25,6 @@
 // THE SOFTWARE.
 
 using System;
-using System.Runtime.InteropServices;
 
 namespace TEGS
 {
@@ -97,14 +96,6 @@ namespace TEGS
         public override string ToString()
         {
             return $"{Name} = {GetValueString()}";
-        }
-
-        [StructLayout(LayoutKind.Explicit)]
-        private struct PrimitiveUnionValue
-        {
-            [FieldOffset(0)] public bool BooleanValue;
-            [FieldOffset(0)] public int IntegerValue;
-            [FieldOffset(0)] public double DoubleValue;
         }
     }
 

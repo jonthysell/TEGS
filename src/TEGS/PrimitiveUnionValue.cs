@@ -1,5 +1,5 @@
 ﻿// 
-// SimulationArgs.cs
+// PrimitiveUnionValue.cs
 //  
 // Author:
 //       Jon Thysell <thysell@gmail.com>
@@ -24,29 +24,15 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
-using System.Collections.Generic;
+using System.Runtime.InteropServices;
 
 namespace TEGS
 {
-    public class SimulationArgs
+    [StructLayout(LayoutKind.Explicit)]
+    internal struct PrimitiveUnionValue
     {
-        public Graph Graph { get; private set; }
-
-        public ScriptingHost ScriptingHost { get; private set; }
-
-        public int? StartingSeed { get; set; } = null;
-
-        public string StartParameters { get; set; } = null;
-
-        public StopCondition StopCondition { get; set; } = StopCondition.Never;
-
-        public List<TraceVariable> TraceVariables { get; private set; } = new List<TraceVariable>();
-
-        public SimulationArgs(Graph graph, ScriptingHost scriptingHost)
-        {
-            Graph = graph ?? throw new ArgumentNullException(nameof(graph));
-            ScriptingHost = scriptingHost ?? throw new ArgumentNullException(nameof(scriptingHost));
-        }
+        [FieldOffset(0)] public bool BooleanValue;
+        [FieldOffset(0)] public int IntegerValue;
+        [FieldOffset(0)] public double DoubleValue;
     }
 }

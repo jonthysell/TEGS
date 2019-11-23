@@ -13,11 +13,13 @@
     <Compile Include="$(MSBuildThisFileDirectory)Edge.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graph.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Lua\LuaScriptingHost.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PrimitiveUnionValue.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Schedule.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ScheduledEvent.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ScriptingHost.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Simulation.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SimulationArgs.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)StopCondition.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)TraceVariable.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\IDialogService.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\MainViewModel.cs" />
@@ -29,8 +31,5 @@
   <ItemGroup>
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)Lua\Scripts\Utility.lua" />
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)Lua\Scripts\Variates.lua" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="$(MSBuildThisFileDirectory)Lua\Scripts\" />
   </ItemGroup>
 </Project>

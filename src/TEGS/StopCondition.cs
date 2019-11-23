@@ -1,5 +1,5 @@
 ﻿// 
-// SimulationArgs.cs
+// StopCondition.cs
 //  
 // Author:
 //       Jon Thysell <thysell@gmail.com>
@@ -25,28 +25,37 @@
 // THE SOFTWARE.
 
 using System;
-using System.Collections.Generic;
 
 namespace TEGS
 {
-    public class SimulationArgs
+    public class StopCondition
     {
-        public Graph Graph { get; private set; }
+        public bool ShouldStop(Simulation simulation) => _stopCondition(simulation);
 
-        public ScriptingHost ScriptingHost { get; private set; }
+        protected Func<Simulation, bool> _stopCondition;
 
-        public int? StartingSeed { get; set; } = null;
-
-        public string StartParameters { get; set; } = null;
-
-        public StopCondition StopCondition { get; set; } = StopCondition.Never;
-
-        public List<TraceVariable> TraceVariables { get; private set; } = new List<TraceVariable>();
-
-        public SimulationArgs(Graph graph, ScriptingHost scriptingHost)
+        protected StopCondition(Func<Simulation, bool> stopCondition)
         {
-            Graph = graph ?? throw new ArgumentNullException(nameof(graph));
-            ScriptingHost = scriptingHost ?? throw new ArgumentNullException(nameof(scriptingHost));
+            _stopCondition = stopCondition ?? throw new ArgumentNullException(nameof(stopCondition));
+        }
+
+        public static StopCondition Never = _never ?? (_never = new StopCondition(sim => false));
+        private static StopCondition _never;
+
+        public static StopCondition StopAfterMaxTime(double maxTime)
+        {
+            if (maxTime < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(maxTime));
+            }
+
+            return new StopCondition(sim => sim.Clock >= maxTime);
+        }
+
+        public static StopCondition StopOnCondition(string code)
+        {
+            code = code?.Trim();
+            return new StopCondition(sim => sim.ScriptingHost.EvaluateBoolean(code, false));
         }
     }
 }

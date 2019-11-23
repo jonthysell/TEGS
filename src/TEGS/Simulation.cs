@@ -71,21 +71,7 @@ namespace TEGS
 
         public Schedule Schedule { get; private set; }
 
-        public double Clock
-        {
-            get
-            {
-                return _cachedClock ?? (_cachedClock = ScriptingHost.GetDouble("t_clock")).Value;
-            }
-
-            set
-            {
-                ScriptingHost.AssignDouble("t_clock", value);
-                _cachedClock = value;
-                OnClockChanged();
-            }
-        }
-        private double? _cachedClock;
+        public double Clock { get; private set; }
 
         public event SimulationStateChangedEventHandler SimulationStateChanged;
 
@@ -104,6 +90,13 @@ namespace TEGS
             Args = args ?? throw new ArgumentNullException(nameof(args));
 
             Schedule = new Schedule(Graph, ScriptingHost.CompareParameters);
+
+            InitDelegates();
+        }
+
+        private void InitDelegates()
+        {
+            ScriptingHost.AssignDelegate("t_clock", new Func<double>(() => Clock));
         }
 
         public void Run()
@@ -249,7 +242,7 @@ namespace TEGS
 
         private bool KeepGoing()
         {
-            return Schedule.EventCount > 0 && !ScriptingHost.EvaluateBoolean(Args.StopCondition, false);
+            return Schedule.EventCount > 0 && (null == Args.StopCondition || !Args.StopCondition.ShouldStop(this));
         }
 
         private void EvaluateTraces()

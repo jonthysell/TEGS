@@ -44,7 +44,7 @@ namespace TEGS.Test
             {
                 StartingSeed = 12345,
                 StartParameters = "5, 3",
-                StopCondition = "t_clock >= 500",
+                StopCondition = StopCondition.StopAfterMaxTime(500),
             };
 
             Simulation s = new Simulation(args);
@@ -58,7 +58,7 @@ namespace TEGS.Test
             {
                 StartingSeed = 12345,
                 StartParameters = "5, 3",
-                StopCondition = "t_clock >= 500",
+                StopCondition = StopCondition.StopAfterMaxTime(500),
             };
 
             Simulation s = new Simulation(args);
@@ -76,7 +76,7 @@ namespace TEGS.Test
             {
                 StartingSeed = 12345,
                 StartParameters = "5, 3",
-                StopCondition = "t_clock >= 10000",
+                StopCondition = StopCondition.StopAfterMaxTime(10000),
             };
 
             Simulation s = new Simulation(args);
@@ -105,7 +105,7 @@ namespace TEGS.Test
             {
                 StartingSeed = 12345,
                 StartParameters = "5, 3",
-                StopCondition = "t_clock >= 500",
+                StopCondition = StopCondition.StopAfterMaxTime(500),
             };
 
             Simulation s = new Simulation(args);
@@ -126,7 +126,7 @@ namespace TEGS.Test
             {
                 StartingSeed = 12345,
                 StartParameters = "5, 3",
-                StopCondition = "t_clock >= 500",
+                StopCondition = StopCondition.StopAfterMaxTime(500),
             };
 
             Simulation s = new Simulation(args);
@@ -156,7 +156,7 @@ namespace TEGS.Test
             {
                 StartingSeed = 12345,
                 StartParameters = "5, 3",
-                StopCondition = "t_clock >= 500"
+                StopCondition = StopCondition.StopAfterMaxTime(500)
             };
 
             args.TraceVariables.Add(new TraceVariable("QUEUE", TraceVariableType.Double));
@@ -202,7 +202,7 @@ namespace TEGS.Test
             {
                 StartingSeed = 12345,
                 StartParameters = "0",
-                StopCondition = "t_clock >= 500",
+                StopCondition = StopCondition.StopAfterMaxTime(500),
             };
 
             Simulation s = new Simulation(args);

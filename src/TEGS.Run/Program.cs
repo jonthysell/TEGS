@@ -154,14 +154,15 @@ namespace TEGS.Run
             Console.WriteLine("Options:");
 
             Console.WriteLine("-o, --output-file [file]     Write simulation output to the given file.");
-            Console.WriteLine("--seed [int]                 The starting seed for the simulation.");
+            Console.WriteLine("--seed [int]                 Set the starting seed for the simulation.");
             Console.WriteLine("--show-output                Show simulation output to the console.");
-            Console.WriteLine("--start-parameters [string]  The simulation start parameters.");
-            Console.WriteLine("--stop-condition [string]    The simulation stop condition.");
-            Console.WriteLine("--trace-boolean [string]     Adds a boolean trace variable by name.");
-            Console.WriteLine("--trace-integer [string]     Adds an integer trace variable by name.");
-            Console.WriteLine("--trace-double  [string]     Adds a double trace variable by name.");
-            Console.WriteLine("--trace-string  [string]     Adds a string trace variable by name.");
+            Console.WriteLine("--start-parameters [string]  Set the simulation start parameters.");
+            Console.WriteLine("--stop-condition [string]    Stop the simulation if the given condition is met.");
+            Console.WriteLine("--stop-time [double]         Stop the simulation if the clock passes the given time.");
+            Console.WriteLine("--trace-boolean [string]     Add a boolean trace variable by name.");
+            Console.WriteLine("--trace-integer [string]     Add an integer trace variable by name.");
+            Console.WriteLine("--trace-double [string]      Add a double trace variable by name.");
+            Console.WriteLine("--trace-string [string]      Add a string trace variable by name.");
             Console.WriteLine();
         }
 
@@ -205,7 +206,7 @@ namespace TEGS.Run
             bool showOutput = false;
             int? startingSeed = null;
             string startParameters = null;
-            string stopCondition = null;
+            StopCondition stopCondition = null;
 
             List<TraceVariable> traceVariables = new List<TraceVariable>();
 
@@ -229,7 +230,10 @@ namespace TEGS.Run
                             startParameters = args[++i];
                             break;
                         case "--stop-condition":
-                            stopCondition = args[++i];
+                            stopCondition = StopCondition.StopOnCondition(args[++i]);
+                            break;
+                        case "--stop-time":
+                            stopCondition = StopCondition.StopAfterMaxTime(double.Parse(args[++i]));
                             break;
                         case "--trace-boolean":
                             traceVariables.Add(new TraceVariable(args[++i], TraceVariableType.Boolean));
