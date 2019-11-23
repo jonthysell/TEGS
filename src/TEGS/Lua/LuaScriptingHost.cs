@@ -62,6 +62,7 @@ namespace TEGS.Lua
 
         public LuaScriptingHost()
         {
+            _script.DebuggerEnabled = false;
             LoadEmbeddedLuaScripts();
         }
 
