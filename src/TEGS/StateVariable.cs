@@ -1,5 +1,5 @@
 ﻿// 
-// PrimitiveUnionValue.cs
+// StateVariable.cs
 //  
 // Author:
 //       Jon Thysell <thysell@gmail.com>
@@ -24,15 +24,50 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System.Runtime.InteropServices;
+using System;
 
 namespace TEGS
 {
-    [StructLayout(LayoutKind.Explicit)]
-    internal struct PrimitiveUnionValue
+    public class StateVariable : IComparable<StateVariable>
     {
-        [FieldOffset(0)] public bool BooleanValue;
-        [FieldOffset(0)] public int IntegerValue;
-        [FieldOffset(0)] public double DoubleValue;
+        public readonly string Name;
+
+        public readonly VariableValueType Type;
+
+        public StateVariable(string name, VariableValueType type)
+        {
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                throw new ArgumentNullException(nameof(name));
+            }
+
+            Name = name.Trim();
+            Type = type;
+        }
+
+        public int CompareTo(StateVariable other)
+        {
+            return Name.CompareTo(other.Name);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (obj is StateVariable other)
+            {
+                return Name == other.Name;
+            }
+
+            return false;
+        }
+
+        public override int GetHashCode()
+        {
+            return Name.GetHashCode();
+        }
+
+        public override string ToString()
+        {
+            return $"{Name}";
+        }
     }
 }

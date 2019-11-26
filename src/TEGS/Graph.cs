@@ -60,6 +60,11 @@ namespace TEGS
         }
         private string _description = null;
 
+        public IList<StateVariable> StateVariables => _stateVariables;
+        private List<StateVariable> _stateVariables= new List<StateVariable>();
+
+        public int StateVariableCount => _stateVariables.Count;
+
         public Vertex StartingVertex
         {
             get
@@ -194,6 +199,13 @@ namespace TEGS
                             graph.Name = xmlReader.GetAttribute("name");
                             graph.Description = xmlReader.GetAttribute("description");
                         }
+                        else if (xmlReader.Name == "variable")
+                        {
+                            string name = xmlReader.GetAttribute("name");
+                            VariableValueType type = (VariableValueType)Enum.Parse(typeof(VariableValueType), xmlReader.GetAttribute("type"));
+
+                            graph.StateVariables.Add(new StateVariable(name, type));
+                        }
                         else if (xmlReader.Name == "vertex")
                         {
                             int id = int.Parse(xmlReader.GetAttribute("id"));
@@ -290,6 +302,20 @@ namespace TEGS
             {
                 xmlWriter.WriteStartElement("graph");
                 xmlWriter.WriteAttributeString("description", Description);
+
+                xmlWriter.WriteStartElement("variables");
+
+                for (int i = 0; i < _stateVariables.Count; i++)
+                {
+                    xmlWriter.WriteStartElement("variable");
+
+                    xmlWriter.WriteAttributeString("name", _stateVariables[i].Name);
+                    xmlWriter.WriteAttributeString("type", _stateVariables[i].Type.ToString());
+
+                    xmlWriter.WriteEndElement();
+                }
+
+                xmlWriter.WriteEndElement(); // variables
 
                 xmlWriter.WriteStartElement("verticies");
 

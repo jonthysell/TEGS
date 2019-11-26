@@ -27,6 +27,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Text;
 
@@ -52,21 +53,21 @@ namespace TEGS.Run
 
                     Simulation simulation = new Simulation(ProgramArgs.SimulationArgs);
 
-                    int numTraceVariables = ProgramArgs.SimulationArgs.TraceVariables.Count;
+                    int numTraceExpressions = ProgramArgs.SimulationArgs.TraceExpressions.Count;
 
                     if (ProgramArgs.ShowOutput)
                     {
                         Console.WriteLine("TEGS.Run v{0}", Assembly.GetEntryAssembly().GetName().Version.ToString());
                         Console.WriteLine();
 
-                        int? columnWidth = (Console.WindowWidth / (numTraceVariables + 2)) - 1; // 
+                        int? columnWidth = (Console.WindowWidth / (numTraceExpressions + 2)) - 1; // 
 
-                        simulation.VertexFired += MakeOutputEventHandler(Console.WriteLine, numTraceVariables, " ", columnWidth);
+                        simulation.VertexFired += MakeOutputEventHandler(Console.WriteLine, numTraceExpressions, " ", columnWidth);
                     }
 
                     if (null != ProgramArgs.OutputWriter)
                     {
-                        simulation.VertexFired += MakeOutputEventHandler(ProgramArgs.OutputWriter.WriteLine, numTraceVariables);
+                        simulation.VertexFired += MakeOutputEventHandler(ProgramArgs.OutputWriter.WriteLine, numTraceExpressions);
                     }
 
                     simulation.Run();
@@ -106,13 +107,13 @@ namespace TEGS.Run
                 dataItems[0] = Truncate(e.Clock.ToString(), columnWidth);
                 dataItems[1] = Truncate(e.Vertex.Name.ToString(), columnWidth);
 
-                for (int i = 0; i < e.TraceVariables.Count; i++)
+                for (int i = 0; i < e.TraceExpressions.Count; i++)
                 {
                     if (!hasHeader)
                     {
-                        headerItems[i + 2] = Truncate(e.TraceVariables[i].Name, columnWidth);
+                        headerItems[i + 2] = Truncate(e.TraceExpressions[i].Label, columnWidth);
                     }
-                    dataItems[i + 2] = Truncate(e.TraceVariables[i].GetValueString(), columnWidth);
+                    dataItems[i + 2] = Truncate(e.TraceExpressions[i].Value.ToString(), columnWidth);
                 }
 
                 if (!hasHeader)
@@ -159,10 +160,7 @@ namespace TEGS.Run
             Console.WriteLine("--start-parameters [string]  Set the simulation start parameters.");
             Console.WriteLine("--stop-condition [string]    Stop the simulation if the given condition is met.");
             Console.WriteLine("--stop-time [double]         Stop the simulation if the clock passes the given time.");
-            Console.WriteLine("--trace-boolean [string]     Add a boolean trace variable by name.");
-            Console.WriteLine("--trace-integer [string]     Add an integer trace variable by name.");
-            Console.WriteLine("--trace-double [string]      Add a double trace variable by name.");
-            Console.WriteLine("--trace-string [string]      Add a string trace variable by name.");
+            Console.WriteLine("--trace-variable [string]     Add a trace variable by name.");
             Console.WriteLine();
         }
 
@@ -208,7 +206,7 @@ namespace TEGS.Run
             string startParameters = null;
             StopCondition stopCondition = null;
 
-            List<TraceVariable> traceVariables = new List<TraceVariable>();
+            List<TraceExpression> traceExpressions = new List<TraceExpression>();
 
             try
             {
@@ -235,17 +233,9 @@ namespace TEGS.Run
                         case "--stop-time":
                             stopCondition = StopCondition.StopAfterMaxTime(double.Parse(args[++i]));
                             break;
-                        case "--trace-boolean":
-                            traceVariables.Add(new TraceVariable(args[++i], TraceVariableType.Boolean));
-                            break;
-                        case "--trace-integer":
-                            traceVariables.Add(new TraceVariable(args[++i], TraceVariableType.Integer));
-                            break;
-                        case "--trace-double":
-                            traceVariables.Add(new TraceVariable(args[++i], TraceVariableType.Double));
-                            break;
-                        case "--trace-string":
-                            traceVariables.Add(new TraceVariable(args[++i], TraceVariableType.String));
+                        case "--trace-variable":
+                            string name = args[++i];
+                            traceExpressions.Add(new StateVariableTraceExpression(graph.StateVariables.Single(sv => sv.Name == name)));
                             break;
                         default:
                             throw new Exception($"Did not recognize option \"{args[i]}\"");
@@ -271,7 +261,7 @@ namespace TEGS.Run
             programArgs.SimulationArgs.StartParameters = startParameters;
             programArgs.SimulationArgs.StopCondition = stopCondition;
 
-            programArgs.SimulationArgs.TraceVariables.AddRange(traceVariables);
+            programArgs.SimulationArgs.TraceExpressions.AddRange(traceExpressions);
 
             return programArgs;
         }

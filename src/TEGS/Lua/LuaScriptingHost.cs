@@ -105,7 +105,51 @@ namespace TEGS.Lua
 
             return null;
         }
-        
+
+        #endregion
+
+        #region Creation
+
+        public override void CreateBoolean(string name, bool value = default(bool))
+        {
+            if (_script.Globals.HasKey(name))
+            {
+                throw new GlobalVariableAlreadyExistsException(name);
+            }
+
+            _script.Globals.Set(name, value ? DynValue.True : DynValue.False);
+        }
+
+        public override void CreateInteger(string name, int value = default(int))
+        {
+            if (_script.Globals.HasKey(name))
+            {
+                throw new GlobalVariableAlreadyExistsException(name);
+            }
+
+            _script.Globals.Set(name, DynValue.NewNumber(value));
+        }
+
+        public override void CreateDouble(string name, double value = default(double))
+        {
+            if (_script.Globals.HasKey(name))
+            {
+                throw new GlobalVariableAlreadyExistsException(name);
+            }
+
+            _script.Globals.Set(name, DynValue.NewNumber(value));
+        }
+
+        public override void CreateString(string name, string value = default(string))
+        {
+            if (_script.Globals.HasKey(name))
+            {
+                throw new GlobalVariableAlreadyExistsException(name);
+            }
+
+            _script.Globals.Set(name, DynValue.NewString(value));
+        }
+
         #endregion
 
         #region Assignment
@@ -142,22 +186,34 @@ namespace TEGS.Lua
 
         public override void AssignBoolean(string name, bool value)
         {
-            _script.Globals.Set(name, value ? DynValue.True : DynValue.False);
+            if (!_script.Globals.TrySet(name, value))
+            {
+                throw new GlobalVariableNotFoundException(name);
+            }
         }
 
         public override void AssignInteger(string name, int value)
         {
-            _script.Globals.Set(name, DynValue.NewNumber(value));
+            if (!_script.Globals.TrySet(name, value))
+            {
+                throw new GlobalVariableNotFoundException(name);
+            }
         }
 
         public override void AssignDouble(string name, double value)
         {
-            _script.Globals.Set(name, DynValue.NewNumber(value));
+            if (!_script.Globals.TrySet(name, value))
+            {
+                throw new GlobalVariableNotFoundException(name);
+            }
         }
 
         public override void AssignString(string name, string value)
         {
-            _script.Globals.Set(name, DynValue.NewString(value));
+            if (!_script.Globals.TrySet(name, value))
+            {
+                throw new GlobalVariableNotFoundException(name);
+            }
         }
 
         #endregion
@@ -166,22 +222,42 @@ namespace TEGS.Lua
 
         public override bool GetBoolean(string name)
         {
-            return _script.Globals.Get(name).Boolean;
+            if (_script.Globals.TryGet(name, out bool value))
+            {
+                return value;
+            }
+
+            throw new GlobalVariableNotFoundException(name);
         }
 
         public override int GetInteger(string name)
         {
-            return (int)_script.Globals.Get(name).Number;
+            if (_script.Globals.TryGet(name, out int value))
+            {
+                return value;
+            }
+
+            throw new GlobalVariableNotFoundException(name);
         }
 
         public override double GetDouble(string name)
         {
-            return _script.Globals.Get(name).Number;
+            if (_script.Globals.TryGet(name, out double value))
+            {
+                return value;
+            }
+
+            throw new GlobalVariableNotFoundException(name);
         }
 
         public override string GetString(string name)
         {
-            return _script.Globals.Get(name).String;
+            if (_script.Globals.TryGet(name, out string value))
+            {
+                return value;
+            }
+
+            throw new GlobalVariableNotFoundException(name);
         }
 
         #endregion

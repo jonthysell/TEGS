@@ -46,7 +46,7 @@ namespace TEGS
     {
         public Graph Graph => Args.Graph;
 
-        public IList<TraceVariable> TraceVariables => Args.TraceVariables;
+        public IList<TraceExpression> TraceExpressions => Args.TraceExpressions;
 
         public ScriptingHost ScriptingHost => Args.ScriptingHost;
 
@@ -247,9 +247,9 @@ namespace TEGS
 
         private void EvaluateTraces()
         {
-            for (int i = 0; i < TraceVariables.Count; i++)
+            for (int i = 0; i < TraceExpressions.Count; i++)
             {
-                TraceVariables[i] = ScriptingHost.GetTraceVariable(TraceVariables[i]);
+                TraceExpressions[i].Evaluate(ScriptingHost);
             }
         }
 
@@ -265,12 +265,12 @@ namespace TEGS
 
         private void OnVertexFiring(Vertex vertex)
         {
-            VertexFiring?.Invoke(this, new VertexEventArgs(Clock, vertex));
+            VertexFiring?.Invoke(this, new VertexEventArgs(Clock, vertex, TraceExpressions));
         }
 
         private void OnVertexFired(Vertex vertex)
         {
-            VertexFired?.Invoke(this, new VertexEventArgs(Clock, vertex, TraceVariables));
+            VertexFired?.Invoke(this, new VertexEventArgs(Clock, vertex, TraceExpressions));
         }
 
         private void OnEdgeFiring(Edge edge)
@@ -321,12 +321,12 @@ namespace TEGS
     {
         public Vertex Vertex { get; private set; }
 
-        public IList<TraceVariable> TraceVariables { get; private set; }
+        public IList<TraceExpression> TraceExpressions { get; private set; }
 
-        public VertexEventArgs(double clock, Vertex vertex, IList<TraceVariable> traceVariables = null) : base(clock)
+        public VertexEventArgs(double clock, Vertex vertex, IList<TraceExpression> traceExpressions) : base(clock)
         {
             Vertex = vertex ?? throw new ArgumentNullException(nameof(vertex));
-            TraceVariables = traceVariables;
+            TraceExpressions = traceExpressions ?? throw new ArgumentNullException(nameof(traceExpressions));
         }
     }
 

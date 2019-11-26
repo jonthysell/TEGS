@@ -40,6 +40,9 @@ namespace TEGS.Test
                         Description = "An automatic carwash"
                     };
 
+                    g.StateVariables.Add(new StateVariable("QUEUE", VariableValueType.Integer));
+                    g.StateVariables.Add(new StateVariable("SERVERS", VariableValueType.Integer));
+
                     Vertex run = g.AddVertex("RUN");
                     run.Description = "The simulation run is started";
                     run.Parameters = "QUEUE, SERVERS";
@@ -100,6 +103,9 @@ namespace TEGS.Test
                         Name = "Breakdown",
                         Description = "A deterministic queue (M/D/1) with breakdowns"
                     };
+
+                    g.StateVariables.Add(new StateVariable("QUEUE", VariableValueType.Integer));
+                    g.StateVariables.Add(new StateVariable("SERVER", VariableValueType.Integer));
 
                     Vertex run = g.AddVertex("RUN");
                     run.Description = "The simulation has started";

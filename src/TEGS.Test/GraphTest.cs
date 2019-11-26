@@ -41,6 +41,7 @@ namespace TEGS.Test
             Graph graph = new Graph();
             Assert.IsNotNull(graph);
 
+            Assert.AreEqual(0, graph.StateVariableCount);
             Assert.AreEqual(0, graph.VertexCount);
             Assert.AreEqual(0, graph.EdgeCount);
         }

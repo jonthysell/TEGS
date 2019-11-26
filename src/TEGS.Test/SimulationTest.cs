@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using System.Diagnostics;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -159,8 +160,8 @@ namespace TEGS.Test
                 StopCondition = StopCondition.StopAfterMaxTime(500)
             };
 
-            args.TraceVariables.Add(new TraceVariable("QUEUE", TraceVariableType.Double));
-            args.TraceVariables.Add(new TraceVariable("SERVERS", TraceVariableType.Double));
+            args.TraceExpressions.Add(new StateVariableTraceExpression(args.Graph.StateVariables.Single(sv => sv.Name == "QUEUE")));
+            args.TraceExpressions.Add(new StateVariableTraceExpression(args.Graph.StateVariables.Single(sv => sv.Name == "SERVERS")));
 
             Simulation s = new Simulation(args);
             Assert.AreEqual(SimulationState.None, s.State);
@@ -172,13 +173,13 @@ namespace TEGS.Test
             {
                 string line = string.Join("\t", e.Clock, e.Vertex);
 
-                for (int i = 0; i < e.TraceVariables.Count; i++)
+                for (int i = 0; i < e.TraceExpressions.Count; i++)
                 {
                     if (!hasHeader)
                     {
-                        headerLine += "\t" + e.TraceVariables[i].Name;
+                        headerLine += "\t" + e.TraceExpressions[i].Label;
                     }
-                    line += "\t" + e.TraceVariables[i].GetValueString();
+                    line += "\t" + e.TraceExpressions[i].Value.ToString();
                 }
 
                 if (!hasHeader)

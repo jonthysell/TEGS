@@ -1,5 +1,8 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<graph description="An automatic carwash">
+﻿<?xml version="1.0" encoding="utf-8"?><graph description="An automatic carwash">
+  <variables>
+    <variable name="QUEUE" type="Integer" />
+    <variable name="SERVERS" type="Integer" />
+  </variables>
   <verticies>
     <vertex id="0" name="RUN" description="The simulation run is started" code="" parameters="QUEUE, SERVERS" x="0" y="0" starting="True" />
     <vertex id="1" name="ENTER" description="Cars enter the line" code="QUEUE = QUEUE + 1" parameters="" x="0" y="0" />

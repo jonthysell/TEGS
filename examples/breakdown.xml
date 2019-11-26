@@ -1,5 +1,8 @@
-<?xml version="1.0" encoding="utf-8"?>
-<graph description="A deterministic queue (M/D/1) with breakdowns">
+<?xml version="1.0" encoding="utf-8"?><graph description="A deterministic queue (M/D/1) with breakdowns">
+  <variables>
+    <variable name="QUEUE" type="Integer" />
+    <variable name="SERVER" type="Integer" />
+  </variables>
   <verticies>
     <vertex id="0" name="RUN" description="The simulation has started" code="SERVER = 1" parameters="QUEUE" x="0" y="0" starting="True" />
     <vertex id="1" name="ENTER" description="Arrival of a job" code="QUEUE = QUEUE + 1" parameters="" x="0" y="0" />

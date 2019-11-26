@@ -1,5 +1,5 @@
 ﻿// 
-// SimulationArgs.cs
+// TraceExpression.cs
 //  
 // Author:
 //       Jon Thysell <thysell@gmail.com>
@@ -25,28 +25,41 @@
 // THE SOFTWARE.
 
 using System;
-using System.Collections.Generic;
 
 namespace TEGS
 {
-    public class SimulationArgs
+    public abstract class TraceExpression
     {
-        public Graph Graph { get; private set; }
+        public readonly string Label;
 
-        public ScriptingHost ScriptingHost { get; private set; }
+        public VariableValue Value;
 
-        public int? StartingSeed { get; set; } = null;
-
-        public string StartParameters { get; set; } = null;
-
-        public StopCondition StopCondition { get; set; } = StopCondition.Never;
-
-        public List<TraceExpression> TraceExpressions { get; private set; } = new List<TraceExpression>();
-
-        public SimulationArgs(Graph graph, ScriptingHost scriptingHost)
+        public TraceExpression(string label, VariableValueType type)
         {
-            Graph = graph ?? throw new ArgumentNullException(nameof(graph));
-            ScriptingHost = scriptingHost ?? throw new ArgumentNullException(nameof(scriptingHost));
+            if (string.IsNullOrWhiteSpace(label))
+            {
+                throw new ArgumentNullException(nameof(label));
+            }
+
+            Label = label.Trim();
+            Value = new VariableValue(type);
+        }
+
+        public abstract void Evaluate(ScriptingHost scriptingHost);
+    }
+
+    public class StateVariableTraceExpression : TraceExpression
+    {
+        public readonly StateVariable StateVariable;
+
+        public StateVariableTraceExpression(StateVariable stateVariable) : base(stateVariable.Name, stateVariable.Type)
+        {
+            StateVariable = stateVariable ?? throw new ArgumentNullException(nameof(stateVariable));
+        }
+
+        public override void Evaluate(ScriptingHost scriptingHost)
+        {
+            Value = scriptingHost.GetVariableValue(StateVariable);
         }
     }
 }

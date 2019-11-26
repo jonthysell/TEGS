@@ -51,6 +51,18 @@ namespace TEGS
 
         #endregion
 
+        #region Creation
+
+        public abstract void CreateBoolean(string name, bool value = default(bool));
+
+        public abstract void CreateInteger(string name, int value = default(int));
+
+        public abstract void CreateDouble(string name, double value = default(double));
+
+        public abstract void CreateString(string name, string value = default(string));
+
+        #endregion
+
         #region Assignment
 
         public abstract void AssignBoolean(string name, bool value);
@@ -197,21 +209,21 @@ namespace TEGS
             return false;
         }
 
-        public TraceVariable GetTraceVariable(TraceVariable traceVariable)
+        public VariableValue GetVariableValue(StateVariable stateVariable)
         {
-            switch (traceVariable.Type)
+            switch (stateVariable.Type)
             {
-                case TraceVariableType.Boolean:
-                    return new TraceVariable(traceVariable.Name, GetBoolean(traceVariable.Name));
-                case TraceVariableType.Integer:
-                    return new TraceVariable(traceVariable.Name, GetInteger(traceVariable.Name));
-                case TraceVariableType.Double:
-                    return new TraceVariable(traceVariable.Name, GetDouble(traceVariable.Name));
-                case TraceVariableType.String:
-                    return new TraceVariable(traceVariable.Name, GetString(traceVariable.Name));
+                case VariableValueType.Boolean:
+                    return new VariableValue(GetBoolean(stateVariable.Name));
+                case VariableValueType.Integer:
+                    return new VariableValue(GetInteger(stateVariable.Name));
+                case VariableValueType.Double:
+                    return new VariableValue(GetDouble(stateVariable.Name));
+                case VariableValueType.String:
+                    return new VariableValue(GetString(stateVariable.Name));
             }
 
-            throw new ArgumentOutOfRangeException(nameof(traceVariable));
+            throw new ArgumentOutOfRangeException(nameof(stateVariable.Type));
         }
 
         #endregion
@@ -361,5 +373,25 @@ namespace TEGS
         }
 
         #endregion
+    }
+
+    public class GlobalVariableAlreadyExistsException : Exception
+    {
+        public readonly string Name;
+
+        public GlobalVariableAlreadyExistsException(string name) : base()
+        {
+            Name = name;
+        }
+    }
+
+    public class GlobalVariableNotFoundException : Exception
+    {
+        public readonly string Name;
+
+        public GlobalVariableNotFoundException(string name) : base()
+        {
+            Name = name;
+        }
     }
 }
