@@ -173,7 +173,7 @@ namespace TEGS
             // Initialize state variables
             for (int i = 0; i < Graph.StateVariables.Count; i++)
             {
-                ScriptingHost.CreateStateVariable(Graph.StateVariables[i]);
+                ScriptingHost.Create(Graph.StateVariables[i]);
             }
 
             // Set seed

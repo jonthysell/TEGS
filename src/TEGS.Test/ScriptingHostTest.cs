@@ -54,11 +54,18 @@ namespace TEGS.Test
 
             for (int i = 0; i < test.Length; i++)
             {
-                host.CreateBoolean($"test{i}");
-                Assert.AreEqual(default(bool), host.GetBoolean($"test{i}"));
+                StateVariable sv = new StateVariable($"test{i}", VariableValueType.Boolean);
+                host.Create(sv);
 
-                host.AssignBoolean($"test{i}", test[i]);
-                Assert.AreEqual(test[i], host.GetBoolean($"test{i}"));
+                VariableValue defaultValue = host.Get(sv);
+                Assert.AreEqual(VariableValueType.Boolean, defaultValue.Type);
+                Assert.AreEqual(default(bool), defaultValue.BooleanValue);
+                
+                host.Assign(sv, new VariableValue(test[i]));
+
+                VariableValue testValue = host.Get(sv);
+                Assert.AreEqual(VariableValueType.Boolean, testValue.Type);
+                Assert.AreEqual(test[i], testValue.BooleanValue);
             }
         }
 
@@ -72,11 +79,18 @@ namespace TEGS.Test
 
             for (int i = 0; i < test.Length; i++)
             {
-                host.CreateInteger($"test{i}");
-                Assert.AreEqual(default(int), host.GetInteger($"test{i}"));
+                StateVariable sv = new StateVariable($"test{i}", VariableValueType.Integer);
+                host.Create(sv);
 
-                host.AssignInteger($"test{i}", test[i]);
-                Assert.AreEqual(test[i], host.GetInteger($"test{i}"));
+                VariableValue defaultValue = host.Get(sv);
+                Assert.AreEqual(VariableValueType.Integer, defaultValue.Type);
+                Assert.AreEqual(default(int), defaultValue.IntegerValue);
+
+                host.Assign(sv, new VariableValue(test[i]));
+
+                VariableValue testValue = host.Get(sv);
+                Assert.AreEqual(VariableValueType.Integer, testValue.Type);
+                Assert.AreEqual(test[i], testValue.IntegerValue);
             }
         }
 
@@ -90,11 +104,18 @@ namespace TEGS.Test
 
             for (int i = 0; i < test.Length; i++)
             {
-                host.CreateDouble($"test{i}");
-                Assert.AreEqual(default(double), host.GetDouble($"test{i}"));
+                StateVariable sv = new StateVariable($"test{i}", VariableValueType.Double);
+                host.Create(sv);
 
-                host.AssignDouble($"test{i}", test[i]);
-                Assert.AreEqual(test[i], host.GetDouble($"test{i}"));
+                VariableValue defaultValue = host.Get(sv);
+                Assert.AreEqual(VariableValueType.Double, defaultValue.Type);
+                Assert.AreEqual(default(double), defaultValue.DoubleValue);
+
+                host.Assign(sv, new VariableValue(test[i]));
+
+                VariableValue testValue = host.Get(sv);
+                Assert.AreEqual(VariableValueType.Double, testValue.Type);
+                Assert.AreEqual(test[i], testValue.DoubleValue);
             }
         }
 
@@ -108,11 +129,18 @@ namespace TEGS.Test
 
             for (int i = 0; i < test.Length; i++)
             {
-                host.CreateString($"test{i}");
-                Assert.AreEqual(default(string), host.GetString($"test{i}"));
+                StateVariable sv = new StateVariable($"test{i}", VariableValueType.String);
+                host.Create(sv);
 
-                host.AssignString($"test{i}", test[i]);
-                Assert.AreEqual(test[i], host.GetString($"test{i}"));
+                VariableValue defaultValue = host.Get(sv);
+                Assert.AreEqual(VariableValueType.String, defaultValue.Type);
+                Assert.AreEqual(default(string), defaultValue.StringValue);
+
+                host.Assign(sv, new VariableValue(test[i]));
+
+                VariableValue testValue = host.Get(sv);
+                Assert.AreEqual(VariableValueType.String, testValue.Type);
+                Assert.AreEqual(test[i], testValue.StringValue);
             }
         }
 
@@ -126,7 +154,11 @@ namespace TEGS.Test
             TScriptingHost host = new TScriptingHost();
             Assert.IsNotNull(host);
 
-            Assert.ThrowsException<GlobalVariableNotFoundException>(() => host.GetBoolean("test"));
+            StateVariable sv = new StateVariable("test", VariableValueType.Boolean);
+
+            Assert.ThrowsException<StateVariableNotFoundException>(() => host.Get(sv));
+            Assert.ThrowsException<StateVariableNotFoundException>(() => host.Assign(sv, new VariableValue(default(bool))));
+            Assert.ThrowsException<StateVariableAssignmentException>(() => host.Assign(sv, new VariableValue(default(string))));
         }
 
         [TestMethod]
@@ -135,7 +167,11 @@ namespace TEGS.Test
             TScriptingHost host = new TScriptingHost();
             Assert.IsNotNull(host);
 
-            Assert.ThrowsException<GlobalVariableNotFoundException>(() => host.GetInteger("test"));
+            StateVariable sv = new StateVariable("test", VariableValueType.Integer);
+
+            Assert.ThrowsException<StateVariableNotFoundException>(() => host.Get(sv));
+            Assert.ThrowsException<StateVariableNotFoundException>(() => host.Assign(sv, new VariableValue(default(int))));
+            Assert.ThrowsException<StateVariableAssignmentException>(() => host.Assign(sv, new VariableValue(default(bool))));
         }
 
         [TestMethod]
@@ -144,7 +180,11 @@ namespace TEGS.Test
             TScriptingHost host = new TScriptingHost();
             Assert.IsNotNull(host);
 
-            Assert.ThrowsException<GlobalVariableNotFoundException>(() => host.GetDouble("test"));
+            StateVariable sv = new StateVariable("test", VariableValueType.Double);
+
+            Assert.ThrowsException<StateVariableNotFoundException>(() => host.Get(sv));
+            Assert.ThrowsException<StateVariableNotFoundException>(() => host.Assign(sv, new VariableValue(default(double))));
+            Assert.ThrowsException<StateVariableAssignmentException>(() => host.Assign(sv, new VariableValue(default(int))));
         }
 
         [TestMethod]
@@ -153,7 +193,11 @@ namespace TEGS.Test
             TScriptingHost host = new TScriptingHost();
             Assert.IsNotNull(host);
 
-            Assert.ThrowsException<GlobalVariableNotFoundException>(() => host.GetString("test"));
+            StateVariable sv = new StateVariable("test", VariableValueType.String);
+
+            Assert.ThrowsException<StateVariableNotFoundException>(() => host.Get(sv));
+            Assert.ThrowsException<StateVariableNotFoundException>(() => host.Assign(sv, new VariableValue(default(string))));
+            Assert.ThrowsException<StateVariableAssignmentException>(() => host.Assign(sv, new VariableValue(default(double))));
         }
 
         #endregion

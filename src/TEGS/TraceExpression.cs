@@ -59,7 +59,7 @@ namespace TEGS
 
         public override void Evaluate(ScriptingHost scriptingHost)
         {
-            Value = scriptingHost.GetStateVariableValue(StateVariable);
+            Value = scriptingHost.Get(StateVariable);
         }
     }
 }

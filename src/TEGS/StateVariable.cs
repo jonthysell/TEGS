@@ -70,4 +70,14 @@ namespace TEGS
             return $"{Name}";
         }
     }
+
+    public abstract class StateVariableException : Exception
+    {
+        public readonly StateVariable StateVariable;
+
+        public StateVariableException(StateVariable stateVariable) : base()
+        {
+            StateVariable = stateVariable;
+        }
+    }
 }

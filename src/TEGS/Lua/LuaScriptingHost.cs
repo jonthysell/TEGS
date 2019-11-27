@@ -110,44 +110,32 @@ namespace TEGS.Lua
 
         #region Creation
 
-        public override void CreateBoolean(string name, bool value = default(bool))
+        protected override void CreateInternal(StateVariable stateVariable)
         {
+            string name = stateVariable.Name;
+
             if (_script.Globals.HasKey(name))
             {
-                throw new GlobalVariableAlreadyExistsException(name);
+                throw new StateVariableAlreadyExistsException(name);
             }
 
-            _script.Globals.Set(name, value ? DynValue.True : DynValue.False);
-        }
-
-        public override void CreateInteger(string name, int value = default(int))
-        {
-            if (_script.Globals.HasKey(name))
+            switch (stateVariable.Type)
             {
-                throw new GlobalVariableAlreadyExistsException(name);
+                case VariableValueType.Boolean:
+                    _script.Globals.Set(name, default(bool) ? DynValue.True : DynValue.False);
+                    break;
+                case VariableValueType.Integer:
+                    _script.Globals.Set(name, DynValue.NewNumber(default(int)));
+                    break;
+                case VariableValueType.Double:
+                    _script.Globals.Set(name, DynValue.NewNumber(default(double)));
+                    break;
+                case VariableValueType.String:
+                    _script.Globals.Set(name, DynValue.NewString(default(string)));
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(stateVariable.Type));
             }
-
-            _script.Globals.Set(name, DynValue.NewNumber(value));
-        }
-
-        public override void CreateDouble(string name, double value = default(double))
-        {
-            if (_script.Globals.HasKey(name))
-            {
-                throw new GlobalVariableAlreadyExistsException(name);
-            }
-
-            _script.Globals.Set(name, DynValue.NewNumber(value));
-        }
-
-        public override void CreateString(string name, string value = default(string))
-        {
-            if (_script.Globals.HasKey(name))
-            {
-                throw new GlobalVariableAlreadyExistsException(name);
-            }
-
-            _script.Globals.Set(name, DynValue.NewString(value));
         }
 
         #endregion
@@ -184,35 +172,31 @@ namespace TEGS.Lua
             }
         }
 
-        public override void AssignBoolean(string name, bool value)
+        protected override void AssignInternal(StateVariable stateVariable, VariableValue value)
         {
-            if (!_script.Globals.TrySet(name, value))
-            {
-                throw new GlobalVariableNotFoundException(name);
-            }
-        }
+            string name = stateVariable.Name;
 
-        public override void AssignInteger(string name, int value)
-        {
-            if (!_script.Globals.TrySet(name, value))
+            if (!_script.Globals.HasKey(name))
             {
-                throw new GlobalVariableNotFoundException(name);
+                throw new StateVariableNotFoundException(name);
             }
-        }
 
-        public override void AssignDouble(string name, double value)
-        {
-            if (!_script.Globals.TrySet(name, value))
+            switch (stateVariable.Type)
             {
-                throw new GlobalVariableNotFoundException(name);
-            }
-        }
-
-        public override void AssignString(string name, string value)
-        {
-            if (!_script.Globals.TrySet(name, value))
-            {
-                throw new GlobalVariableNotFoundException(name);
+                case VariableValueType.Boolean:
+                    _script.Globals.Set(name, value.BooleanValue ? DynValue.True : DynValue.False);
+                    break;
+                case VariableValueType.Integer:
+                    _script.Globals.Set(name, DynValue.NewNumber(value.IntegerValue));
+                    break;
+                case VariableValueType.Double:
+                    _script.Globals.Set(name, DynValue.NewNumber(value.DoubleValue));
+                    break;
+                case VariableValueType.String:
+                    _script.Globals.Set(name, DynValue.NewString(value.StringValue));
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(stateVariable.Type));
             }
         }
 
@@ -220,44 +204,31 @@ namespace TEGS.Lua
 
         #region Getters
 
-        public override bool GetBoolean(string name)
+        protected override VariableValue GetInternal(StateVariable stateVariable)
         {
-            if (_script.Globals.TryGet(name, out bool value))
+            string name = stateVariable.Name;
+
+            DynValue value = _script.Globals.RawGet(name);
+
+            if (null == value)
             {
-                return value;
+                throw new StateVariableNotFoundException(name);
             }
 
-            throw new GlobalVariableNotFoundException(name);
-        }
-
-        public override int GetInteger(string name)
-        {
-            if (_script.Globals.TryGet(name, out int value))
+            switch (stateVariable.Type)
             {
-                return value;
+                case VariableValueType.Boolean:
+                    return new VariableValue(value.Boolean);
+                case VariableValueType.Integer:
+                    return new VariableValue((int)value.Number);
+                case VariableValueType.Double:
+                    return new VariableValue(value.Number);
+                case VariableValueType.String:
+                    return new VariableValue(value.String);
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(stateVariable.Type));
             }
 
-            throw new GlobalVariableNotFoundException(name);
-        }
-
-        public override double GetDouble(string name)
-        {
-            if (_script.Globals.TryGet(name, out double value))
-            {
-                return value;
-            }
-
-            throw new GlobalVariableNotFoundException(name);
-        }
-
-        public override string GetString(string name)
-        {
-            if (_script.Globals.TryGet(name, out string value))
-            {
-                return value;
-            }
-
-            throw new GlobalVariableNotFoundException(name);
         }
 
         #endregion

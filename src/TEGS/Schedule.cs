@@ -44,7 +44,7 @@ namespace TEGS
 
         public event ScheduleChangedEventHandler ScheduleChanged;
 
-        private ParameterComparer _parameterComparer;
+        private readonly ParameterComparer _parameterComparer;
 
         public Schedule(Graph graph, ParameterComparer parameterComparer)
         {

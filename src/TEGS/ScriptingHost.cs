@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
 
 namespace TEGS
 {
@@ -53,52 +54,57 @@ namespace TEGS
 
         #region Creation
 
-        public abstract void CreateBoolean(string name, bool value = default(bool));
-
-        public abstract void CreateInteger(string name, int value = default(int));
-
-        public abstract void CreateDouble(string name, double value = default(double));
-
-        public abstract void CreateString(string name, string value = default(string));
-
-        public virtual void CreateStateVariable(StateVariable stateVariable)
+        public void Create(StateVariable stateVariable)
         {
-            switch (stateVariable.Type)
+            if (null == stateVariable)
             {
-                case VariableValueType.Boolean:
-                    CreateBoolean(stateVariable.Name);
-                    break;
-                case VariableValueType.Integer:
-                    CreateInteger(stateVariable.Name);
-                    break;
-                case VariableValueType.Double:
-                    CreateDouble(stateVariable.Name);
-                    break;
-                case VariableValueType.String:
-                    CreateString(stateVariable.Name);
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(stateVariable.Type));
+                throw new ArgumentNullException(nameof(stateVariable));
             }
+
+            CreateInternal(stateVariable);
         }
+
+        public bool TryCreate(StateVariable stateVariable)
+        {
+            try
+            {
+                Create(stateVariable);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                DebugLogger.LogException(ex);
+            }
+
+            return false;
+        }
+
+        protected abstract void CreateInternal(StateVariable stateVariable);
 
         #endregion
 
         #region Assignment
 
-        public abstract void AssignBoolean(string name, bool value);
+        public void Assign(StateVariable stateVariable, VariableValue value)
+        {
+            if (null == stateVariable)
+            {
+                throw new ArgumentNullException(nameof(stateVariable));
+            }
 
-        public abstract void AssignInteger(string name, int value);
+            if (stateVariable.Type != value.Type)
+            {
+                throw new StateVariableAssignmentException(stateVariable, value);
+            }
 
-        public abstract void AssignDouble(string name, double value);
+            AssignInternal(stateVariable, value);
+        }
 
-        public abstract void AssignString(string name, string value);
-
-        public bool TryAssign(string name, bool value)
+        public bool TryAssign(StateVariable stateVariable, VariableValue value)
         {
             try
             {
-                AssignBoolean(name, value);
+                Assign(stateVariable, value);
                 return true;
             }
             catch (Exception ex)
@@ -109,68 +115,27 @@ namespace TEGS
             return false;
         }
 
-        public bool TryAssign(string name, int value)
-        {
-            try
-            {
-                AssignInteger(name, value);
-                return true;
-            }
-            catch (Exception ex)
-            {
-                DebugLogger.LogException(ex);
-            }
-
-            return false;
-        }
-
-        public bool TryAssign(string name, double value)
-        {
-            try
-            {
-                AssignDouble(name, value);
-                return true;
-            }
-            catch (Exception ex)
-            {
-                DebugLogger.LogException(ex);
-            }
-
-            return false;
-        }
-
-        public bool TryAssign(string name, string value)
-        {
-            try
-            {
-                AssignString(name, value);
-                return true;
-            }
-            catch (Exception ex)
-            {
-                DebugLogger.LogException(ex);
-            }
-
-            return false;
-        }
+        protected abstract void AssignInternal(StateVariable stateVariable, VariableValue value);
 
         #endregion
 
         #region Getters
 
-        public abstract bool GetBoolean(string name);
+        public VariableValue Get(StateVariable stateVariable)
+        {
+            if (null == stateVariable)
+            {
+                throw new ArgumentNullException(nameof(stateVariable));
+            }
 
-        public abstract int GetInteger(string name);
+            return GetInternal(stateVariable);
+        }
 
-        public abstract double GetDouble(string name);
-
-        public abstract string GetString(string name);
-
-        public bool TryGet(string name, out bool result)
+        public bool TryGet(StateVariable stateVariable, out VariableValue value)
         {
             try
             {
-                result = GetBoolean(name);
+                value = Get(stateVariable);
                 return true;
             }
             catch (Exception ex)
@@ -178,74 +143,11 @@ namespace TEGS
                 DebugLogger.LogException(ex);
             }
 
-            result = default(bool);
+            value = default(VariableValue);
             return false;
         }
 
-        public bool TryGet(string name, out int result)
-        {
-            try
-            {
-                result = GetInteger(name);
-                return true;
-            }
-            catch (Exception ex)
-            {
-                DebugLogger.LogException(ex);
-            }
-
-            result = default(int);
-            return false;
-        }
-
-        public bool TryGet(string name, out double result)
-        {
-            try
-            {
-                result = GetDouble(name);
-                return true;
-            }
-            catch (Exception ex)
-            {
-                DebugLogger.LogException(ex);
-            }
-
-            result = default(double);
-            return false;
-        }
-
-        public bool TryGet(string name, out string result)
-        {
-            try
-            {
-                result = GetString(name);
-                return true;
-            }
-            catch (Exception ex)
-            {
-                DebugLogger.LogException(ex);
-            }
-
-            result = default(string);
-            return false;
-        }
-
-        public virtual VariableValue GetStateVariableValue(StateVariable stateVariable)
-        {
-            switch (stateVariable.Type)
-            {
-                case VariableValueType.Boolean:
-                    return new VariableValue(GetBoolean(stateVariable.Name));
-                case VariableValueType.Integer:
-                    return new VariableValue(GetInteger(stateVariable.Name));
-                case VariableValueType.Double:
-                    return new VariableValue(GetDouble(stateVariable.Name));
-                case VariableValueType.String:
-                    return new VariableValue(GetString(stateVariable.Name));
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(stateVariable.Type));
-            }
-        }
+        protected abstract VariableValue GetInternal(StateVariable stateVariable);
 
         #endregion
 
@@ -396,21 +298,31 @@ namespace TEGS
         #endregion
     }
 
-    public class GlobalVariableAlreadyExistsException : Exception
+    public class StateVariableAssignmentException : StateVariableException
+    {
+        public readonly VariableValue NewValue;
+
+        public StateVariableAssignmentException(StateVariable stateVariable, VariableValue newValue) : base(stateVariable)
+        {
+            NewValue = newValue;
+        }
+    }
+
+    public class StateVariableAlreadyExistsException : Exception
     {
         public readonly string Name;
 
-        public GlobalVariableAlreadyExistsException(string name) : base()
+        public StateVariableAlreadyExistsException(string name) : base()
         {
             Name = name;
         }
     }
 
-    public class GlobalVariableNotFoundException : Exception
+    public class StateVariableNotFoundException : Exception
     {
         public readonly string Name;
 
-        public GlobalVariableNotFoundException(string name) : base()
+        public StateVariableNotFoundException(string name) : base()
         {
             Name = name;
         }
