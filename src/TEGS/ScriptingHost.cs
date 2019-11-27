@@ -153,59 +153,31 @@ namespace TEGS
 
         #region Evaluators
 
-        public abstract bool EvaluateBoolean(string code);
-
-        public abstract int EvaluateInteger(string code);
-
-        public abstract double EvaluateDouble(string code);
-
-        public abstract string EvaluateString(string code);
-
-        public bool EvaluateBoolean(string code, bool defaultValue)
+        public VariableValue Evaluate(string code, VariableValueType returnType)
         {
-            if (!string.IsNullOrEmpty(code) && TryEvaluate(code, out bool result))
+            if (null == code)
             {
-                return result;
+                throw new ArgumentNullException(nameof(code));
+            }
+
+            return EvaluateInternal(code, returnType);
+        }
+
+        public VariableValue Evaluate(string code, VariableValue defaultValue)
+        {
+            if (!string.IsNullOrEmpty(code) && TryEvaluate(code, defaultValue.Type, out VariableValue value))
+            {
+                return value;
             }
 
             return defaultValue;
         }
 
-        public double EvaluateInteger(string code, int defaultValue)
-        {
-            if (!string.IsNullOrEmpty(code) && TryEvaluate(code, out int result))
-            {
-                return result;
-            }
-
-            return defaultValue;
-        }
-
-        public double EvaluateDouble(string code, double defaultValue)
-        {
-            if (!string.IsNullOrEmpty(code) && TryEvaluate(code, out double result))
-            {
-                return result;
-            }
-
-            return defaultValue;
-        }
-
-        public string EvaluateString(string code, string defaultValue)
-        {
-            if (!string.IsNullOrEmpty(code) && TryEvaluate(code, out string result))
-            {
-                return result;
-            }
-
-            return defaultValue;
-        }
-
-        public bool TryEvaluate(string code, out bool result)
+        public bool TryEvaluate(string code, VariableValueType returnType, out VariableValue value)
         {
             try
             {
-                result = EvaluateBoolean(code);
+                value = Evaluate(code, returnType);
                 return true;
             }
             catch (Exception ex)
@@ -213,57 +185,11 @@ namespace TEGS
                 DebugLogger.LogException(ex);
             }
 
-            result = default(bool);
+            value = default(VariableValue);
             return false;
         }
 
-        public bool TryEvaluate(string code, out int result)
-        {
-            try
-            {
-                result = EvaluateInteger(code);
-                return true;
-            }
-            catch (Exception ex)
-            {
-                DebugLogger.LogException(ex);
-            }
-
-            result = default(int);
-            return false;
-        }
-
-        public bool TryEvaluate(string code, out double result)
-        {
-            try
-            {
-                result = EvaluateDouble(code);
-                return true;
-            }
-            catch (Exception ex)
-            {
-                DebugLogger.LogException(ex);
-            }
-
-            result = default(double);
-            return false;
-        }
-
-        public bool TryEvaluate(string code, out string result)
-        {
-            try
-            {
-                result = EvaluateString(code);
-                return true;
-            }
-            catch (Exception ex)
-            {
-                DebugLogger.LogException(ex);
-            }
-
-            result = default(string);
-            return false;
-        }
+        protected abstract VariableValue EvaluateInternal(string code, VariableValueType returnType);
 
         #endregion
 

@@ -228,31 +228,29 @@ namespace TEGS.Lua
                 default:
                     throw new ArgumentOutOfRangeException(nameof(stateVariable.Type));
             }
-
         }
 
         #endregion
 
         #region Evaluators
 
-        public override bool EvaluateBoolean(string code)
+        protected override VariableValue EvaluateInternal(string code, VariableValueType returnType)
         {
-            return Evaluate(code).Boolean;
-        }
+            DynValue value = Evaluate(code);
 
-        public override int EvaluateInteger(string code)
-        {
-            return (int)Evaluate(code).Number;
-        }
-
-        public override double EvaluateDouble(string code)
-        {
-            return Evaluate(code).Number;
-        }
-
-        public override string EvaluateString(string code)
-        {
-            return Evaluate(code).String;
+            switch (returnType)
+            {
+                case VariableValueType.Boolean:
+                    return new VariableValue(value.Boolean);
+                case VariableValueType.Integer:
+                    return new VariableValue((int)value.Number);
+                case VariableValueType.Double:
+                    return new VariableValue(value.Number);
+                case VariableValueType.String:
+                    return new VariableValue(value.String);
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(returnType));
+            }
         }
 
         private DynValue Evaluate(string code, bool cache = true)
@@ -356,7 +354,7 @@ namespace TEGS.Lua
                 a = a.StartsWith(ParamPrefix) ? a : string.Format(ParamWrapInTable, a);
                 b = b.StartsWith(ParamPrefix) ? b : string.Format(ParamWrapInTable, b);
 
-                return EvaluateBoolean(string.Format("t_comparetables({0}, {1})", a, b));
+                return Evaluate(string.Format("t_comparetables({0}, {1})", a, b)).Boolean;
             }
 
             return false;

@@ -55,7 +55,7 @@ namespace TEGS
         public static StopCondition StopOnCondition(string code)
         {
             code = code?.Trim();
-            return new StopCondition(sim => sim.ScriptingHost.EvaluateBoolean(code, false));
+            return new StopCondition(sim => sim.ScriptingHost.Evaluate(code, new VariableValue(false)).BooleanValue);
         }
     }
 }
