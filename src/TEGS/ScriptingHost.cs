@@ -61,6 +61,27 @@ namespace TEGS
 
         public abstract void CreateString(string name, string value = default(string));
 
+        public virtual void CreateStateVariable(StateVariable stateVariable)
+        {
+            switch (stateVariable.Type)
+            {
+                case VariableValueType.Boolean:
+                    CreateBoolean(stateVariable.Name);
+                    break;
+                case VariableValueType.Integer:
+                    CreateInteger(stateVariable.Name);
+                    break;
+                case VariableValueType.Double:
+                    CreateDouble(stateVariable.Name);
+                    break;
+                case VariableValueType.String:
+                    CreateString(stateVariable.Name);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(stateVariable.Type));
+            }
+        }
+
         #endregion
 
         #region Assignment
@@ -209,7 +230,7 @@ namespace TEGS
             return false;
         }
 
-        public VariableValue GetVariableValue(StateVariable stateVariable)
+        public virtual VariableValue GetStateVariableValue(StateVariable stateVariable)
         {
             switch (stateVariable.Type)
             {
@@ -221,9 +242,9 @@ namespace TEGS
                     return new VariableValue(GetDouble(stateVariable.Name));
                 case VariableValueType.String:
                     return new VariableValue(GetString(stateVariable.Name));
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(stateVariable.Type));
             }
-
-            throw new ArgumentOutOfRangeException(nameof(stateVariable.Type));
         }
 
         #endregion

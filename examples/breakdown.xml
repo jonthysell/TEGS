@@ -9,7 +9,7 @@
     <vertex id="2" name="START" description="Start of Service" code="SERVER = 0&#xD;&#xA;QUEUE = QUEUE - 1" parameters="" x="0" y="0" />
     <vertex id="3" name="LEAVE" description="End of Service" code="SERVER = 1" parameters="" x="0" y="0" />
     <vertex id="4" name="FIX" description="Completion of repair on the machine" code="SERVER = 1" parameters="" x="0" y="0" />
-    <vertex id="5" name="FAIL" description="The occurrence of a sercice failure" code="SERVER = -1" parameters="" x="0" y="0" />
+    <vertex id="5" name="FAIL" description="The occurrence of a service failure" code="SERVER = -1" parameters="" x="0" y="0" />
   </verticies>
   <edges>
     <edge id="0" source="0" target="1" action="Schedule" description="Initiate the first job arrival" condition="" delay="" priority="5" parameters="" />

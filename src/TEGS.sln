@@ -20,6 +20,9 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Carwash", "NativeExamples\Carwash\Carwash.csproj", "{094DA8BD-E6B1-4E40-8B7B-A7E5F29A0281}"
 EndProject
 Global
+	GlobalSection(Performance) = preSolution
+		HasPerformanceSessions = true
+	EndGlobalSection
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		TEGS\TEGS.projitems*{65d675fd-3028-47e5-8358-1264bba47479}*SharedItemsImports = 4
 		TEGS\TEGS.projitems*{9757c0a6-9315-4afd-8666-3634e373dfe4}*SharedItemsImports = 4

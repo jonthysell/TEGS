@@ -60,10 +60,8 @@ namespace TEGS
         }
         private string _description = null;
 
-        public IList<StateVariable> StateVariables => _stateVariables;
-        private List<StateVariable> _stateVariables= new List<StateVariable>();
-
-        public int StateVariableCount => _stateVariables.Count;
+        public IReadOnlyList<StateVariable> StateVariables => _stateVariables;
+        private List<StateVariable> _stateVariables = new List<StateVariable>();
 
         public Vertex StartingVertex
         {
@@ -82,15 +80,23 @@ namespace TEGS
         }
         private Vertex _startingVertex = null;
 
-        public IEnumerable<Vertex> Verticies => _verticies;
+        public IReadOnlyList<Vertex> Verticies => _verticies;
         private List<Vertex> _verticies = new List<Vertex>();
 
-        public int VertexCount => _verticies.Count;
-
-        public IEnumerable<Edge> Edges => _edges;
+        public IReadOnlyList<Edge> Edges => _edges;
         private List<Edge> _edges = new List<Edge>();
 
-        public int EdgeCount => _edges.Count;
+        public StateVariable AddStateVariable(string name, VariableValueType type)
+        {
+            StateVariable item = new StateVariable(name, type);
+            AddStateVariable(item);
+            return item;
+        }
+
+        private void AddStateVariable(StateVariable item)
+        {
+            _stateVariables.Add(item);
+        }
 
         public Vertex AddVertex(string name)
         {
@@ -204,7 +210,7 @@ namespace TEGS
                             string name = xmlReader.GetAttribute("name");
                             VariableValueType type = (VariableValueType)Enum.Parse(typeof(VariableValueType), xmlReader.GetAttribute("type"));
 
-                            graph.StateVariables.Add(new StateVariable(name, type));
+                            graph.AddStateVariable(name, type);
                         }
                         else if (xmlReader.Name == "vertex")
                         {

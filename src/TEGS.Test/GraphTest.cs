@@ -41,9 +41,9 @@ namespace TEGS.Test
             Graph graph = new Graph();
             Assert.IsNotNull(graph);
 
-            Assert.AreEqual(0, graph.StateVariableCount);
-            Assert.AreEqual(0, graph.VertexCount);
-            Assert.AreEqual(0, graph.EdgeCount);
+            Assert.AreEqual(0, graph.StateVariables.Count);
+            Assert.AreEqual(0, graph.Verticies.Count);
+            Assert.AreEqual(0, graph.Edges.Count);
         }
 
         [TestMethod]
@@ -52,8 +52,9 @@ namespace TEGS.Test
             Graph graph = LoadXml("carwash.xml");
             Assert.IsNotNull(graph);
 
-            Assert.AreEqual(4, graph.VertexCount);
-            Assert.AreEqual(5, graph.EdgeCount);
+            Assert.AreEqual(2, graph.StateVariables.Count);
+            Assert.AreEqual(4, graph.Verticies.Count);
+            Assert.AreEqual(5, graph.Edges.Count);
         }
 
         [TestMethod]

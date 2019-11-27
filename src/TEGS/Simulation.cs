@@ -170,6 +170,13 @@ namespace TEGS
 
         private void Start()
         {
+            // Initialize state variables
+            for (int i = 0; i < Graph.StateVariables.Count; i++)
+            {
+                ScriptingHost.CreateStateVariable(Graph.StateVariables[i]);
+            }
+
+            // Set seed
             if (Args.StartingSeed.HasValue)
             {
                 ScriptingHost.SetSeed(Args.StartingSeed.Value);
@@ -179,7 +186,10 @@ namespace TEGS
                 ScriptingHost.SetSeed();
             }
 
+            // Initialize clock
             Clock = Schedule.MinTime;
+
+            // Insert starting event
             Schedule.Insert(Graph.StartingVertex, Schedule.DefaultDelay, Schedule.DefaultPriority, ScriptingHost.EvaluateParameters(Args.StartParameters));
         }
 

@@ -107,15 +107,17 @@ namespace TEGS
         {
             get
             {
-                foreach (Edge edge in Graph.Edges)
+                for (int i = 0; i < Graph.Edges.Count; i++)
                 {
-                    if (edge.Source == this)
+                    if (Graph.Edges[i].Source == this)
                     {
-                        yield return edge;
+                        yield return Graph.Edges[i];
                     }
                 }
             }
         }
+
+
 
         public Vertex(Graph graph, string name)
         {

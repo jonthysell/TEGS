@@ -28,15 +28,15 @@ using System;
 
 namespace TEGS
 {
-    public class ScheduledEvent : IComparable<ScheduledEvent>
+    public struct ScheduledEvent : IComparable<ScheduledEvent>
     {
-        public Vertex Target { get; private set; }
+        public readonly Vertex Target;
 
-        public double Time { get; private set; }
+        public readonly double Time;
 
-        public double Priority { get; private set; }
+        public readonly double Priority;
 
-        public string ParameterValues { get; private set; }
+        public readonly string ParameterValues;
 
         public ScheduledEvent(Vertex target, double time, double priority, string parameterValues)
         {
@@ -48,11 +48,6 @@ namespace TEGS
 
         public int CompareTo(ScheduledEvent other)
         {
-            if (null == other)
-            {
-                throw new ArgumentNullException(nameof(other));
-            }
-
             int timeCompare = Time.CompareTo(other.Time);
 
             if (timeCompare != 0)

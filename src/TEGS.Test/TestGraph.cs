@@ -40,8 +40,8 @@ namespace TEGS.Test
                         Description = "An automatic carwash"
                     };
 
-                    g.StateVariables.Add(new StateVariable("QUEUE", VariableValueType.Integer));
-                    g.StateVariables.Add(new StateVariable("SERVERS", VariableValueType.Integer));
+                    g.AddStateVariable("QUEUE", VariableValueType.Integer);
+                    g.AddStateVariable("SERVERS", VariableValueType.Integer);
 
                     Vertex run = g.AddVertex("RUN");
                     run.Description = "The simulation run is started";
@@ -104,8 +104,8 @@ namespace TEGS.Test
                         Description = "A deterministic queue (M/D/1) with breakdowns"
                     };
 
-                    g.StateVariables.Add(new StateVariable("QUEUE", VariableValueType.Integer));
-                    g.StateVariables.Add(new StateVariable("SERVER", VariableValueType.Integer));
+                    g.AddStateVariable("QUEUE", VariableValueType.Integer);
+                    g.AddStateVariable("SERVER", VariableValueType.Integer);
 
                     Vertex run = g.AddVertex("RUN");
                     run.Description = "The simulation has started";
@@ -130,7 +130,7 @@ namespace TEGS.Test
                     fix.Code = "SERVER = 1";
 
                     Vertex fail = g.AddVertex("FAIL");
-                    fail.Description = "The occurrence of a sercice failure";
+                    fail.Description = "The occurrence of a service failure";
                     fail.Code = "SERVER = -1";
 
                     Edge run_enter = g.AddEdge(run, enter);
