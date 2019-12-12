@@ -40,25 +40,31 @@ namespace TEGS
 
             List<ValidationError> errors = new List<ValidationError>();
 
-            // Verify starting vertex
-            if (graph.Verticies.Count > 0 && null == graph.StartingVertex)
-            {
-                errors.Add(new NoStartingVertexValidationError());
-            }
-
             // Verify verticies
-            HashSet<string> vertexNames = new HashSet<string>();
+            List<Vertex> startingVerticies = new List<Vertex>();
+
+            Dictionary<string, List<Vertex>> uniqueVertexNames = new Dictionary<string, List<Vertex>>();
 
             foreach (Vertex v in graph.Verticies)
             {
+                if (v.IsStartingVertex)
+                {
+                    startingVerticies.Add(v);
+                }
+
                 // Verify name
                 if (string.IsNullOrWhiteSpace(v.Name))
                 {
                     errors.Add(new BlankVertexNameValidationError(v));
                 }
-                else if (!vertexNames.Add(v.Name))
+                else
                 {
-                    errors.Add(new DuplicateVertexNameValidationError(v));
+                    if (!uniqueVertexNames.ContainsKey(v.Name))
+                    {
+                        uniqueVertexNames[v.Name] = new List<Vertex>();
+                    }
+
+                    uniqueVertexNames[v.Name].Add(v);
                 }
 
                 // Verify parameters
@@ -73,6 +79,23 @@ namespace TEGS
                             errors.Add(new InvalidParameterNameVertexValidationError(v, parameterName));
                         }
                     }
+                }
+            }
+
+            if (startingVerticies.Count == 0)
+            {
+                errors.Add(new NoStartingVertexValidationError());
+            }
+            else if (startingVerticies.Count > 1)
+            {
+                errors.Add(new MultipleStartingVertexValidationError(startingVerticies));
+            }
+
+            foreach (var kvp in uniqueVertexNames)
+            {
+                if (kvp.Value.Count > 1)
+                {
+                    errors.Add(new DuplicateVertexNamesValidationError(kvp.Value));
                 }
             }
 
@@ -117,13 +140,6 @@ namespace TEGS
         public BlankVertexNameValidationError(Vertex vertex) : base(vertex) { }
     }
 
-    public class DuplicateVertexNameValidationError : VertexValidationError
-    {
-        public override string Message => $"Vertex #{Vertex.Id} uses existing name \"{Vertex.Name}\".";
-
-        public DuplicateVertexNameValidationError(Vertex vertex) : base(vertex) { }
-    }
-
     public class InvalidParameterNameVertexValidationError : VertexValidationError
     {
         public override string Message => $"Vertex #{Vertex.Id} has invalid parameter name \"{ParameterName}\".";
@@ -134,5 +150,57 @@ namespace TEGS
         {
             ParameterName = parameterName;
         }
+    }
+
+    public abstract class VerticiesValidationError : ValidationError
+    {
+        public readonly IReadOnlyList<Vertex> Verticies;
+
+        public VerticiesValidationError(IReadOnlyList<Vertex> verticies)
+        {
+            Verticies = verticies ?? throw new ArgumentNullException(nameof(verticies));
+        }
+
+        protected string[] GetNames()
+        {
+            List<string> names = new List<string>();
+
+            foreach (Vertex v in Verticies)
+            {
+                names.Add(v.Name);
+            }
+
+            return names.ToArray();
+        }
+    }
+
+    public class DuplicateVertexNamesValidationError : VerticiesValidationError
+    {
+        public override string Message
+        {
+            get
+            {
+                string[] names = GetNames();
+
+                return $"Graph has {names.Length} verticies named \"{names[0]}\".";
+            }
+        }
+
+        public DuplicateVertexNamesValidationError(IReadOnlyList<Vertex> verticies) : base(verticies) { }
+    }
+
+    public class MultipleStartingVertexValidationError : VerticiesValidationError
+    {
+        public override string Message
+        {
+            get
+            {
+                string[] names = GetNames();
+
+                return $"Graph has {names.Length} starting verticies: \"{string.Join("\", \"", names)}\".";
+            }
+        }
+
+        public MultipleStartingVertexValidationError(IReadOnlyList<Vertex> verticies) : base(verticies) { }
     }
 }

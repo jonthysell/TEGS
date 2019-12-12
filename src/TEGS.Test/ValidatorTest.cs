@@ -37,9 +37,6 @@ namespace TEGS.Test
     public class ValidatorTest
     {
         [TestMethod]
-        public void Validator_NewGraphValidTest() => Validator_ValidTest(new Graph());
-
-        [TestMethod]
         public void Validator_CarwashValidTest() => Validator_ValidTest(TestGraph.Carwash);
 
         [TestMethod]
@@ -51,6 +48,17 @@ namespace TEGS.Test
         [TestMethod]
         [ExpectedException(typeof(ArgumentNullException))]
         public void Validator_NullInvalidTest() => Validator_InvalidTest(null);
+
+        [TestMethod]
+        public void Validator_NewGraphInvalidTest()
+        {
+            Graph graph = new Graph();
+
+            List<ValidationError> expectedErrors = new List<ValidationError>();
+            expectedErrors.Add(new NoStartingVertexValidationError());
+
+            Validator_InvalidTest(graph, expectedErrors);
+        }
 
         [TestMethod]
         public void Validator_NoStartingVertexInvalidTest()
@@ -77,19 +85,6 @@ namespace TEGS.Test
         }
 
         [TestMethod]
-        public void Validator_DuplicateVertexNameInvalidTest()
-        {
-            Graph graph = new Graph();
-            Vertex runVertex1 = graph.AddVertex("RUN", true);
-            Vertex runVertex2 = graph.AddVertex("RUN");
-
-            List<ValidationError> expectedErrors = new List<ValidationError>();
-            expectedErrors.Add(new DuplicateVertexNameValidationError(runVertex2));
-
-            Validator_InvalidTest(graph, expectedErrors);
-        }
-
-        [TestMethod]
         public void Validator_InvalidParameterNameVertexInvalidTest()
         {
             Graph graph = new Graph();
@@ -98,6 +93,32 @@ namespace TEGS.Test
 
             List<ValidationError> expectedErrors = new List<ValidationError>();
             expectedErrors.Add(new InvalidParameterNameVertexValidationError(runVertex, "test"));
+
+            Validator_InvalidTest(graph, expectedErrors);
+        }
+
+        [TestMethod]
+        public void Validator_DuplicateVertexNameInvalidTest()
+        {
+            Graph graph = new Graph();
+            Vertex runVertex1 = graph.AddVertex("RUN", true);
+            Vertex runVertex2 = graph.AddVertex("RUN");
+
+            List<ValidationError> expectedErrors = new List<ValidationError>();
+            expectedErrors.Add(new DuplicateVertexNamesValidationError(new List<Vertex>(new Vertex[] { runVertex1, runVertex2 })));
+
+            Validator_InvalidTest(graph, expectedErrors);
+        }
+
+        [TestMethod]
+        public void Validator_MultipleStartingVertexInvalidTest()
+        {
+            Graph graph = new Graph();
+            Vertex runVertex1 = graph.AddVertex("RUN1", true);
+            Vertex runVertex2 = graph.AddVertex("RUN2", true);
+
+            List<ValidationError> expectedErrors = new List<ValidationError>();
+            expectedErrors.Add(new MultipleStartingVertexValidationError(new List<Vertex>(new Vertex[] { runVertex1, runVertex2 })));
 
             Validator_InvalidTest(graph, expectedErrors);
         }
