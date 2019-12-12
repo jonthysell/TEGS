@@ -44,7 +44,7 @@ namespace TEGS
             }
             set
             {
-                _name = value ?? value.Trim();
+                _name = value?.Trim() ?? "";
             }
         }
         private string _name = "";
@@ -57,7 +57,7 @@ namespace TEGS
             }
             set
             {
-                _description = value ?? value.Trim();
+                _description = value?.Trim() ?? "";
             }
         }
         private string _description = "";

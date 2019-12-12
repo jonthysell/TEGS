@@ -62,7 +62,7 @@ namespace TEGS
             }
             set
             {
-                _description = value ?? value.Trim();
+                _description = value?.Trim() ?? "";
             }
         }
         private string _description = "";
@@ -75,7 +75,7 @@ namespace TEGS
             }
             set
             {
-                _condition = value ?? value.Trim();
+                _condition = value?.Trim() ?? "";
             }
         }
         private string _condition = "";
@@ -88,7 +88,7 @@ namespace TEGS
             }
             set
             {
-                _delay = value ?? value.Trim();
+                _delay = value?.Trim() ?? "";
             }
         }
         private string _delay = "";
@@ -101,7 +101,7 @@ namespace TEGS
             }
             set
             {
-                _priority = value ?? value.Trim();
+                _priority = value?.Trim() ?? "";
             }
         }
         private string _priority = "";
@@ -114,7 +114,7 @@ namespace TEGS
             }
             set
             {
-                _parameters = value ?? value.Trim();
+                _parameters = value?.Trim() ?? "";
             }
         }
         private string _parameters = "";

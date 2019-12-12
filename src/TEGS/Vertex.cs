@@ -57,7 +57,7 @@ namespace TEGS
             }
             set
             {
-                _name = value ?? value.Trim();
+                _name = value?.Trim() ?? "";
             }
         }
         private string _name = "";
@@ -70,7 +70,7 @@ namespace TEGS
             }
             set
             {
-                _description = value ?? value.Trim();
+                _description = value?.Trim() ?? "";
             }
         }
         private string _description = "";
@@ -83,7 +83,7 @@ namespace TEGS
             }
             set
             {
-                _code = value ?? value.Trim();
+                _code = value?.Trim() ?? "";
             }
         }
         private string _code = "";

@@ -1,4 +1,5 @@
-﻿<?xml version="1.0" encoding="utf-8"?><graph description="An automatic carwash">
+﻿<?xml version="1.0" encoding="utf-8"?>
+<graph description="An automatic carwash">
   <variables>
     <variable name="QUEUE" type="Integer" />
     <variable name="SERVERS" type="Integer" />
