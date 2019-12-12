@@ -31,7 +31,7 @@ namespace TEGS
 {
     public class Vertex
     {
-        public Graph Graph { get; private set; }
+        public readonly Graph Graph;
 
         public int Id
         {
@@ -60,7 +60,7 @@ namespace TEGS
                 _name = value ?? value.Trim();
             }
         }
-        private string _name;
+        private string _name = "";
 
         public string Description
         {
@@ -73,7 +73,7 @@ namespace TEGS
                 _description = value ?? value.Trim();
             }
         }
-        private string _description = null;
+        private string _description = "";
 
         public string Code
         {
@@ -86,7 +86,7 @@ namespace TEGS
                 _code = value ?? value.Trim();
             }
         }
-        private string _code = null;
+        private string _code = "";
 
         public string Parameters
         {
@@ -137,17 +137,6 @@ namespace TEGS
         public override string ToString()
         {
             return Name;
-        }
-    }
-
-    [Serializable]
-    public class VertexNameAlreadyExistsException : Exception
-    {
-        public string Name { get; private set; }
-
-        public VertexNameAlreadyExistsException(string name) : base()
-        {
-            Name = name;
         }
     }
 }

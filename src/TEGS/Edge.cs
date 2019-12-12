@@ -30,11 +30,27 @@ namespace TEGS
 {
     public class Edge
     {
-        public Graph Graph { get; private set; }
+        public readonly Graph Graph;
 
-        public Vertex Source { get; private set; }
+        public int Id
+        {
+            get
+            {
+                for (int i = 0; i < Graph.Edges.Count; i++)
+                {
+                    if (this == Graph.Edges[i])
+                    {
+                        return i;
+                    }
+                }
 
-        public Vertex Target { get; private set; }
+                return -1;
+            }
+        }
+
+        public readonly Vertex Source;
+
+        public readonly Vertex Target;
 
         public EdgeAction Action { get; set; } = EdgeAction.Schedule;
 
@@ -46,10 +62,10 @@ namespace TEGS
             }
             set
             {
-                _description = value?.Trim();
+                _description = value ?? value.Trim();
             }
         }
-        private string _description = null;
+        private string _description = "";
 
         public string Condition
         {
@@ -59,10 +75,10 @@ namespace TEGS
             }
             set
             {
-                _condition = value?.Trim();
+                _condition = value ?? value.Trim();
             }
         }
-        private string _condition = null;
+        private string _condition = "";
 
         public string Delay
         {
@@ -72,10 +88,10 @@ namespace TEGS
             }
             set
             {
-                _delay = value?.Trim();
+                _delay = value ?? value.Trim();
             }
         }
-        private string _delay = null;
+        private string _delay = "";
 
         public string Priority
         {
@@ -85,10 +101,10 @@ namespace TEGS
             }
             set
             {
-                _priority = value?.Trim();
+                _priority = value ?? value.Trim();
             }
         }
-        private string _priority = null;
+        private string _priority = "";
 
         public string Parameters
         {
@@ -98,10 +114,10 @@ namespace TEGS
             }
             set
             {
-                _parameters = value?.Trim();
+                _parameters = value ?? value.Trim();
             }
         }
-        private string _parameters = null;
+        private string _parameters = "";
 
         public Edge(Graph graph, Vertex source, Vertex target)
         {

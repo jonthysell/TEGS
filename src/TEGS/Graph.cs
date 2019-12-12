@@ -44,10 +44,10 @@ namespace TEGS
             }
             set
             {
-                _name = value?.Trim();
+                _name = value ?? value.Trim();
             }
         }
-        private string _name = null;
+        private string _name = "";
 
         public string Description
         {
@@ -57,10 +57,10 @@ namespace TEGS
             }
             set
             {
-                _description = value?.Trim();
+                _description = value ?? value.Trim();
             }
         }
-        private string _description = null;
+        private string _description = "";
 
         public IReadOnlyDictionary<string, StateVariable> StateVariables => _stateVariables;
         private Dictionary<string, StateVariable> _stateVariables = new Dictionary<string, StateVariable>();
@@ -124,22 +124,14 @@ namespace TEGS
             _verticies.Add(item);
         }
 
-        public bool RemoveVertex(Vertex item, bool removeEdges = false)
+        public bool RemoveVertex(Vertex item)
         {
             if (null == item)
             {
                 throw new ArgumentNullException(nameof(item));
             }
 
-            if (_edges.Exists(edge => (edge.Source == item || edge.Target == item)))
-            {
-                if (!removeEdges)
-                {
-                    throw new CannotRemoveVertexWithEdgesException();
-                }
-
-                _edges.RemoveAll(edge => (edge.Source == item || edge.Target == item));
-            }
+            _edges.RemoveAll(edge => (edge.Source == item || edge.Target == item));
 
             return _verticies.Remove(item);
         }
@@ -213,8 +205,6 @@ namespace TEGS
 
             Dictionary<int, Vertex> verticies = new Dictionary<int, Vertex>();
             Dictionary<int, Edge> edges = new Dictionary<int, Edge>();
-
-            int? startingVertexId = null;
 
             using (XmlReader xmlReader = XmlReader.Create(inputStream))
             {
@@ -405,11 +395,5 @@ namespace TEGS
     public class VertexNotInGraphException : Exception
     {
         public VertexNotInGraphException() : base() { }
-    }
-
-    [Serializable]
-    public class CannotRemoveVertexWithEdgesException : Exception
-    {
-        public CannotRemoveVertexWithEdgesException() : base() { }
     }
 }
