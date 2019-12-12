@@ -117,8 +117,6 @@ namespace TEGS
             }
         }
 
-
-
         public Vertex(Graph graph, string name)
         {
             Graph = graph ?? throw new ArgumentNullException(nameof(graph));
