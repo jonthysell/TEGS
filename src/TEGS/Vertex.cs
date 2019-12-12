@@ -33,6 +33,22 @@ namespace TEGS
     {
         public Graph Graph { get; private set; }
 
+        public int Id
+        {
+            get
+            {
+                for (int i = 0; i < Graph.Verticies.Count; i++)
+                {
+                    if (this == Graph.Verticies[i])
+                    {
+                        return i;
+                    }
+                }
+
+                return -1;
+            }
+        }
+
         public string Name
         {
             get
@@ -41,19 +57,7 @@ namespace TEGS
             }
             set
             {
-                if (string.IsNullOrWhiteSpace(value))
-                {
-                    throw new ArgumentNullException(nameof(value));
-                }
-
-                value = value.Trim();
-
-                if (Graph.HasVertex(value))
-                {
-                    throw new VertexNameAlreadyExistsException(value);
-                }
-
-                _name = value;
+                _name = value ?? value.Trim();
             }
         }
         private string _name;
@@ -66,7 +70,7 @@ namespace TEGS
             }
             set
             {
-                _description = value?.Trim();
+                _description = value ?? value.Trim();
             }
         }
         private string _description = null;
@@ -79,7 +83,7 @@ namespace TEGS
             }
             set
             {
-                _code = value?.Trim();
+                _code = value ?? value.Trim();
             }
         }
         private string _code = null;
@@ -88,16 +92,22 @@ namespace TEGS
         {
             get
             {
-                return _parameters;
+                if (null == ParameterNames)
+                {
+                    return "";
+                }
+
+                return string.Join(", ", ParameterNames);
             }
             set
             {
-                _parameters = value?.Trim();
+                ParameterNames = value?.Split(new char[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries);
             }
         }
-        private string _parameters = null;
 
-        public bool IsStartingVertex => (this == Graph.StartingVertex);
+        public string[] ParameterNames { get; private set; }
+
+        public bool IsStartingVertex { get; set; }
 
         public int X { get; set; } = 0;
 
@@ -117,10 +127,11 @@ namespace TEGS
             }
         }
 
-        public Vertex(Graph graph, string name)
+        public Vertex(Graph graph, string name, bool isStartingVertex = false)
         {
             Graph = graph ?? throw new ArgumentNullException(nameof(graph));
             Name = name;
+            IsStartingVertex = isStartingVertex;
         }
 
         public override string ToString()

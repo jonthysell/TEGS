@@ -20,6 +20,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Simulation.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SimulationArgs.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)TraceExpression.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Validator.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)VariableValue.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)StateVariable.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)StopCondition.cs" />

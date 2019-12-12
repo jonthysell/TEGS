@@ -171,9 +171,9 @@ namespace TEGS
         private void Start()
         {
             // Initialize state variables
-            for (int i = 0; i < Graph.StateVariables.Count; i++)
+            foreach (StateVariable stateVariable in Graph.StateVariables.Values)
             {
-                ScriptingHost.Create(Graph.StateVariables[i]);
+                ScriptingHost.Create(stateVariable);
             }
 
             // Set seed

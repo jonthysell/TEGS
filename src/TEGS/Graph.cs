@@ -34,6 +34,8 @@ namespace TEGS
 {
     public class Graph
     {
+        #region Properties
+
         public string Name
         {
             get
@@ -60,25 +62,24 @@ namespace TEGS
         }
         private string _description = null;
 
-        public IReadOnlyList<StateVariable> StateVariables => _stateVariables;
-        private List<StateVariable> _stateVariables = new List<StateVariable>();
+        public IReadOnlyDictionary<string, StateVariable> StateVariables => _stateVariables;
+        private Dictionary<string, StateVariable> _stateVariables = new Dictionary<string, StateVariable>();
 
         public Vertex StartingVertex
         {
             get
             {
-                return _startingVertex;
-            }
-            set
-            {
-                if (null != value && !_verticies.Contains(value))
+                foreach (Vertex v in Verticies)
                 {
-                    throw new VertexNotInGraphException();
+                    if (v.IsStartingVertex)
+                    {
+                        return v;
+                    }
                 }
-                _startingVertex = value;
+
+                return null;
             }
         }
-        private Vertex _startingVertex = null;
 
         public IReadOnlyList<Vertex> Verticies => _verticies;
         private List<Vertex> _verticies = new List<Vertex>();
@@ -86,21 +87,34 @@ namespace TEGS
         public IReadOnlyList<Edge> Edges => _edges;
         private List<Edge> _edges = new List<Edge>();
 
+        #endregion
+
+        #region Variables
+
         public StateVariable AddStateVariable(string name, VariableValueType type)
         {
             StateVariable item = new StateVariable(name, type);
-            AddStateVariable(item);
+            _stateVariables.Add(item.Name, item);
             return item;
         }
 
-        private void AddStateVariable(StateVariable item)
+        public bool HasStateVariable(string name)
         {
-            _stateVariables.Add(item);
+            if (string.IsNullOrEmpty(name))
+            {
+                throw new ArgumentNullException(nameof(name));
+            }
+
+            return StateVariables.ContainsKey(name);
         }
 
-        public Vertex AddVertex(string name)
+        #endregion
+
+        #region Verticies
+
+        public Vertex AddVertex(string name, bool isStarting = false)
         {
-            Vertex item = new Vertex(this, name);
+            Vertex item = new Vertex(this, name, isStarting);
             AddVertex(item);
             return item;
         }
@@ -148,6 +162,10 @@ namespace TEGS
             return false;
         }
 
+        #endregion
+
+        #region Edges
+
         public Edge AddEdge(Vertex source, Vertex target)
         {
             if (null == source)
@@ -179,6 +197,10 @@ namespace TEGS
 
             return _edges.Remove(item);
         }
+
+        #endregion
+
+        #region XML
 
         public static Graph LoadXml(Stream inputStream)
         {
@@ -217,16 +239,9 @@ namespace TEGS
                             int id = int.Parse(xmlReader.GetAttribute("id"));
                             string name = xmlReader.GetAttribute("name");
 
-                            // Check for existing name
-                            foreach (Vertex v in verticies.Values)
-                            {
-                                if (v.Name == name)
-                                {
-                                    throw new VertexNameAlreadyExistsException(name);
-                                }
-                            }
+                            bool.TryParse(xmlReader.GetAttribute("starting"), out bool isStartingVertex);
 
-                            Vertex vertex = new Vertex(graph, name)
+                            Vertex vertex = new Vertex(graph, name, isStartingVertex)
                             {
                                 Description = xmlReader.GetAttribute("description"),
                                 Code = xmlReader.GetAttribute("code"),
@@ -244,11 +259,6 @@ namespace TEGS
                             }
 
                             verticies.Add(id, vertex);
-
-                            if (bool.TryParse(xmlReader.GetAttribute("starting"), out bool isStartingVertex) && isStartingVertex)
-                            {
-                                startingVertexId = id;
-                            }
                         }
                         else if (xmlReader.Name == "edge")
                         {
@@ -277,10 +287,6 @@ namespace TEGS
             foreach (KeyValuePair<int, Vertex> kvp in verticies)
             {
                 graph.AddVertex(kvp.Value);
-                if (startingVertexId.HasValue && kvp.Key == startingVertexId.Value)
-                {
-                    graph.StartingVertex = kvp.Value;
-                }
             }
 
             foreach (Edge edge in edges.Values)
@@ -311,12 +317,12 @@ namespace TEGS
 
                 xmlWriter.WriteStartElement("variables");
 
-                for (int i = 0; i < _stateVariables.Count; i++)
+                foreach (StateVariable stateVariable in _stateVariables.Values)
                 {
                     xmlWriter.WriteStartElement("variable");
 
-                    xmlWriter.WriteAttributeString("name", _stateVariables[i].Name);
-                    xmlWriter.WriteAttributeString("type", _stateVariables[i].Type.ToString());
+                    xmlWriter.WriteAttributeString("name", stateVariable.Name);
+                    xmlWriter.WriteAttributeString("type", stateVariable.Type.ToString());
 
                     xmlWriter.WriteEndElement();
                 }
@@ -375,6 +381,8 @@ namespace TEGS
                 xmlWriter.WriteEndElement(); // graph
             }
         }
+
+        #endregion
 
         public override string ToString()
         {

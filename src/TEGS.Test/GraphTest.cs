@@ -49,7 +49,7 @@ namespace TEGS.Test
         [TestMethod]
         public void Graph_LoadTest()
         {
-            Graph graph = LoadXml("carwash.xml");
+            Graph graph = TestGraph.LoadXml("carwash.xml");
             Assert.IsNotNull(graph);
 
             Assert.AreEqual(2, graph.StateVariables.Count);
@@ -60,7 +60,7 @@ namespace TEGS.Test
         [TestMethod]
         public void Graph_SaveTest()
         {
-            Graph graph = LoadXml("carwash.xml");
+            Graph graph = TestGraph.LoadXml("carwash.xml");
             Assert.IsNotNull(graph);
 
             MemoryStream ms = new MemoryStream();
@@ -72,16 +72,26 @@ namespace TEGS.Test
             Assert.IsFalse(string.IsNullOrWhiteSpace(graphXml));
         }
 
-        private Graph LoadXml(string fileName)
+        [TestMethod]
+        public void Graph_CarwashTest()
         {
-            Graph graph = null;
+            Graph graph = TestGraph.Carwash;
+            Assert.IsNotNull(graph);
 
-            using (FileStream fs = new FileStream(fileName, FileMode.Open))
-            {
-                graph = Graph.LoadXml(fs);
-            }
+            Assert.AreEqual(2, graph.StateVariables.Count);
+            Assert.AreEqual(4, graph.Verticies.Count);
+            Assert.AreEqual(5, graph.Edges.Count);
+        }
 
-            return graph;
+        [TestMethod]
+        public void Graph_BreakdownTest()
+        {
+            Graph graph = TestGraph.Breakdown;
+            Assert.IsNotNull(graph);
+
+            Assert.AreEqual(2, graph.StateVariables.Count);
+            Assert.AreEqual(6, graph.Verticies.Count);
+            Assert.AreEqual(10, graph.Edges.Count);
         }
     }
 }

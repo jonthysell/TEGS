@@ -24,6 +24,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System.IO;
+
 namespace TEGS.Test
 {
     public class TestGraph
@@ -43,10 +45,9 @@ namespace TEGS.Test
                     g.AddStateVariable("QUEUE", VariableValueType.Integer);
                     g.AddStateVariable("SERVERS", VariableValueType.Integer);
 
-                    Vertex run = g.AddVertex("RUN");
+                    Vertex run = g.AddVertex("RUN", true);
                     run.Description = "The simulation run is started";
                     run.Parameters = "QUEUE, SERVERS";
-                    g.StartingVertex = run;
 
                     Vertex enter = g.AddVertex("ENTER");
                     enter.Description = "Cars enter the line";
@@ -107,11 +108,10 @@ namespace TEGS.Test
                     g.AddStateVariable("QUEUE", VariableValueType.Integer);
                     g.AddStateVariable("SERVER", VariableValueType.Integer);
 
-                    Vertex run = g.AddVertex("RUN");
+                    Vertex run = g.AddVertex("RUN", true);
                     run.Description = "The simulation has started";
                     run.Parameters = "QUEUE";
                     run.Code = "SERVER = 1";
-                    g.StartingVertex = run;
 
                     Vertex enter = g.AddVertex("ENTER");
                     enter.Description = "Arrival of a job";
@@ -187,5 +187,17 @@ namespace TEGS.Test
             }
         }
         private static Graph _breakdown;
+
+        public static Graph LoadXml(string fileName)
+        {
+            Graph graph = null;
+
+            using (FileStream fs = new FileStream(fileName, FileMode.Open))
+            {
+                graph = Graph.LoadXml(fs);
+            }
+
+            return graph;
+        }
     }
 }

@@ -72,6 +72,15 @@ namespace TEGS.Run
 
                     simulation.Run();
                 }
+                catch (ValidationException ex)
+                {
+                    Console.Error.WriteLine($"Graph has {ex.ValidationErrors.Count} errors:");
+
+                    foreach (var error in ex.ValidationErrors)
+                    {
+                        Console.Error.WriteLine($"  {error.Message}");
+                    }
+                }
                 catch (AggregateException ex)
                 {
                     PrintException(ex);
@@ -199,7 +208,13 @@ namespace TEGS.Run
                 throw new Exception("Unable to load graph.", ex);
             }
 
-            
+            IReadOnlyList<ValidationError> validationErrors = Validator.Validate(graph);
+
+            if (validationErrors.Count > 0)
+            {
+                throw new ValidationException(validationErrors);
+            }
+
             string outputFile = null;
             bool showOutput = false;
             int? startingSeed = null;
@@ -235,7 +250,7 @@ namespace TEGS.Run
                             break;
                         case "--trace-variable":
                             string name = args[++i];
-                            traceExpressions.Add(new StateVariableTraceExpression(graph.StateVariables.Single(sv => sv.Name == name)));
+                            traceExpressions.Add(new StateVariableTraceExpression(graph.StateVariables.Single(kvp => kvp.Key == name).Value));
                             break;
                         default:
                             throw new Exception($"Did not recognize option \"{args[i]}\"");
