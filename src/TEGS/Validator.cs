@@ -99,6 +99,25 @@ namespace TEGS
                 }
             }
 
+            // Verify edges
+            foreach (Edge e in graph.Edges)
+            {
+                if (e.Action == EdgeAction.Schedule)
+                {
+                    if (e.Target.ParameterNames.Count > 0)
+                    {
+                        if (e.ParameterExpressions.Count == 0)
+                        {
+                            errors.Add(new ParametersRequiredEdgeValidationError(e));
+                        }
+                        else if (e.ParameterExpressions.Count != e.Target.ParameterNames.Count)
+                        {
+                            errors.Add(new InvalidParametersEdgeValidationError(e));
+                        }
+                    }
+                }
+            }
+
             return errors;
         }
     }

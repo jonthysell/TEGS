@@ -39,6 +39,8 @@ namespace TEGS
         public override string Message => "Graph has no starting vertex.";
     }
 
+    #region Vertex Validation Errors
+
     public abstract class VertexValidationError : ValidationError
     {
         public readonly Vertex Vertex;
@@ -67,6 +69,10 @@ namespace TEGS
             ParameterName = parameterName;
         }
     }
+
+    #endregion
+
+    #region Verticies Validation Errors
 
     public abstract class VerticiesValidationError : ValidationError
     {
@@ -119,4 +125,34 @@ namespace TEGS
 
         public MultipleStartingVertexValidationError(IReadOnlyList<Vertex> verticies) : base(verticies) { }
     }
+
+    #endregion
+
+    #region Edge Validation Errors
+
+    public abstract class EdgeValidationError : ValidationError
+    {
+        public readonly Edge Edge;
+
+        public EdgeValidationError(Edge edge)
+        {
+            Edge = edge ?? throw new ArgumentNullException(nameof(edge));
+        }
+    }
+
+    public class ParametersRequiredEdgeValidationError : EdgeValidationError
+    {
+        public override string Message => $"Edge #{Edge.Id} from \"{Edge.Source.Name}\" to \"{Edge.Target.Name}\" requires parameters.";
+
+        public ParametersRequiredEdgeValidationError(Edge edge) : base(edge) { }
+    }
+
+    public class InvalidParametersEdgeValidationError : EdgeValidationError
+    {
+        public override string Message => $"Edge #{Edge.Id} from \"{Edge.Source.Name}\" to \"{Edge.Target.Name}\" has invalid parameters.";
+
+        public InvalidParametersEdgeValidationError(Edge edge) : base(edge) { }
+    }
+
+    #endregion
 }
