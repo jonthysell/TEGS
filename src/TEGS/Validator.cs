@@ -68,7 +68,7 @@ namespace TEGS
                 }
 
                 // Verify parameters
-                string[] parameterNames = v.ParameterNames;
+                IReadOnlyList<string> parameterNames = v.ParameterNames;
 
                 if (null != parameterNames)
                 {

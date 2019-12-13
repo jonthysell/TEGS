@@ -89,7 +89,7 @@ namespace TEGS.Test
         {
             Graph graph = new Graph();
             Vertex runVertex = graph.AddVertex("RUN", true);
-            runVertex.Parameters = "test";
+            runVertex.AddParameter("test");
 
             List<ValidationError> expectedErrors = new List<ValidationError>();
             expectedErrors.Add(new InvalidParameterNameVertexValidationError(runVertex, "test"));

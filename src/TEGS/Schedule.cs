@@ -29,8 +29,6 @@ using System.Collections.Generic;
 
 namespace TEGS
 {
-    public delegate bool ParameterComparer(string a, string b);
-
     public delegate void ScheduleChangedEventHandler(object sender, ScheduleChangedEventArgs e);
 
     public class Schedule
@@ -44,12 +42,9 @@ namespace TEGS
 
         public event ScheduleChangedEventHandler ScheduleChanged;
 
-        private readonly ParameterComparer _parameterComparer;
-
-        public Schedule(Graph graph, ParameterComparer parameterComparer)
+        public Schedule(Graph graph)
         {
             Graph = graph ?? throw new ArgumentNullException(nameof(graph));
-            _parameterComparer = parameterComparer ?? throw new ArgumentNullException(nameof(parameterComparer));
         }
 
         public ScheduledEvent GetNext()
@@ -65,7 +60,7 @@ namespace TEGS
             return next;
         }
 
-        public void Insert(Vertex target, double time, double priority, string parameterValues)
+        public void Insert(Vertex target, double time, double priority, IReadOnlyList<VariableValue> parameterValues)
         {
             if (null == target)
             {
@@ -98,7 +93,7 @@ namespace TEGS
             OnScheduleChanged();
         }
 
-        public void CancelNext(Vertex target, string parameterValues = null)
+        public void CancelNext(Vertex target, IReadOnlyList<VariableValue> parameterValues = null)
         {
             if (null == target)
             {
@@ -128,7 +123,7 @@ namespace TEGS
             }
         }
 
-        public void CancelAll(Vertex target, string parameterValues = null)
+        public void CancelAll(Vertex target, IReadOnlyList<VariableValue> parameterValues = null)
         {
             if (null == target)
             {
@@ -147,9 +142,27 @@ namespace TEGS
             }
         }
 
-        private bool CancelPredicate(ScheduledEvent match, Vertex target, string parameterValues)
+        private bool CancelPredicate(ScheduledEvent match, Vertex target, IReadOnlyList<VariableValue> parameterValues)
         {
-            return (match.Target == target && (string.IsNullOrEmpty(parameterValues) || _parameterComparer(parameterValues, match.ParameterValues)));
+            if (match.Target == target)
+            {
+                if (null == parameterValues)
+                {
+                    return true;
+                }
+                else if (parameterValues.Count == match.ParameterValues.Count)
+                {
+                    for (int i = 0; i < parameterValues.Count; i++)
+                    {
+                        if (parameterValues[i] != match.ParameterValues[i])
+                        {
+                            return false;
+                        }
+                    }
+                }
+            }
+
+            return false;
         }
 
         private void OnScheduleChanged()

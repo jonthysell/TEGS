@@ -166,10 +166,10 @@ namespace TEGS.Run
             Console.WriteLine("-o, --output-file [file]     Write simulation output to the given file.");
             Console.WriteLine("--seed [int]                 Set the starting seed for the simulation.");
             Console.WriteLine("--show-output                Show simulation output to the console.");
-            Console.WriteLine("--start-parameters [string]  Set the simulation start parameters.");
+            Console.WriteLine("--start-parameter [string]   Add a simulation start parameter.");
             Console.WriteLine("--stop-condition [string]    Stop the simulation if the given condition is met.");
             Console.WriteLine("--stop-time [double]         Stop the simulation if the clock passes the given time.");
-            Console.WriteLine("--trace-variable [string]     Add a trace variable by name.");
+            Console.WriteLine("--trace-variable [string]    Add a trace variable by name.");
             Console.WriteLine();
         }
 
@@ -218,7 +218,7 @@ namespace TEGS.Run
             string outputFile = null;
             bool showOutput = false;
             int? startingSeed = null;
-            string startParameters = null;
+            List<string> startParameters = new List<string>();
             StopCondition stopCondition = null;
 
             List<TraceExpression> traceExpressions = new List<TraceExpression>();
@@ -239,8 +239,8 @@ namespace TEGS.Run
                         case "--show-output":
                             showOutput = true;
                             break;
-                        case "--start-parameters":
-                            startParameters = args[++i];
+                        case "--start-parameter":
+                            startParameters.Add(args[++i]);
                             break;
                         case "--stop-condition":
                             stopCondition = StopCondition.StopOnCondition(args[++i]);
@@ -273,7 +273,7 @@ namespace TEGS.Run
             }
 
             programArgs.SimulationArgs.StartingSeed = startingSeed;
-            programArgs.SimulationArgs.StartParameters = startParameters;
+            programArgs.SimulationArgs.StartParameterExpressions = startParameters;
             programArgs.SimulationArgs.StopCondition = stopCondition;
 
             programArgs.SimulationArgs.TraceExpressions.AddRange(traceExpressions);

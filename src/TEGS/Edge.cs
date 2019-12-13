@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
 
 namespace TEGS
 {
@@ -106,24 +107,35 @@ namespace TEGS
         }
         private string _priority = "";
 
-        public string Parameters
-        {
-            get
-            {
-                return _parameters;
-            }
-            set
-            {
-                _parameters = value?.Trim() ?? "";
-            }
-        }
-        private string _parameters = "";
+        public IReadOnlyList<string> ParameterExpressions => _parameterExpressions;
+        private List<string> _parameterExpressions = new List<string>();
 
         public Edge(Graph graph, Vertex source, Vertex target)
         {
             Graph = graph ?? throw new ArgumentNullException(nameof(graph));
             Source = source ?? throw new ArgumentNullException(nameof(source));
             Target = target ?? throw new ArgumentNullException(nameof(target));
+        }
+
+        public void AddParameter(string expression)
+        {
+            expression = expression ?? throw new ArgumentNullException(expression);
+
+            expression = expression.Trim();
+            _parameterExpressions.Add(expression);
+        }
+
+        public void RemoveParameter(string expression)
+        {
+            expression = expression ?? throw new ArgumentNullException(expression);
+
+            expression = expression.Trim();
+            _parameterExpressions.Remove(expression);
+        }
+
+        public void RemoveParameterAt(int index)
+        {
+            _parameterExpressions.RemoveAt(index);
         }
 
         public override string ToString()

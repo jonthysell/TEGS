@@ -37,7 +37,7 @@ namespace TEGS
 
         public int? StartingSeed { get; set; } = null;
 
-        public string StartParameters { get; set; } = null;
+        public IReadOnlyList<string> StartParameterExpressions { get; set; } = null;
 
         public StopCondition StopCondition { get; set; } = StopCondition.Never;
 

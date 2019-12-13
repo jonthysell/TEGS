@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
 
 namespace TEGS
 {
@@ -36,9 +37,9 @@ namespace TEGS
 
         public readonly double Priority;
 
-        public readonly string ParameterValues;
+        public readonly IReadOnlyList<VariableValue> ParameterValues;
 
-        public ScheduledEvent(Vertex target, double time, double priority, string parameterValues)
+        public ScheduledEvent(Vertex target, double time, double priority, IReadOnlyList<VariableValue> parameterValues)
         {
             Time = time;
             Target = target;

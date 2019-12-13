@@ -24,11 +24,13 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System;
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
 namespace TEGS
 {
-    public struct VariableValue
+    public struct VariableValue : IEquatable<VariableValue>
     {
         public readonly VariableValueType Type;
 
@@ -83,6 +85,36 @@ namespace TEGS
                 default:
                     return _objectValue?.ToString();
             }
+        }
+
+        public bool Equals(VariableValue other)
+        {
+            if (Type == other.Type)
+            {
+                switch (Type)
+                {
+                    case VariableValueType.Boolean:
+                        return _value.BooleanValue == other._value.BooleanValue;
+                    case VariableValueType.Integer:
+                        return _value.IntegerValue == other._value.IntegerValue;
+                    case VariableValueType.Double:
+                        return _value.DoubleValue == other._value.DoubleValue;
+                    default:
+                        return _objectValue == other._objectValue;
+                }
+            }
+
+            return false;
+        }
+
+        public static bool operator ==(VariableValue a, VariableValue b)
+        {
+            return a.Equals(b);
+        }
+
+        public static bool operator !=(VariableValue a, VariableValue b)
+        {
+            return a.Equals(b);
         }
     }
 

@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
@@ -44,7 +45,7 @@ namespace TEGS.Test
             SimulationArgs args = new SimulationArgs(TestGraph.Carwash, GetScriptingHost())
             {
                 StartingSeed = 12345,
-                StartParameters = "5, 3",
+                StartParameterExpressions = new List<string>(){"5","3"},
                 StopCondition = StopCondition.StopAfterMaxTime(500),
             };
 
@@ -58,7 +59,7 @@ namespace TEGS.Test
             SimulationArgs args = new SimulationArgs(TestGraph.Carwash, GetScriptingHost())
             {
                 StartingSeed = 12345,
-                StartParameters = "5, 3",
+                StartParameterExpressions = new List<string>(){"5","3"},
                 StopCondition = StopCondition.StopAfterMaxTime(500),
             };
 
@@ -76,7 +77,7 @@ namespace TEGS.Test
             SimulationArgs args = new SimulationArgs(TestGraph.Carwash, GetScriptingHost())
             {
                 StartingSeed = 12345,
-                StartParameters = "5, 3",
+                StartParameterExpressions = new List<string>(){"5","3"},
                 StopCondition = StopCondition.StopAfterMaxTime(10000),
             };
 
@@ -105,7 +106,7 @@ namespace TEGS.Test
             SimulationArgs args = new SimulationArgs(TestGraph.Carwash, GetScriptingHost())
             {
                 StartingSeed = 12345,
-                StartParameters = "5, 3",
+                StartParameterExpressions = new List<string>(){"5","3"},
                 StopCondition = StopCondition.StopAfterMaxTime(500),
             };
 
@@ -126,7 +127,7 @@ namespace TEGS.Test
             SimulationArgs args = new SimulationArgs(TestGraph.Carwash, GetScriptingHost())
             {
                 StartingSeed = 12345,
-                StartParameters = "5, 3",
+                StartParameterExpressions = new List<string>(){"5","3"},
                 StopCondition = StopCondition.StopAfterMaxTime(500),
             };
 
@@ -156,7 +157,7 @@ namespace TEGS.Test
             SimulationArgs args = new SimulationArgs(TestGraph.Carwash, GetScriptingHost())
             {
                 StartingSeed = 12345,
-                StartParameters = "5, 3",
+                StartParameterExpressions = new List<string>(){"5","3"},
                 StopCondition = StopCondition.StopAfterMaxTime(500)
             };
 
@@ -202,7 +203,7 @@ namespace TEGS.Test
             SimulationArgs args = new SimulationArgs(TestGraph.Breakdown, GetScriptingHost())
             {
                 StartingSeed = 12345,
-                StartParameters = "0",
+                StartParameterExpressions = new List<string>() { "0" },
                 StopCondition = StopCondition.StopAfterMaxTime(500),
             };
 

@@ -88,24 +88,8 @@ namespace TEGS
         }
         private string _code = "";
 
-        public string Parameters
-        {
-            get
-            {
-                if (null == ParameterNames)
-                {
-                    return "";
-                }
-
-                return string.Join(", ", ParameterNames);
-            }
-            set
-            {
-                ParameterNames = value?.Split(new char[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries);
-            }
-        }
-
-        public string[] ParameterNames { get; private set; }
+        public IReadOnlyList<string> ParameterNames => _parameterNames;
+        private List<string> _parameterNames = new List<string>();
 
         public bool IsStartingVertex { get; set; }
 
@@ -132,6 +116,27 @@ namespace TEGS
             Graph = graph ?? throw new ArgumentNullException(nameof(graph));
             Name = name;
             IsStartingVertex = isStartingVertex;
+        }
+
+        public void AddParameter(string name)
+        {
+            name = name ?? throw new ArgumentNullException(name);
+
+            name = name.Trim();
+            _parameterNames.Add(name);
+        }
+
+        public void RemoveParameter(string name)
+        {
+            name = name ?? throw new ArgumentNullException(name);
+
+            name = name.Trim();
+            _parameterNames.Remove(name);
+        }
+
+        public void RemoveParameterAt(int index)
+        {
+            _parameterNames.RemoveAt(index);
         }
 
         public override string ToString()

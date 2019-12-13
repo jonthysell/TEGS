@@ -206,6 +206,8 @@ namespace TEGS
             Dictionary<int, Vertex> verticies = new Dictionary<int, Vertex>();
             Dictionary<int, Edge> edges = new Dictionary<int, Edge>();
 
+            object lastItem = null;
+
             using (XmlReader xmlReader = XmlReader.Create(inputStream))
             {
                 while (xmlReader.Read())
@@ -234,8 +236,7 @@ namespace TEGS
                             Vertex vertex = new Vertex(graph, name, isStartingVertex)
                             {
                                 Description = xmlReader.GetAttribute("description"),
-                                Code = xmlReader.GetAttribute("code"),
-                                Parameters = xmlReader.GetAttribute("parameters")
+                                Code = xmlReader.GetAttribute("code")
                             };
 
                             if (int.TryParse(xmlReader.GetAttribute("x"), out int x))
@@ -249,6 +250,13 @@ namespace TEGS
                             }
 
                             verticies.Add(id, vertex);
+
+                            lastItem = vertex;
+                        }
+                        else if (xmlReader.Name == "parameter" && lastItem is Vertex lastVertex)
+                        {
+                            string name = xmlReader.GetAttribute("name");
+                            lastVertex.AddParameter(name);
                         }
                         else if (xmlReader.Name == "edge")
                         {
@@ -264,11 +272,21 @@ namespace TEGS
                                 Description = xmlReader.GetAttribute("description"),
                                 Condition = xmlReader.GetAttribute("condition"),
                                 Delay = xmlReader.GetAttribute("delay"),
-                                Priority = xmlReader.GetAttribute("priority"),
-                                Parameters = xmlReader.GetAttribute("parameters")
+                                Priority = xmlReader.GetAttribute("priority")
                             };
 
                             edges.Add(id, edge);
+
+                            lastItem = edge;
+                        }
+                        else if (xmlReader.Name == "parameter" && lastItem is Edge lastEdge)
+                        {
+                            string expression = xmlReader.GetAttribute("expression");
+                            lastEdge.AddParameter(expression);
+                        }
+                        else
+                        {
+                            lastItem = null;
                         }
                     }
                 }
@@ -329,7 +347,6 @@ namespace TEGS
                     xmlWriter.WriteAttributeString("name", _verticies[i].Name);
                     xmlWriter.WriteAttributeString("description", _verticies[i].Description);
                     xmlWriter.WriteAttributeString("code", _verticies[i].Code);
-                    xmlWriter.WriteAttributeString("parameters", _verticies[i].Parameters);
 
                     xmlWriter.WriteAttributeString("x", _verticies[i].X.ToString());
                     xmlWriter.WriteAttributeString("y", _verticies[i].Y.ToString());
@@ -337,6 +354,16 @@ namespace TEGS
                     if (_verticies[i].IsStartingVertex)
                     {
                         xmlWriter.WriteAttributeString("starting", _verticies[i].IsStartingVertex.ToString());
+                    }
+
+                    if (_verticies[i].ParameterNames.Count > 0)
+                    {
+                        for (int j = 0; j < _verticies[i].ParameterNames.Count; j++)
+                        {
+                            xmlWriter.WriteStartElement("parameter");
+                            xmlWriter.WriteAttributeString("name", _verticies[i].ParameterNames[j]);
+                            xmlWriter.WriteEndElement();
+                        }
                     }
 
                     xmlWriter.WriteEndElement();
@@ -361,7 +388,16 @@ namespace TEGS
                     xmlWriter.WriteAttributeString("condition", _edges[i].Condition);
                     xmlWriter.WriteAttributeString("delay", _edges[i].Delay);
                     xmlWriter.WriteAttributeString("priority", _edges[i].Priority);
-                    xmlWriter.WriteAttributeString("parameters", _edges[i].Parameters);
+
+                    if (_edges[i].ParameterExpressions.Count > 0)
+                    {
+                        for (int j = 0; j < _edges[i].ParameterExpressions.Count; j++)
+                        {
+                            xmlWriter.WriteStartElement("parameter");
+                            xmlWriter.WriteAttributeString("expression", _edges[i].ParameterExpressions[j]);
+                            xmlWriter.WriteEndElement();
+                        }
+                    }
 
                     xmlWriter.WriteEndElement();
                 }

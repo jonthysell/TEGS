@@ -293,75 +293,6 @@ namespace TEGS.Lua
 
         #endregion
 
-        #region Parameters
-
-        public override void AssignParameters(string lhs, string rhs)
-        {
-            if (null != rhs && (rhs = rhs.Trim()).StartsWith(ParamPrefix))
-            {
-                // RHS is a temporary param table
-
-                // Unpack RHS and assign to LHS
-                Assign(lhs, string.Format("table.unpack({0})", rhs));
-
-                // Delete the temporary param table
-                Assign(rhs, null);
-            }
-            else
-            {
-                // RHS is either null or not a temporary param table
-                Assign(lhs, rhs);
-            }
-        }
-
-        public override string EvaluateParameters(string parameters)
-        {
-            if (string.IsNullOrEmpty(parameters))
-            {
-                return null;
-            }
-
-            // Evaluate the parameters by assigning them to a temporary param table
-            string lhs = string.Format("{0}{1}", ParamPrefix, _paramCount++);
-            string rhs = string.Format(ParamWrapInTable, parameters.Trim());
-            Assign(lhs, rhs);
-
-            // Return the name of the the temporary param table
-            return lhs;
-        }
-
-        public override bool CompareParameters(string a, string b)
-        {
-            // Trim if necessary
-            a = a?.Trim();
-            b = b?.Trim();
-
-            if (a == b)
-            {
-                // Quick compare
-                return true;
-            }
-            else if (string.IsNullOrEmpty(a) && string.IsNullOrEmpty(b))
-            {
-                // Null/empty string compare
-                return true;
-            }
-
-            if (!string.IsNullOrWhiteSpace(a) && !string.IsNullOrWhiteSpace(b))
-            {
-                // Both have valid values, pack into table if necessary
-
-                a = a.StartsWith(ParamPrefix) ? a : string.Format(ParamWrapInTable, a);
-                b = b.StartsWith(ParamPrefix) ? b : string.Format(ParamWrapInTable, b);
-
-                return Evaluate(string.Format("t_comparetables({0}, {1})", a, b)).Boolean;
-            }
-
-            return false;
-        }
-
-        #endregion
-
         #region Seed
 
         public override void SetSeed(int value)
@@ -370,9 +301,5 @@ namespace TEGS.Lua
         }
 
         #endregion
-
-        private const string ParamPrefix = @"t_param";
-
-        private const string ParamWrapInTable = @"{{ {0} }}";
     }
 }

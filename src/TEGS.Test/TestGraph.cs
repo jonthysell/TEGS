@@ -47,7 +47,8 @@ namespace TEGS.Test
 
                     Vertex run = g.AddVertex("RUN", true);
                     run.Description = "The simulation run is started";
-                    run.Parameters = "QUEUE, SERVERS";
+                    run.AddParameter("QUEUE");
+                    run.AddParameter("SERVERS");
 
                     Vertex enter = g.AddVertex("ENTER");
                     enter.Description = "Cars enter the line";
@@ -110,7 +111,7 @@ namespace TEGS.Test
 
                     Vertex run = g.AddVertex("RUN", true);
                     run.Description = "The simulation has started";
-                    run.Parameters = "QUEUE";
+                    run.AddParameter("QUEUE");
                     run.Code = "SERVER = 1";
 
                     Vertex enter = g.AddVertex("ENTER");
@@ -149,7 +150,7 @@ namespace TEGS.Test
 
                     Edge enter_start = g.AddEdge(enter, start);
                     enter_start.Description = "Start service";
-                    enter_start.Condition = "SERVERS > 0";
+                    enter_start.Condition = "SERVER > 0";
                     enter_start.Priority = "5";
 
                     Edge start_leave = g.AddEdge(start, leave);

@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
 using System.Text;
 
 namespace Carwash
@@ -45,6 +46,8 @@ namespace Carwash
         {
             var simArgs = new SimulationArgs();
 
+            List<int> startValues = new List<int>();
+
             for (int i = 0; i < args.Length - 1; i++)
             {
                 switch (args[i].ToLower())
@@ -52,14 +55,8 @@ namespace Carwash
                     case "--seed":
                         simArgs.Seed = int.Parse(args[++i]);
                         break;
-                    case "--start-parameters":
-                        string[] split = args[++i].Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
-                        int[] vals = new int[split.Length];
-                        for (int j = 0; j < split.Length; j++)
-                        {
-                            vals[j] = int.Parse(split[j]);
-                        }
-                        simArgs.ParameterValues = vals;
+                    case "--start-parameter":
+                        startValues.Add(int.Parse(args[++i]));
                         break;
                     case "--stop-time":
                         simArgs.StopCondition.MaxTime = double.Parse(args[++i]);
@@ -68,6 +65,8 @@ namespace Carwash
                         throw new Exception($"Did not recognize option \"{args[i]}\"");
                 }
             }
+
+            simArgs.ParameterValues = startValues.ToArray();
 
             return simArgs;
         }

@@ -85,11 +85,13 @@ namespace TEGS
 
         public event EdgeFiredEventHandler EdgeFired;
 
+        private Dictionary<Vertex, IReadOnlyList<StateVariable>> _vertexToParameterCache = new Dictionary<Vertex, IReadOnlyList<StateVariable>>();
+
         public Simulation(SimulationArgs args)
         {
             Args = args ?? throw new ArgumentNullException(nameof(args));
 
-            Schedule = new Schedule(Graph, ScriptingHost.CompareParameters);
+            Schedule = new Schedule(Graph);
 
             InitDelegates();
         }
@@ -190,7 +192,7 @@ namespace TEGS
             Clock = Schedule.MinTime;
 
             // Insert starting event
-            Schedule.Insert(Graph.StartingVertex, Schedule.DefaultDelay, Schedule.DefaultPriority, ScriptingHost.EvaluateParameters(Args.StartParameters));
+            Schedule.Insert(Graph.StartingVertex, Schedule.DefaultDelay, Schedule.DefaultPriority, EvaluateParameters(Graph.StartingVertex, Args.StartParameterExpressions));
         }
 
         private void InternalStep()
@@ -204,7 +206,7 @@ namespace TEGS
             Clock = nextEvent.Time;
 
             // Assign parameters
-            ScriptingHost.AssignParameters(nextEvent.Target.Parameters, nextEvent.ParameterValues);
+            AssignParameters(nextEvent.Target, nextEvent.ParameterValues);
 
             // Execute event
             ScriptingHost.Execute(nextEvent.Target.Code);
@@ -223,7 +225,7 @@ namespace TEGS
                     OnEdgeFiring(edge);
 
                     // Evaluate parameters
-                    string parameterValues = ScriptingHost.EvaluateParameters(edge.Parameters);
+                    IReadOnlyList<VariableValue> parameterValues = EvaluateParameters(edge.Target, edge.ParameterExpressions);
 
                     switch (edge.Action)
                     {
@@ -291,6 +293,65 @@ namespace TEGS
         private void OnEdgeFired(Edge edge)
         {
             EdgeFired?.Invoke(this, new EdgeEventArgs(Clock ,edge));
+        }
+
+        private IReadOnlyList<StateVariable> GetStateVariables(Vertex target)
+        {
+            if (!_vertexToParameterCache.TryGetValue(target, out IReadOnlyList<StateVariable> stateVariables))
+            {
+                if (target.ParameterNames.Count == 0)
+                {
+                    stateVariables = null;
+                }
+                else
+                {
+                    List<StateVariable> parameters = new List<StateVariable>();
+                    foreach (string parameterName in target.ParameterNames)
+                    {
+                        parameters.Add(Graph.StateVariables[parameterName]);
+                    }
+                    stateVariables = parameters;
+                }
+
+                _vertexToParameterCache[target] = stateVariables;
+            }
+
+            return stateVariables;
+        }
+
+        private void AssignParameters(Vertex target, IReadOnlyList<VariableValue> parameterValues)
+        {
+            if (null != parameterValues)
+            {
+                IReadOnlyList<StateVariable> stateVariables = GetStateVariables(target);
+
+                if (null != stateVariables)
+                {
+                    ScriptingHost.Assign(stateVariables, parameterValues);
+                }
+            }
+        }
+
+        private IReadOnlyList<VariableValue> EvaluateParameters(Vertex target, IReadOnlyList<string> parameterExpressions)
+        {
+            if (null != parameterExpressions)
+            {
+                IReadOnlyList<StateVariable> stateVariables = GetStateVariables(target);
+
+                if (null != stateVariables)
+                {
+                    List<VariableValue> values = new List<VariableValue>();
+
+                    for (int i = 0; i < stateVariables.Count; i++)
+                    {
+                        values.Add(ScriptingHost.Evaluate(parameterExpressions[i], stateVariables[i].Type));
+                    }
+
+                    return values;
+                }
+            }
+
+            return null;
         }
     }
 

@@ -115,6 +115,29 @@ namespace TEGS
             return false;
         }
 
+        public void Assign(IReadOnlyList<StateVariable> stateVariables, IReadOnlyList<VariableValue> values)
+        {
+            if (null == stateVariables)
+            {
+                throw new ArgumentNullException(nameof(stateVariables));
+            }
+
+            if (null == values)
+            {
+                throw new ArgumentNullException(nameof(values));
+            }
+
+            if (stateVariables.Count != values.Count)
+            {
+                throw new ArgumentOutOfRangeException(nameof(values));
+            }
+
+            for (int i = 0; i < stateVariables.Count; i++)
+            {
+                Assign(stateVariables[i], values[i]);
+            }
+        }
+
         protected abstract void AssignInternal(StateVariable stateVariable, VariableValue value);
 
         #endregion
@@ -196,16 +219,6 @@ namespace TEGS
         #region Delegates
 
         public abstract void AssignDelegate(string name, Delegate @delegate);
-
-        #endregion
-
-        #region Parameters
-
-        public abstract void AssignParameters(string lhs, string rhs);
-
-        public abstract string EvaluateParameters(string parameters);
-
-        public abstract bool CompareParameters(string a, string b);
 
         #endregion
 

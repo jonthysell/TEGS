@@ -5,23 +5,25 @@
     <variable name="SERVER" type="Integer" />
   </variables>
   <verticies>
-    <vertex id="0" name="RUN" description="The simulation has started" code="SERVER = 1" parameters="QUEUE" x="0" y="0" starting="True" />
-    <vertex id="1" name="ENTER" description="Arrival of a job" code="QUEUE = QUEUE + 1" parameters="" x="0" y="0" />
-    <vertex id="2" name="START" description="Start of Service" code="SERVER = 0&#xD;&#xA;QUEUE = QUEUE - 1" parameters="" x="0" y="0" />
-    <vertex id="3" name="LEAVE" description="End of Service" code="SERVER = 1" parameters="" x="0" y="0" />
-    <vertex id="4" name="FIX" description="Completion of repair on the machine" code="SERVER = 1" parameters="" x="0" y="0" />
-    <vertex id="5" name="FAIL" description="The occurrence of a service failure" code="SERVER = -1" parameters="" x="0" y="0" />
+    <vertex id="0" name="RUN" description="The simulation has started" code="SERVER = 1" x="0" y="0" starting="True">
+      <parameter name="QUEUE" />
+    </vertex>
+    <vertex id="1" name="ENTER" description="Arrival of a job" code="QUEUE = QUEUE + 1" x="0" y="0" />
+    <vertex id="2" name="START" description="Start of Service" code="SERVER = 0&#xD;&#xA;QUEUE = QUEUE - 1" x="0" y="0" />
+    <vertex id="3" name="LEAVE" description="End of Service" code="SERVER = 1" x="0" y="0" />
+    <vertex id="4" name="FIX" description="Completion of repair on the machine" code="SERVER = 1" x="0" y="0" />
+    <vertex id="5" name="FAIL" description="The occurrence of a service failure" code="SERVER = -1" x="0" y="0" />
   </verticies>
   <edges>
-    <edge id="0" source="0" target="1" action="Schedule" description="Initiate the first job arrival" condition="" delay="" priority="5" parameters="" />
-    <edge id="1" source="0" target="5" action="Schedule" description="Schedule the first machine breakdown" condition="" delay="t_expovariate(1/15)" priority="4" parameters="" />
-    <edge id="2" source="1" target="1" action="Schedule" description="Schedule the next arrival" condition="" delay="t_expovariate(1/6)" priority="6" parameters="" />
-    <edge id="3" source="1" target="2" action="Schedule" description="Start service" condition="SERVERS &gt; 0" delay="" priority="5" parameters="" />
-    <edge id="4" source="2" target="3" action="Schedule" description="The job is placed in service for 2 minutes" condition="" delay="2" priority="6" parameters="" />
-    <edge id="5" source="3" target="2" action="Schedule" description="Start servicing the waiting job" condition="QUEUE &gt; 0" delay="" priority="5" parameters="" />
-    <edge id="6" source="5" target="4" action="Schedule" description="After 30 minutes the machine will be fixed" condition="" delay="30" priority="6" parameters="" />
-    <edge id="7" source="5" target="3" action="CancelNext" description="" condition="" delay="" priority="5" parameters="" />
-    <edge id="8" source="4" target="5" action="Schedule" description="Schedule the next machine failure" condition="" delay="t_expovariate(1/15)" priority="4" parameters="" />
-    <edge id="9" source="4" target="2" action="Schedule" description="" condition="QUEUE &gt; 0" delay="" priority="5" parameters="" />
+    <edge id="0" source="0" target="1" action="Schedule" description="Initiate the first job arrival" condition="" delay="" priority="5" />
+    <edge id="1" source="0" target="5" action="Schedule" description="Schedule the first machine breakdown" condition="" delay="t_expovariate(1/15)" priority="4" />
+    <edge id="2" source="1" target="1" action="Schedule" description="Schedule the next arrival" condition="" delay="t_expovariate(1/6)" priority="6" />
+    <edge id="3" source="1" target="2" action="Schedule" description="Start service" condition="SERVER &gt; 0" delay="" priority="5" />
+    <edge id="4" source="2" target="3" action="Schedule" description="The job is placed in service for 2 minutes" condition="" delay="2" priority="6" />
+    <edge id="5" source="3" target="2" action="Schedule" description="Start servicing the waiting job" condition="QUEUE &gt; 0" delay="" priority="5" />
+    <edge id="6" source="5" target="4" action="Schedule" description="After 30 minutes the machine will be fixed" condition="" delay="30" priority="6" />
+    <edge id="7" source="5" target="3" action="CancelNext" description="" condition="" delay="" priority="5" />
+    <edge id="8" source="4" target="5" action="Schedule" description="Schedule the next machine failure" condition="" delay="t_expovariate(1/15)" priority="4" />
+    <edge id="9" source="4" target="2" action="Schedule" description="" condition="QUEUE &gt; 0" delay="" priority="5" />
   </edges>
 </graph>
