@@ -4,7 +4,7 @@
 // Author:
 //       Jon Thysell <thysell@gmail.com>
 // 
-// Copyright (c) 2019 Jon Thysell <http://jonthysell.com>
+// Copyright (c) 2019, 2020 Jon Thysell <http://jonthysell.com>
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -32,8 +32,6 @@ using System.Threading.Tasks;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-using TEGS.Lua;
-
 namespace TEGS.Test
 {
     [TestClass]
@@ -42,10 +40,10 @@ namespace TEGS.Test
         [TestMethod]
         public void Simulation_NewTest()
         {
-            SimulationArgs args = new SimulationArgs(TestGraph.Carwash, GetScriptingHost())
+            SimulationArgs args = new SimulationArgs(TestGraph.Carwash)
             {
                 StartingSeed = 12345,
-                StartParameterExpressions = new List<string>(){"5","3"},
+                StartParameterExpressions = new List<string>() { "5", "3" },
                 StopCondition = StopCondition.StopAfterMaxTime(500),
             };
 
@@ -56,10 +54,10 @@ namespace TEGS.Test
         [TestMethod]
         public void Simulation_RunTest()
         {
-            SimulationArgs args = new SimulationArgs(TestGraph.Carwash, GetScriptingHost())
+            SimulationArgs args = new SimulationArgs(TestGraph.Carwash)
             {
                 StartingSeed = 12345,
-                StartParameterExpressions = new List<string>(){"5","3"},
+                StartParameterExpressions = new List<string>() { "5", "3" },
                 StopCondition = StopCondition.StopAfterMaxTime(500),
             };
 
@@ -74,10 +72,10 @@ namespace TEGS.Test
         [TestMethod]
         public void Simulation_PauseTest()
         {
-            SimulationArgs args = new SimulationArgs(TestGraph.Carwash, GetScriptingHost())
+            SimulationArgs args = new SimulationArgs(TestGraph.Carwash)
             {
                 StartingSeed = 12345,
-                StartParameterExpressions = new List<string>(){"5","3"},
+                StartParameterExpressions = new List<string>() { "5", "3" },
                 StopCondition = StopCondition.StopAfterMaxTime(10000),
             };
 
@@ -103,10 +101,10 @@ namespace TEGS.Test
         [TestMethod]
         public void Simulation_StepTest()
         {
-            SimulationArgs args = new SimulationArgs(TestGraph.Carwash, GetScriptingHost())
+            SimulationArgs args = new SimulationArgs(TestGraph.Carwash)
             {
                 StartingSeed = 12345,
-                StartParameterExpressions = new List<string>(){"5","3"},
+                StartParameterExpressions = new List<string>() { "5", "3" },
                 StopCondition = StopCondition.StopAfterMaxTime(500),
             };
 
@@ -124,10 +122,10 @@ namespace TEGS.Test
         [TestMethod]
         public void Simulation_BasicTraceTest()
         {
-            SimulationArgs args = new SimulationArgs(TestGraph.Carwash, GetScriptingHost())
+            SimulationArgs args = new SimulationArgs(TestGraph.Carwash)
             {
                 StartingSeed = 12345,
-                StartParameterExpressions = new List<string>(){"5","3"},
+                StartParameterExpressions = new List<string>() { "5", "3" },
                 StopCondition = StopCondition.StopAfterMaxTime(500),
             };
 
@@ -154,10 +152,10 @@ namespace TEGS.Test
         [TestMethod]
         public void Simulation_CompleteTraceTest()
         {
-            SimulationArgs args = new SimulationArgs(TestGraph.Carwash, GetScriptingHost())
+            SimulationArgs args = new SimulationArgs(TestGraph.Carwash)
             {
                 StartingSeed = 12345,
-                StartParameterExpressions = new List<string>(){"5","3"},
+                StartParameterExpressions = new List<string>() { "5", "3" },
                 StopCondition = StopCondition.StopAfterMaxTime(500)
             };
 
@@ -200,7 +198,7 @@ namespace TEGS.Test
         [TestMethod]
         public void Simulation_RunWithCancelNextTest()
         {
-            SimulationArgs args = new SimulationArgs(TestGraph.Breakdown, GetScriptingHost())
+            SimulationArgs args = new SimulationArgs(TestGraph.Breakdown)
             {
                 StartingSeed = 12345,
                 StartParameterExpressions = new List<string>() { "0" },
@@ -213,11 +211,6 @@ namespace TEGS.Test
             s.Run();
 
             Assert.AreEqual(SimulationState.Complete, s.State);
-        }
-
-        private static ScriptingHost GetScriptingHost()
-        {
-            return new LuaScriptingHost();
         }
     }
 }

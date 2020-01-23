@@ -1,10 +1,10 @@
 ﻿// 
-// ProgramArgs.cs
+// IContext.cs
 //  
 // Author:
 //       Jon Thysell <thysell@gmail.com>
 // 
-// Copyright (c) 2019, 2020 Jon Thysell <http://jonthysell.com>
+// Copyright (c) 2020 Jon Thysell <http://jonthysell.com>
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,21 +24,16 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System.IO;
+// Adapted from https://medium.com/@toptensoftware/writing-a-simple-math-expression-engine-in-c-d414de18d4ce
 
-namespace TEGS.Run
+namespace TEGS.Expressions
 {
-    class ProgramArgs
+    public interface IContext
     {
-        public SimulationArgs SimulationArgs { get; private set; }
+        VariableValue GetVariable(string name);
 
-        public bool ShowOutput { get; set; } = false;
+        void SetVariable(string name, VariableValue value);
 
-        public StreamWriter OutputWriter { get; set; } = null;
-
-        public ProgramArgs(Graph graph)
-        {
-            SimulationArgs = new SimulationArgs(graph);
-        }
+        VariableValue CallFunction(string name, VariableValue[] arguments);
     }
 }

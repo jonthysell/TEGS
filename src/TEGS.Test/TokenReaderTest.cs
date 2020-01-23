@@ -1,10 +1,10 @@
 ﻿// 
-// ProgramArgs.cs
+// TokenReaderTest.cs
 //  
 // Author:
 //       Jon Thysell <thysell@gmail.com>
 // 
-// Copyright (c) 2019, 2020 Jon Thysell <http://jonthysell.com>
+// Copyright (c) 2020 Jon Thysell <http://jonthysell.com>
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,21 +24,41 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System.IO;
+using System;
+using System.Collections.Generic;
 
-namespace TEGS.Run
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+
+using TEGS.Expressions;
+
+namespace TEGS.Test
 {
-    class ProgramArgs
+    [TestClass]
+    public class TokenReaderTest
     {
-        public SimulationArgs SimulationArgs { get; private set; }
+        [TestMethod]
+        public void TokenReader_EmptyValidTest() => TokenReader_ValidTest("", new TokenType[] { TokenType.End });
 
-        public bool ShowOutput { get; set; } = false;
+        [TestMethod]
+        public void TokenReader_WhiteSpaceValidTest() => TokenReader_ValidTest(" ", new TokenType[] { TokenType.End });
 
-        public StreamWriter OutputWriter { get; set; } = null;
-
-        public ProgramArgs(Graph graph)
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void TokenReader_NullInvalidTest()
         {
-            SimulationArgs = new SimulationArgs(graph);
+            TokenReader tr = new TokenReader(null);
+        }
+
+        private void TokenReader_ValidTest(string expression, IEnumerable<TokenType> expectedTokens)
+        {
+            TokenReader tr = new TokenReader(expression);
+            Assert.IsNotNull(tr);
+
+            foreach (TokenType expectedToken in expectedTokens)
+            {
+                Assert.AreEqual(expectedToken, tr.CurrentToken);
+                tr.ReadNext();
+            }
         }
     }
 }

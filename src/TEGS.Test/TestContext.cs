@@ -1,10 +1,10 @@
 ﻿// 
-// TableExtensions.cs
+// TestContext.cs
 //  
 // Author:
 //       Jon Thysell <thysell@gmail.com>
 // 
-// Copyright (c) 2019 Jon Thysell <http://jonthysell.com>
+// Copyright (c) 2020 Jon Thysell <http://jonthysell.com>
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,15 +24,22 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using MoonSharp.Interpreter;
+using System.Collections.Generic;
 
-namespace TEGS.Lua
+using TEGS.Expressions;
+
+namespace TEGS.Test
 {
-    static class TableExtensions
+    public class TestContext : IContext
     {
-        public static bool HasKey(this Table table, string key)
-        {
-            return null != table.RawGet(key);
-        }
+        public Dictionary<string, VariableValue> Variables { get; private set; } = new Dictionary<string, VariableValue>();
+
+        public Dictionary<string, CustomFunction> Functions { get; private set; } = new Dictionary<string, CustomFunction>();
+
+        public VariableValue GetVariable(string name) => Variables[name];
+
+        public void SetVariable(string name, VariableValue value) => Variables[name] = value;
+
+        public VariableValue CallFunction(string name, VariableValue[] arguments) => Functions[name](arguments);
     }
 }

@@ -11,12 +11,15 @@
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)DebugLogger.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Edge.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Expressions\IContext.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graph.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Lua\LuaScriptingHost.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Lua\TableExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)RandomExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Expressions\Node.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Schedule.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ScheduledEvent.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ScriptingHost.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Expressions\Parser.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Expressions\TokenReader.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Simulation.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SimulationArgs.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)TraceExpression.cs" />
@@ -31,9 +34,5 @@
     <Compile Include="$(MSBuildThisFileDirectory)UI\ObservableGraph.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)UI\ObservableVertex.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Vertex.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Lua\Scripts\Utility.lua" />
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Lua\Scripts\Variates.lua" />
   </ItemGroup>
 </Project>

@@ -4,7 +4,7 @@
 // Author:
 //       Jon Thysell <thysell@gmail.com>
 // 
-// Copyright (c) 2019 Jon Thysell <http://jonthysell.com>
+// Copyright (c) 2019, 2020 Jon Thysell <http://jonthysell.com>
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -25,7 +25,6 @@
 // THE SOFTWARE.
 
 using System;
-using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
 namespace TEGS
@@ -72,6 +71,21 @@ namespace TEGS
             _objectValue = value;
         }
 
+        public double AsDouble()
+        {
+            switch (Type)
+            {
+                case VariableValueType.Boolean:
+                    return Convert.ToDouble(_value.BooleanValue);
+                case VariableValueType.Integer:
+                    return _value.IntegerValue;
+                case VariableValueType.Double:
+                    return _value.DoubleValue;
+                default:
+                    return Convert.ToDouble(_objectValue);
+            }
+        }
+
         public override string ToString()
         {
             switch (Type)
@@ -114,7 +128,156 @@ namespace TEGS
 
         public static bool operator !=(VariableValue a, VariableValue b)
         {
-            return a.Equals(b);
+            return !a.Equals(b);
+        }
+
+        public static VariableValue operator -(VariableValue a)
+        {
+            switch (a.Type)
+            {
+                case VariableValueType.Integer:
+                    return new VariableValue(-a.IntegerValue);
+                case VariableValueType.Double:
+                    return new VariableValue(-a.DoubleValue);
+            }
+
+            throw new ArithmeticException();
+        }
+
+        public static VariableValue operator +(VariableValue a, VariableValue b)
+        {
+            if (a.Type == VariableValueType.Integer && b.Type == VariableValueType.Integer)
+            {
+                return new VariableValue(a.IntegerValue + b.IntegerValue);
+            }
+            else if (a.Type == VariableValueType.Double && b.Type == VariableValueType.Double)
+            {
+                return new VariableValue(a.DoubleValue + b.DoubleValue);
+            }
+            else if (a.Type == VariableValueType.String && b.Type == VariableValueType.String)
+            {
+                return new VariableValue(a.StringValue + b.StringValue);
+            }
+            else if (a.Type == VariableValueType.Integer && b.Type == VariableValueType.Double)
+            {
+                return new VariableValue(a.AsDouble() + b.DoubleValue);
+            }
+            else if (a.Type == VariableValueType.Double && b.Type == VariableValueType.Integer)
+            {
+                return new VariableValue(a.DoubleValue + b.AsDouble());
+            }
+
+            throw new ArithmeticException();
+        }
+
+        public static VariableValue operator -(VariableValue a, VariableValue b)
+        {
+            if (a.Type == VariableValueType.Integer && b.Type == VariableValueType.Integer)
+            {
+                return new VariableValue(a.IntegerValue - b.IntegerValue);
+            }
+            else if (a.Type == VariableValueType.Double && b.Type == VariableValueType.Double)
+            {
+                return new VariableValue(a.DoubleValue - b.DoubleValue);
+            }
+            else if (a.Type == VariableValueType.Integer && b.Type == VariableValueType.Double)
+            {
+                return new VariableValue(a.AsDouble() - b.DoubleValue);
+            }
+            else if (a.Type == VariableValueType.Double && b.Type == VariableValueType.Integer)
+            {
+                return new VariableValue(a.DoubleValue - b.AsDouble());
+            }
+
+            throw new ArithmeticException();
+        }
+
+        public static VariableValue operator *(VariableValue a, VariableValue b)
+        {
+            if (a.Type == VariableValueType.Integer && b.Type == VariableValueType.Integer)
+            {
+                return new VariableValue(a.IntegerValue * b.IntegerValue);
+            }
+            else if (a.Type == VariableValueType.Double && b.Type == VariableValueType.Double)
+            {
+                return new VariableValue(a.DoubleValue * b.DoubleValue);
+            }
+            else if (a.Type == VariableValueType.Integer && b.Type == VariableValueType.Double)
+            {
+                return new VariableValue(a.AsDouble() * b.DoubleValue);
+            }
+            else if (a.Type == VariableValueType.Double && b.Type == VariableValueType.Integer)
+            {
+                return new VariableValue(a.DoubleValue * b.AsDouble());
+            }
+
+            throw new ArithmeticException();
+        }
+
+        public static VariableValue operator /(VariableValue a, VariableValue b)
+        {
+            if (a.Type == VariableValueType.Integer && b.Type == VariableValueType.Integer)
+            {
+                return new VariableValue(a.IntegerValue / b.IntegerValue);
+            }
+            else if (a.Type == VariableValueType.Double && b.Type == VariableValueType.Double)
+            {
+                return new VariableValue(a.DoubleValue / b.DoubleValue);
+            }
+            else if (a.Type == VariableValueType.Integer && b.Type == VariableValueType.Double)
+            {
+                return new VariableValue(a.AsDouble() / b.DoubleValue);
+            }
+            else if (a.Type == VariableValueType.Double && b.Type == VariableValueType.Integer)
+            {
+                return new VariableValue(a.DoubleValue / b.AsDouble());
+            }
+
+            throw new ArithmeticException();
+        }
+
+        public static bool operator <(VariableValue a, VariableValue b)
+        {
+            if (a.Type == VariableValueType.Integer && b.Type == VariableValueType.Integer)
+            {
+                return a.IntegerValue < b.IntegerValue;
+            }
+            else if (a.Type == VariableValueType.Double && b.Type == VariableValueType.Double)
+            {
+                return a.DoubleValue < b.DoubleValue;
+            }
+            else if (a.Type == VariableValueType.Integer && b.Type == VariableValueType.Double)
+            {
+                return a.AsDouble() < b.DoubleValue;
+            }
+            else if (a.Type == VariableValueType.Double && b.Type == VariableValueType.Integer)
+            {
+                return a.DoubleValue < b.AsDouble();
+            }
+
+            throw new ArithmeticException();
+        }
+
+        public static bool operator >(VariableValue a, VariableValue b)
+        {
+            if (a.Type == VariableValueType.Integer && b.Type == VariableValueType.Integer)
+            {
+                return a.IntegerValue > b.IntegerValue;
+            }
+            else if (a.Type == VariableValueType.Double && b.Type == VariableValueType.Double)
+            {
+                return a.DoubleValue > b.DoubleValue;
+            }
+            else if (a.Type == VariableValueType.Integer && b.Type == VariableValueType.Double)
+            {
+                return a.AsDouble() > b.DoubleValue;
+            }
+            else if (a.Type == VariableValueType.Double && b.Type == VariableValueType.Integer)
+            {
+                return a.DoubleValue > b.AsDouble();
+            }
+
+            throw new ArithmeticException();
         }
     }
 

@@ -4,7 +4,7 @@
 // Author:
 //       Jon Thysell <thysell@gmail.com>
 // 
-// Copyright (c) 2019 Jon Thysell <http://jonthysell.com>
+// Copyright (c) 2019, 2020 Jon Thysell <http://jonthysell.com>
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,21 +24,19 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
 
-using TEGS.Lua;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace TEGS.Test
 {
     [TestClass]
-    public class LuaScriptingHostTest : ScriptingHostTest<LuaScriptingHost> { }
-
-    public abstract class ScriptingHostTest<TScriptingHost> where TScriptingHost : ScriptingHost, new()
+    public class ScriptingHostTest
     {
         [TestMethod]
         public void ScriptingHost_NewTest()
         {
-            TScriptingHost host = new TScriptingHost();
+            ScriptingHost host = new ScriptingHost();
             Assert.IsNotNull(host);
         }
 
@@ -47,12 +45,12 @@ namespace TEGS.Test
         [TestMethod]
         public void ScriptingHost_ValidBooleanVariableTest()
         {
-            TScriptingHost host = new TScriptingHost();
+            ScriptingHost host = new ScriptingHost();
             Assert.IsNotNull(host);
 
-            bool[] test = { true, false };
+            bool[] expectedValues = ValidBooleans;
 
-            for (int i = 0; i < test.Length; i++)
+            for (int i = 0; i < expectedValues.Length; i++)
             {
                 StateVariable sv = new StateVariable($"test{i}", VariableValueType.Boolean);
                 host.Create(sv);
@@ -61,23 +59,23 @@ namespace TEGS.Test
                 Assert.AreEqual(VariableValueType.Boolean, defaultValue.Type);
                 Assert.AreEqual(default(bool), defaultValue.BooleanValue);
                 
-                host.Assign(sv, new VariableValue(test[i]));
+                host.Assign(sv, new VariableValue(expectedValues[i]));
 
-                VariableValue testValue = host.Get(sv);
-                Assert.AreEqual(VariableValueType.Boolean, testValue.Type);
-                Assert.AreEqual(test[i], testValue.BooleanValue);
+                VariableValue actualValue = host.Get(sv);
+                Assert.AreEqual(VariableValueType.Boolean, actualValue.Type);
+                Assert.AreEqual(expectedValues[i], actualValue.BooleanValue);
             }
         }
 
         [TestMethod]
         public void ScriptingHost_ValidIntegerVariableTest()
         {
-            TScriptingHost host = new TScriptingHost();
+            ScriptingHost host = new ScriptingHost();
             Assert.IsNotNull(host);
 
-            int[] test = { 0, 1, int.MinValue, int.MaxValue };
+            int[] expectedValues = ValidIntegers;
 
-            for (int i = 0; i < test.Length; i++)
+            for (int i = 0; i < expectedValues.Length; i++)
             {
                 StateVariable sv = new StateVariable($"test{i}", VariableValueType.Integer);
                 host.Create(sv);
@@ -86,23 +84,23 @@ namespace TEGS.Test
                 Assert.AreEqual(VariableValueType.Integer, defaultValue.Type);
                 Assert.AreEqual(default(int), defaultValue.IntegerValue);
 
-                host.Assign(sv, new VariableValue(test[i]));
+                host.Assign(sv, new VariableValue(expectedValues[i]));
 
-                VariableValue testValue = host.Get(sv);
-                Assert.AreEqual(VariableValueType.Integer, testValue.Type);
-                Assert.AreEqual(test[i], testValue.IntegerValue);
+                VariableValue actualValue = host.Get(sv);
+                Assert.AreEqual(VariableValueType.Integer, actualValue.Type);
+                Assert.AreEqual(expectedValues[i], actualValue.IntegerValue);
             }
         }
 
         [TestMethod]
         public void ScriptingHost_ValidDoubleVariableTest()
         {
-            TScriptingHost host = new TScriptingHost();
+            ScriptingHost host = new ScriptingHost();
             Assert.IsNotNull(host);
 
-            double[] test = { 0, 1, double.MinValue, double.MinValue };
+            double[] expectedValues = ValidDoubles;
 
-            for (int i = 0; i < test.Length; i++)
+            for (int i = 0; i < expectedValues.Length; i++)
             {
                 StateVariable sv = new StateVariable($"test{i}", VariableValueType.Double);
                 host.Create(sv);
@@ -111,23 +109,23 @@ namespace TEGS.Test
                 Assert.AreEqual(VariableValueType.Double, defaultValue.Type);
                 Assert.AreEqual(default(double), defaultValue.DoubleValue);
 
-                host.Assign(sv, new VariableValue(test[i]));
+                host.Assign(sv, new VariableValue(expectedValues[i]));
 
-                VariableValue testValue = host.Get(sv);
-                Assert.AreEqual(VariableValueType.Double, testValue.Type);
-                Assert.AreEqual(test[i], testValue.DoubleValue);
+                VariableValue actualValues = host.Get(sv);
+                Assert.AreEqual(VariableValueType.Double, actualValues.Type);
+                Assert.AreEqual(expectedValues[i], actualValues.DoubleValue);
             }
         }
 
         [TestMethod]
         public void ScriptingHost_ValidStringVariableTest()
         {
-            TScriptingHost host = new TScriptingHost();
+            ScriptingHost host = new ScriptingHost();
             Assert.IsNotNull(host);
 
-            string[] test = { null, "", "test" };
+            string[] expectedValues = ValidStrings;
 
-            for (int i = 0; i < test.Length; i++)
+            for (int i = 0; i < expectedValues.Length; i++)
             {
                 StateVariable sv = new StateVariable($"test{i}", VariableValueType.String);
                 host.Create(sv);
@@ -136,11 +134,11 @@ namespace TEGS.Test
                 Assert.AreEqual(VariableValueType.String, defaultValue.Type);
                 Assert.AreEqual(default(string), defaultValue.StringValue);
 
-                host.Assign(sv, new VariableValue(test[i]));
+                host.Assign(sv, new VariableValue(expectedValues[i]));
 
-                VariableValue testValue = host.Get(sv);
-                Assert.AreEqual(VariableValueType.String, testValue.Type);
-                Assert.AreEqual(test[i], testValue.StringValue);
+                VariableValue actualValue = host.Get(sv);
+                Assert.AreEqual(VariableValueType.String, actualValue.Type);
+                Assert.AreEqual(expectedValues[i], actualValue.StringValue);
             }
         }
 
@@ -151,7 +149,7 @@ namespace TEGS.Test
         [TestMethod]
         public void ScriptingHost_InvalidBooleanVariableTest()
         {
-            TScriptingHost host = new TScriptingHost();
+            ScriptingHost host = new ScriptingHost();
             Assert.IsNotNull(host);
 
             StateVariable sv = new StateVariable("test", VariableValueType.Boolean);
@@ -164,7 +162,7 @@ namespace TEGS.Test
         [TestMethod]
         public void ScriptingHost_InvalidIntegerVariableTest()
         {
-            TScriptingHost host = new TScriptingHost();
+            ScriptingHost host = new ScriptingHost();
             Assert.IsNotNull(host);
 
             StateVariable sv = new StateVariable("test", VariableValueType.Integer);
@@ -177,7 +175,7 @@ namespace TEGS.Test
         [TestMethod]
         public void ScriptingHost_InvalidDoubleVariableTest()
         {
-            TScriptingHost host = new TScriptingHost();
+            ScriptingHost host = new ScriptingHost();
             Assert.IsNotNull(host);
 
             StateVariable sv = new StateVariable("test", VariableValueType.Double);
@@ -190,7 +188,7 @@ namespace TEGS.Test
         [TestMethod]
         public void ScriptingHost_InvalidStringVariableTest()
         {
-            TScriptingHost host = new TScriptingHost();
+            ScriptingHost host = new ScriptingHost();
             Assert.IsNotNull(host);
 
             StateVariable sv = new StateVariable("test", VariableValueType.String);
@@ -201,5 +199,109 @@ namespace TEGS.Test
         }
 
         #endregion
+
+        #region Custom Function Tests
+
+        [TestMethod]
+        public void ScriptingHost_ValidNoParamsBooleanCustomFunctionTest()
+        {
+            ScriptingHost host = new ScriptingHost();
+            Assert.IsNotNull(host);
+
+            bool[] expectedValues = ValidBooleans;
+
+            for (int i = 0; i < expectedValues.Length; i++)
+            {
+                CustomFunction function = new CustomFunction((parameterValues) =>
+                {
+                    return new VariableValue(expectedValues[i]);
+                });
+
+                host.AddCustomFunction("test", function);
+                VariableValue actualValue = host.Evaluate("test()", VariableValueType.Boolean);
+
+                Assert.AreEqual(VariableValueType.Boolean, actualValue.Type);
+                Assert.AreEqual(expectedValues[i], actualValue.BooleanValue);
+            }
+        }
+
+        [TestMethod]
+        public void ScriptingHost_ValidNoParamsIntegerCustomFunctionTest()
+        {
+            ScriptingHost host = new ScriptingHost();
+            Assert.IsNotNull(host);
+
+            int[] expectedValues = ValidIntegers;
+
+            for (int i = 0; i < expectedValues.Length; i++)
+            {
+                CustomFunction function = new CustomFunction((parameterValues) =>
+                {
+                    return new VariableValue(expectedValues[i]);
+                });
+
+                host.AddCustomFunction("test", function);
+                VariableValue actualValue = host.Evaluate("test()", VariableValueType.Integer);
+
+                Assert.AreEqual(VariableValueType.Integer, actualValue.Type);
+                Assert.AreEqual(expectedValues[i], actualValue.IntegerValue);
+            }
+        }
+
+        [TestMethod]
+        public void ScriptingHost_ValidNoParamsDoubleCustomFunctionTest()
+        {
+            ScriptingHost host = new ScriptingHost();
+            Assert.IsNotNull(host);
+
+            double[] expectedValues = ValidDoubles;
+
+            for (int i = 0; i < expectedValues.Length; i++)
+            {
+                CustomFunction function = new CustomFunction((parameterValues) =>
+                {
+                    return new VariableValue(expectedValues[i]);
+                });
+
+                host.AddCustomFunction("test", function);
+                VariableValue actualValue = host.Evaluate("test()", VariableValueType.Double);
+
+                Assert.AreEqual(VariableValueType.Double, actualValue.Type);
+                Assert.AreEqual(expectedValues[i], actualValue.DoubleValue);
+            }
+        }
+
+        [TestMethod]
+        public void ScriptingHost_ValidNoParamsStringCustomFunctionTest()
+        {
+            ScriptingHost host = new ScriptingHost();
+            Assert.IsNotNull(host);
+
+            string[] expectedValues = ValidStrings;
+
+            for (int i = 0; i < expectedValues.Length; i++)
+            {
+                CustomFunction function = new CustomFunction((parameterValues) =>
+                {
+                    return new VariableValue(expectedValues[i]);
+                });
+
+                host.AddCustomFunction("test", function);
+                VariableValue actualValue = host.Evaluate("test()", VariableValueType.String);
+
+                Assert.AreEqual(VariableValueType.String, actualValue.Type);
+                Assert.AreEqual(expectedValues[i], actualValue.StringValue);
+            }
+        }
+
+        #endregion
+
+        protected readonly static bool[] ValidBooleans = { true, false };
+
+        protected readonly static int[] ValidIntegers = { 0, 1, int.MinValue, int.MaxValue };
+
+        protected readonly static double[] ValidDoubles = { 0, 1, double.MinValue, double.MinValue };
+
+        protected readonly static string[] ValidStrings = { null, "", "test" };
     }
 }

@@ -4,7 +4,7 @@
 // Author:
 //       Jon Thysell <thysell@gmail.com>
 // 
-// Copyright (c) 2019 Jon Thysell <http://jonthysell.com>
+// Copyright (c) 2019, 2020 Jon Thysell <http://jonthysell.com>
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -27,13 +27,60 @@
 using System;
 using System.Collections.Generic;
 
+using TEGS.Expressions;
+
 namespace TEGS
 {
-    public abstract class ScriptingHost
+    public delegate VariableValue CustomFunction(VariableValue[] argumentValues);
+
+    public class ScriptingHost : IContext
     {
+        private readonly Dictionary<StateVariable, VariableValue> _stateVariables = new Dictionary<StateVariable, VariableValue>();
+        private readonly Dictionary<string, VariableValue> _stateVariablesByName = new Dictionary<string, VariableValue>();
+
+        private readonly Dictionary<string, CustomFunction> _customFunctions = new Dictionary<string, CustomFunction>();
+
+        private readonly Dictionary<string, Node> _parsedNodes = new Dictionary<string, Node>();
+
+        private Random _random;
+
+        public ScriptingHost()
+        {
+            LoadCustomFunctions();
+        }
+
+        private void LoadCustomFunctions()
+        {
+            AddCustomFunction("t_uniformvariate", UniformVariate);
+            AddCustomFunction("t_expovariate", ExponentialVariate);
+            AddCustomFunction("t_normalvariate", NormalVariate);
+            AddCustomFunction("t_lognormalvariate", LogNormalVariate);
+        }
+
+        private VariableValue ParseAndEvaluate(string expression)
+        {
+            if (!_parsedNodes.TryGetValue(expression, out Node node))
+            {
+                node = Parser.Parse(expression);
+                _parsedNodes[expression] = node;
+            }
+
+            return node.Evaluate(this);
+        }
+
         #region Execution
 
-        public abstract void Execute(string code);
+        public void Execute(string code)
+        {
+            if (!string.IsNullOrWhiteSpace(code))
+            {
+                string[] lines = code.Split(LineSeparators, StringSplitOptions.RemoveEmptyEntries);
+                for (int i = 0; i < lines.Length; i++)
+                {
+                    ParseAndEvaluate(lines[i]);
+                }
+            }
+        }
 
         public bool TryExecute(string code)
         {
@@ -50,9 +97,51 @@ namespace TEGS
             return false;
         }
 
+        private readonly char[] LineSeparators = new char[] { '\r', '\n', ';' };
+
         #endregion
 
-        #region Creation
+        #region Evaluators
+
+        public VariableValue Evaluate(string code, VariableValueType returnType)
+        {
+            if (null == code)
+            {
+                throw new ArgumentNullException(nameof(code));
+            }
+
+            return ParseAndEvaluate(code);
+        }
+
+        public VariableValue Evaluate(string code, VariableValue defaultValue)
+        {
+            if (!string.IsNullOrEmpty(code) && TryEvaluate(code, defaultValue.Type, out VariableValue value))
+            {
+                return value;
+            }
+
+            return defaultValue;
+        }
+
+        public bool TryEvaluate(string code, VariableValueType returnType, out VariableValue value)
+        {
+            try
+            {
+                value = Evaluate(code, returnType);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                DebugLogger.LogException(ex);
+            }
+
+            value = default(VariableValue);
+            return false;
+        }
+
+        #endregion
+
+        #region State Variables
 
         public void Create(StateVariable stateVariable)
         {
@@ -61,7 +150,13 @@ namespace TEGS
                 throw new ArgumentNullException(nameof(stateVariable));
             }
 
-            CreateInternal(stateVariable);
+            if (_stateVariables.ContainsKey(stateVariable))
+            {
+                throw new StateVariableAlreadyExistsException(stateVariable.Name);
+            }
+
+            _stateVariables[stateVariable] = new VariableValue(stateVariable.Type);
+            _stateVariablesByName[stateVariable.Name] = new VariableValue(stateVariable.Type);
         }
 
         public bool TryCreate(StateVariable stateVariable)
@@ -79,12 +174,6 @@ namespace TEGS
             return false;
         }
 
-        protected abstract void CreateInternal(StateVariable stateVariable);
-
-        #endregion
-
-        #region Assignment
-
         public void Assign(StateVariable stateVariable, VariableValue value)
         {
             if (null == stateVariable)
@@ -97,7 +186,13 @@ namespace TEGS
                 throw new StateVariableAssignmentException(stateVariable, value);
             }
 
-            AssignInternal(stateVariable, value);
+            if (!_stateVariables.ContainsKey(stateVariable))
+            {
+                throw new StateVariableNotFoundException(stateVariable.Name);
+            }
+
+            _stateVariables[stateVariable] = value;
+            _stateVariablesByName[stateVariable.Name] = value;
         }
 
         public bool TryAssign(StateVariable stateVariable, VariableValue value)
@@ -138,12 +233,6 @@ namespace TEGS
             }
         }
 
-        protected abstract void AssignInternal(StateVariable stateVariable, VariableValue value);
-
-        #endregion
-
-        #region Getters
-
         public VariableValue Get(StateVariable stateVariable)
         {
             if (null == stateVariable)
@@ -151,7 +240,12 @@ namespace TEGS
                 throw new ArgumentNullException(nameof(stateVariable));
             }
 
-            return GetInternal(stateVariable);
+            if (!_stateVariables.ContainsKey(stateVariable))
+            {
+                throw new StateVariableNotFoundException(stateVariable.Name);
+            }
+
+            return _stateVariables[stateVariable];
         }
 
         public bool TryGet(StateVariable stateVariable, out VariableValue value)
@@ -170,61 +264,62 @@ namespace TEGS
             return false;
         }
 
-        protected abstract VariableValue GetInternal(StateVariable stateVariable);
-
         #endregion
 
-        #region Evaluators
+        #region Custom Functions
 
-        public VariableValue Evaluate(string code, VariableValueType returnType)
+        public void AddCustomFunction(string name, CustomFunction function)
         {
-            if (null == code)
-            {
-                throw new ArgumentNullException(nameof(code));
-            }
-
-            return EvaluateInternal(code, returnType);
+            _customFunctions[name] = function;
         }
 
-        public VariableValue Evaluate(string code, VariableValue defaultValue)
+        private VariableValue UniformVariate(VariableValue[] parameterValues)
         {
-            if (!string.IsNullOrEmpty(code) && TryEvaluate(code, defaultValue.Type, out VariableValue value))
+            if (parameterValues == null || parameterValues.Length == 0)
             {
-                return value;
+                return new VariableValue(_random.UniformVariate(0, 1));
+            }
+            else if (parameterValues.Length == 2)
+            {
+                return new VariableValue(_random.UniformVariate(parameterValues[0].AsDouble(), parameterValues[1].AsDouble()));
             }
 
-            return defaultValue;
+            throw new ArgumentOutOfRangeException(nameof(parameterValues));
         }
 
-        public bool TryEvaluate(string code, VariableValueType returnType, out VariableValue value)
+        private VariableValue ExponentialVariate(VariableValue[] parameterValues)
         {
-            try
+            if (parameterValues != null && parameterValues.Length == 1)
             {
-                value = Evaluate(code, returnType);
-                return true;
-            }
-            catch (Exception ex)
-            {
-                DebugLogger.LogException(ex);
+                return new VariableValue(_random.ExponentialVariate(parameterValues[0].AsDouble()));
             }
 
-            value = default(VariableValue);
-            return false;
+            throw new ArgumentOutOfRangeException(nameof(parameterValues));
         }
 
-        protected abstract VariableValue EvaluateInternal(string code, VariableValueType returnType);
+        private VariableValue NormalVariate(VariableValue[] parameterValues)
+        {
+            if (parameterValues != null && parameterValues.Length == 2)
+            {
+                return new VariableValue(_random.NormalVariate(parameterValues[0].AsDouble(), parameterValues[1].AsDouble()));
+            }
 
-        #endregion
+            throw new ArgumentOutOfRangeException(nameof(parameterValues));
+        }
 
-        #region Delegates
+        private VariableValue LogNormalVariate(VariableValue[] parameterValues)
+        {
+            if (parameterValues != null && parameterValues.Length == 2)
+            {
+                return new VariableValue(_random.LogNormalVariate(parameterValues[0].AsDouble(), parameterValues[1].AsDouble()));
+            }
 
-        public abstract void AssignDelegate(string name, Delegate @delegate);
+            throw new ArgumentOutOfRangeException(nameof(parameterValues));
+        }
 
         #endregion
 
         #region Seed
-
-        public abstract void SetSeed(int seed);
 
         public void SetSeed()
         {
@@ -232,6 +327,31 @@ namespace TEGS
             char[] c = DateTime.UtcNow.Ticks.ToString().ToCharArray();
             Array.Reverse(c);
             SetSeed(int.Parse(new string(c).Substring(1, 6)));
+        }
+
+        public void SetSeed(int seed)
+        {
+            _random = new Random(seed);
+        }
+
+        #endregion
+
+        #region IContext
+
+        public VariableValue GetVariable(string name)
+        {
+            return _stateVariablesByName[name];
+        }
+
+        public void SetVariable(string name, VariableValue value)
+        {
+            StateVariable stateVariable = new StateVariable(name, value.Type);
+            Assign(stateVariable, value);
+        }
+
+        public VariableValue CallFunction(string name, VariableValue[] arguments)
+        {
+            return _customFunctions[name].Invoke(arguments);
         }
 
         #endregion

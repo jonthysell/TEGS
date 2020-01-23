@@ -9,7 +9,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("TEGS")]
-[assembly: AssemblyCopyright("Copyright © 2019 Jon Thysell")]
+[assembly: AssemblyCopyright("Copyright © 2019-2020 Jon Thysell")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

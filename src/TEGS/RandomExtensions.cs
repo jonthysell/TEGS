@@ -1,10 +1,10 @@
 ﻿// 
-// ProgramArgs.cs
+// RandomExtensions.cs
 //  
 // Author:
 //       Jon Thysell <thysell@gmail.com>
 // 
-// Copyright (c) 2019, 2020 Jon Thysell <http://jonthysell.com>
+// Copyright (c) 2020 Jon Thysell <http://jonthysell.com>
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,21 +24,45 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System.IO;
+using System;
 
-namespace TEGS.Run
+namespace TEGS
 {
-    class ProgramArgs
+    public static class RandomExtensions
     {
-        public SimulationArgs SimulationArgs { get; private set; }
-
-        public bool ShowOutput { get; set; } = false;
-
-        public StreamWriter OutputWriter { get; set; } = null;
-
-        public ProgramArgs(Graph graph)
+        public static double UniformVariate(this Random random, double alpha, double beta)
         {
-            SimulationArgs = new SimulationArgs(graph);
+            return alpha + (beta - alpha) * random.NextDouble();
+        }
+
+        public static double ExponentialVariate(this Random random, double lambda)
+        {
+            return -Math.Log(1.0 - random.NextDouble()) / lambda;
+        }
+
+        public static double NormalVariate(this Random random, double mu, double sigma)
+        {
+            double z = 0.0;
+
+            while (true)
+            {
+                double u1 = random.NextDouble();
+                double u2 = 1.0 - random.NextDouble();
+
+                z = (4 * Math.Exp(-0.5) / Math.Sqrt(2.0)) * (u1 - 0.5) / u2;
+
+                if ((z * z / 4.0) <= -Math.Log(u2))
+                {
+                    break;
+                }
+            }
+
+            return mu + z * sigma;
+        }
+
+        public static double LogNormalVariate(this Random random, double mu, double sigma)
+        {
+            return Math.Exp(random.NormalVariate(mu, sigma));
         }
     }
 }

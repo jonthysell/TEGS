@@ -4,7 +4,7 @@
 // Author:
 //       Jon Thysell <thysell@gmail.com>
 // 
-// Copyright (c) 2019 Jon Thysell <http://jonthysell.com>
+// Copyright (c) 2019, 2020 Jon Thysell <http://jonthysell.com>
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -33,7 +33,7 @@ namespace TEGS
     {
         public Graph Graph { get; private set; }
 
-        public ScriptingHost ScriptingHost { get; private set; }
+        public ScriptingHost ScriptingHost { get; private set; } = new ScriptingHost();
 
         public int? StartingSeed { get; set; } = null;
 
@@ -43,10 +43,9 @@ namespace TEGS
 
         public List<TraceExpression> TraceExpressions { get; private set; } = new List<TraceExpression>();
 
-        public SimulationArgs(Graph graph, ScriptingHost scriptingHost)
+        public SimulationArgs(Graph graph)
         {
             Graph = graph ?? throw new ArgumentNullException(nameof(graph));
-            ScriptingHost = scriptingHost ?? throw new ArgumentNullException(nameof(scriptingHost));
         }
     }
 }
