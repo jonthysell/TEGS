@@ -136,11 +136,27 @@ namespace TEGS.Expressions
                     return true;
                 case '<':
                     ReadChar();
-                    result = TokenType.LessThan;
+                    if (CurrentChar == '=')
+                    {
+                        ReadChar();
+                        result = TokenType.LessThanEquals;
+                    }
+                    else
+                    {
+                        result = TokenType.LessThan;
+                    }
                     return true;
                 case '>':
                     ReadChar();
-                    result = TokenType.GreaterThan;
+                    if (CurrentChar == '=')
+                    {
+                        ReadChar();
+                        result = TokenType.GreaterThanEquals;
+                    }
+                    else
+                    {
+                        result = TokenType.GreaterThan;
+                    }
                     return true;
             }
 
@@ -211,6 +227,8 @@ namespace TEGS.Expressions
         Assign,
         LessThan,
         GreaterThan,
+        LessThanEquals,
+        GreaterThanEquals,
         Symbol,
         Value,
     }

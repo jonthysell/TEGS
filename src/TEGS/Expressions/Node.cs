@@ -241,6 +241,40 @@ namespace TEGS.Expressions
         }
     }
 
+    public class NodeLessThanEquals : NodeBinary
+    {
+        public NodeLessThanEquals(Node lhs, Node rhs) : base(lhs, rhs) { }
+
+        public override VariableValue Evaluate(IContext context)
+        {
+            try
+            {
+                return new VariableValue(LHS.Evaluate(context) <= RHS.Evaluate(context));
+            }
+            catch (ArithmeticException)
+            {
+                throw new NodeEvaluateException(this);
+            }
+        }
+    }
+
+    public class NodeGreaterThanEquals : NodeBinary
+    {
+        public NodeGreaterThanEquals(Node lhs, Node rhs) : base(lhs, rhs) { }
+
+        public override VariableValue Evaluate(IContext context)
+        {
+            try
+            {
+                return new VariableValue(LHS.Evaluate(context) >= RHS.Evaluate(context));
+            }
+            catch (ArithmeticException)
+            {
+                throw new NodeEvaluateException(this);
+            }
+        }
+    }
+
     #endregion
 
     #region Exceptions

@@ -279,6 +279,50 @@ namespace TEGS
 
             throw new ArithmeticException();
         }
+
+        public static bool operator <=(VariableValue a, VariableValue b)
+        {
+            if (a.Type == VariableValueType.Integer && b.Type == VariableValueType.Integer)
+            {
+                return a.IntegerValue <= b.IntegerValue;
+            }
+            else if (a.Type == VariableValueType.Double && b.Type == VariableValueType.Double)
+            {
+                return a.DoubleValue <= b.DoubleValue;
+            }
+            else if (a.Type == VariableValueType.Integer && b.Type == VariableValueType.Double)
+            {
+                return a.AsDouble() <= b.DoubleValue;
+            }
+            else if (a.Type == VariableValueType.Double && b.Type == VariableValueType.Integer)
+            {
+                return a.DoubleValue <= b.AsDouble();
+            }
+
+            throw new ArithmeticException();
+        }
+
+        public static bool operator >=(VariableValue a, VariableValue b)
+        {
+            if (a.Type == VariableValueType.Integer && b.Type == VariableValueType.Integer)
+            {
+                return a.IntegerValue >= b.IntegerValue;
+            }
+            else if (a.Type == VariableValueType.Double && b.Type == VariableValueType.Double)
+            {
+                return a.DoubleValue >= b.DoubleValue;
+            }
+            else if (a.Type == VariableValueType.Integer && b.Type == VariableValueType.Double)
+            {
+                return a.AsDouble() >= b.DoubleValue;
+            }
+            else if (a.Type == VariableValueType.Double && b.Type == VariableValueType.Integer)
+            {
+                return a.DoubleValue >= b.AsDouble();
+            }
+
+            throw new ArithmeticException();
+        }
     }
 
     [StructLayout(LayoutKind.Explicit)]

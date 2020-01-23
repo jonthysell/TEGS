@@ -106,6 +106,20 @@ namespace TEGS.Expressions
                             lhs = new NodeGreaterThan(lhs, rhs);
                             continue;
                         }
+                    case TokenType.LessThanEquals:
+                        {
+                            Tokens.ReadNext();
+                            Node rhs = ParseAddSubtract();
+                            lhs = new NodeLessThanEquals(lhs, rhs);
+                            continue;
+                        }
+                    case TokenType.GreaterThanEquals:
+                        {
+                            Tokens.ReadNext();
+                            Node rhs = ParseAddSubtract();
+                            lhs = new NodeGreaterThanEquals(lhs, rhs);
+                            continue;
+                        }
                     default:
                         return lhs;
                 }
