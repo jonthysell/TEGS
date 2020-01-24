@@ -91,6 +91,42 @@ namespace TEGS.Test
             ParseAndEvaluate_ValidTests(tests, context);
         }
 
+        [TestMethod]
+        public void Parser_MultiplicationTest()
+        {
+            List<ParseAndEvaluateTestCase> tests = new List<ParseAndEvaluateTestCase>()
+            {
+                new ParseAndEvaluateTestCase("0 * 0", 0),
+                new ParseAndEvaluateTestCase("0.0 * 0.0", 0.0),
+                new ParseAndEvaluateTestCase("1 * 1", 1),
+                new ParseAndEvaluateTestCase("1.0 * 1.0", 1.0),
+                new ParseAndEvaluateTestCase("-1 * -1", 1),
+                new ParseAndEvaluateTestCase("-1.0 * -1.0", 1.0)
+            };
+
+            IContext context = new TestContext();
+
+            ParseAndEvaluate_ValidTests(tests, context);
+        }
+
+        [TestMethod]
+        public void Parser_DivisionTest()
+        {
+            List<ParseAndEvaluateTestCase> tests = new List<ParseAndEvaluateTestCase>()
+            {
+                new ParseAndEvaluateTestCase("0 / 1", 0),
+                new ParseAndEvaluateTestCase("0.0 / 1.0", 0.0),
+                new ParseAndEvaluateTestCase("1 / 1", 1),
+                new ParseAndEvaluateTestCase("1.0 / 1.0", 1.0),
+                new ParseAndEvaluateTestCase("-1 / -1", 1),
+                new ParseAndEvaluateTestCase("-1.0 / -1.0", 1.0)
+            };
+
+            IContext context = new TestContext();
+
+            ParseAndEvaluate_ValidTests(tests, context);
+        }
+
         private void ParseAndEvaluate_ValidTests(IEnumerable<ParseAndEvaluateTestCase> tests, IContext context)
         {
             bool allPass = true;

@@ -98,7 +98,7 @@ namespace TEGS
 
         private void InitCustomFunctions()
         {
-            ScriptingHost.AddCustomFunction("t_clock", (parameterValues) => new VariableValue(Clock));
+            ScriptingHost.AddCustomFunction("t_clock", (argumentValues) => new VariableValue(Clock));
         }
 
         public void Run()
