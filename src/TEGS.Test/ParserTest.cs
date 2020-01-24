@@ -62,10 +62,10 @@ namespace TEGS.Test
             {
                 new ParseAndEvaluateTestCase("0 + 0", 0),
                 new ParseAndEvaluateTestCase("0.0 + 0.0", 0.0),
-                new ParseAndEvaluateTestCase("1 + 1", 2),
-                new ParseAndEvaluateTestCase("1.0 + 1.0", 2.0),
-                new ParseAndEvaluateTestCase("-1 + -1", -2),
-                new ParseAndEvaluateTestCase("-1.0 + -1.0", -2.0)
+                new ParseAndEvaluateTestCase("1 + 1", 1 + 1),
+                new ParseAndEvaluateTestCase("1.0 + 1.0", 1.0 + 1.0),
+                new ParseAndEvaluateTestCase("-1 + -1", -1 + -1),
+                new ParseAndEvaluateTestCase("-1.0 + -1.0", -1.0 + -1.0)
             };
 
             IContext context = new TestContext();
@@ -79,11 +79,11 @@ namespace TEGS.Test
             List<ParseAndEvaluateTestCase> tests = new List<ParseAndEvaluateTestCase>()
             {
                 new ParseAndEvaluateTestCase("0 - 0", 0),
-                new ParseAndEvaluateTestCase("0.0 - 0.0", 0.0),
-                new ParseAndEvaluateTestCase("1 - 1", 0),
-                new ParseAndEvaluateTestCase("1.0 - 1.0", 0.0),
-                new ParseAndEvaluateTestCase("-1 - -1", 0),
-                new ParseAndEvaluateTestCase("-1.0 - -1.0", 0.0)
+                new ParseAndEvaluateTestCase("0.0 - 0.0", 0.0 - 0.0),
+                new ParseAndEvaluateTestCase("1 - 1", 1 - 1),
+                new ParseAndEvaluateTestCase("1.0 - 1.0", 1.0 - 1.0),
+                new ParseAndEvaluateTestCase("-1 - -1", -1 - -1),
+                new ParseAndEvaluateTestCase("-1.0 - -1.0", -1.0 - -1.0)
             };
 
             IContext context = new TestContext();
@@ -97,11 +97,11 @@ namespace TEGS.Test
             List<ParseAndEvaluateTestCase> tests = new List<ParseAndEvaluateTestCase>()
             {
                 new ParseAndEvaluateTestCase("0 * 0", 0),
-                new ParseAndEvaluateTestCase("0.0 * 0.0", 0.0),
-                new ParseAndEvaluateTestCase("1 * 1", 1),
-                new ParseAndEvaluateTestCase("1.0 * 1.0", 1.0),
-                new ParseAndEvaluateTestCase("-1 * -1", 1),
-                new ParseAndEvaluateTestCase("-1.0 * -1.0", 1.0)
+                new ParseAndEvaluateTestCase("0.0 * 0.0", 0.0 * 0.0),
+                new ParseAndEvaluateTestCase("1 * 1", 1 * 1),
+                new ParseAndEvaluateTestCase("1.0 * 1.0", 1.0 * 1.0),
+                new ParseAndEvaluateTestCase("-1 * -1", -1 * -1),
+                new ParseAndEvaluateTestCase("-1.0 * -1.0", -1.0 * -1.0)
             };
 
             IContext context = new TestContext();
@@ -114,12 +114,12 @@ namespace TEGS.Test
         {
             List<ParseAndEvaluateTestCase> tests = new List<ParseAndEvaluateTestCase>()
             {
-                new ParseAndEvaluateTestCase("0 / 1", 0),
-                new ParseAndEvaluateTestCase("0.0 / 1.0", 0.0),
-                new ParseAndEvaluateTestCase("1 / 1", 1),
-                new ParseAndEvaluateTestCase("1.0 / 1.0", 1.0),
-                new ParseAndEvaluateTestCase("-1 / -1", 1),
-                new ParseAndEvaluateTestCase("-1.0 / -1.0", 1.0)
+                new ParseAndEvaluateTestCase("0 / 1", 0 / 1),
+                new ParseAndEvaluateTestCase("0.0 / 1.0", 0.0 / 1.0),
+                new ParseAndEvaluateTestCase("1 / 1", 1 / 1),
+                new ParseAndEvaluateTestCase("1.0 / 1.0", 1.0 / 1.0),
+                new ParseAndEvaluateTestCase("-1 / -1", -1 / -1),
+                new ParseAndEvaluateTestCase("-1.0 / -1.0", -1.0 / -1.0)
             };
 
             IContext context = new TestContext();
@@ -132,7 +132,7 @@ namespace TEGS.Test
         {
             List<ParseAndEvaluateTestCase> tests = new List<ParseAndEvaluateTestCase>()
             {
-                new ParseAndEvaluateTestCase("1+10*4-2*(16/4)/2/0.5+9", 42.0),
+                new ParseAndEvaluateTestCase("1+10*4-2*(16/4)/2/0.5+9", 1+10*4-2*(16/4)/2/0.5+9),
             };
 
             IContext context = new TestContext();
