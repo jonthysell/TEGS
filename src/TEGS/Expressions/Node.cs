@@ -326,6 +326,74 @@ namespace TEGS.Expressions
         }
     }
 
+    public class NodeAnd : NodeBinary
+    {
+        public NodeAnd(Node lhs, Node rhs) : base(lhs, rhs) { }
+
+        public override VariableValue Evaluate(IContext context)
+        {
+            try
+            {
+                return LHS.Evaluate(context) & RHS.Evaluate(context);
+            }
+            catch (ArithmeticException)
+            {
+                throw new NodeEvaluateException(this);
+            }
+        }
+    }
+
+    public class NodeOr : NodeBinary
+    {
+        public NodeOr(Node lhs, Node rhs) : base(lhs, rhs) { }
+
+        public override VariableValue Evaluate(IContext context)
+        {
+            try
+            {
+                return LHS.Evaluate(context) | RHS.Evaluate(context);
+            }
+            catch (ArithmeticException)
+            {
+                throw new NodeEvaluateException(this);
+            }
+        }
+    }
+
+    public class NodeConditionalAnd : NodeBinary
+    {
+        public NodeConditionalAnd(Node lhs, Node rhs) : base(lhs, rhs) { }
+
+        public override VariableValue Evaluate(IContext context)
+        {
+            try
+            {
+                return LHS.Evaluate(context) && RHS.Evaluate(context);
+            }
+            catch (ArithmeticException)
+            {
+                throw new NodeEvaluateException(this);
+            }
+        }
+    }
+
+    public class NodeConditionalOr : NodeBinary
+    {
+        public NodeConditionalOr(Node lhs, Node rhs) : base(lhs, rhs) { }
+
+        public override VariableValue Evaluate(IContext context)
+        {
+            try
+            {
+                return LHS.Evaluate(context) || RHS.Evaluate(context);
+            }
+            catch (ArithmeticException)
+            {
+                throw new NodeEvaluateException(this);
+            }
+        }
+    }
+
     #endregion
 
     #region Exceptions

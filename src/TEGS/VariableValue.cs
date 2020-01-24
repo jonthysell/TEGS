@@ -362,6 +362,46 @@ namespace TEGS
 
             throw new ArithmeticException();
         }
+
+        public static VariableValue operator &(VariableValue a, VariableValue b)
+        {
+            if (a.Type == VariableValueType.Boolean && b.Type == VariableValueType.Boolean)
+            {
+                return new VariableValue(a.BooleanValue & b.BooleanValue);
+            }
+
+            throw new ArithmeticException();
+        }
+
+        public static VariableValue operator |(VariableValue a, VariableValue b)
+        {
+            if (a.Type == VariableValueType.Boolean && b.Type == VariableValueType.Boolean)
+            {
+                return new VariableValue(a.BooleanValue | b.BooleanValue);
+            }
+
+            throw new ArithmeticException();
+        }
+
+        public static bool operator true(VariableValue a)
+        {
+            if (a.Type == VariableValueType.Boolean)
+            {
+                return a.BooleanValue;
+            }
+
+            throw new ArithmeticException();
+        }
+
+        public static bool operator false(VariableValue a)
+        {
+            if (a.Type == VariableValueType.Boolean)
+            {
+                return a.BooleanValue;
+            }
+
+            throw new ArithmeticException();
+        }
     }
 
     [StructLayout(LayoutKind.Explicit)]

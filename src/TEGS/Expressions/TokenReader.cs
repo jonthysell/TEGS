@@ -178,6 +178,30 @@ namespace TEGS.Expressions
                         result = TokenType.Not;
                     }
                     return true;
+                case '&':
+                    ReadChar();
+                    if (CurrentChar == '&')
+                    {
+                        ReadChar();
+                        result = TokenType.ConditionalAnd;
+                    }
+                    else
+                    {
+                        result = TokenType.And;
+                    }
+                    return true;
+                case '|':
+                    ReadChar();
+                    if (CurrentChar == '|')
+                    {
+                        ReadChar();
+                        result = TokenType.ConditionalOr;
+                    }
+                    else
+                    {
+                        result = TokenType.Or;
+                    }
+                    return true;
             }
 
             result = default(TokenType);
@@ -234,6 +258,15 @@ namespace TEGS.Expressions
         protected const char EndChar = '\0';
     }
 
+    #region Exceptions
+
+    public class UnexpectedTokenException : Exception
+    {
+        public UnexpectedTokenException() : base() { }
+    }
+
+    #endregion
+
     public enum TokenType
     {
         End,
@@ -252,6 +285,10 @@ namespace TEGS.Expressions
         Not,
         Equals,
         NotEquals,
+        And,
+        Or,
+        ConditionalAnd,
+        ConditionalOr,
         Symbol,
         Value,
     }

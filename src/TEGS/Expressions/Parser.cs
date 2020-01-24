@@ -78,9 +78,61 @@ namespace TEGS.Expressions
             return false;
         }
 
-        private Node ParseOr() => ParseAnd();
+        private Node ParseOr()
+        {
+            Node lhs = ParseAnd();
 
-        private Node ParseAnd() => ParseEqualsNotEquals();
+            while (true)
+            {
+                switch (Tokens.CurrentToken)
+                {
+                    case TokenType.Or:
+                        {
+                            Tokens.ReadNext();
+                            Node rhs = ParseAnd();
+                            lhs = new NodeOr(lhs, rhs);
+                            continue;
+                        }
+                    case TokenType.ConditionalOr:
+                        {
+                            Tokens.ReadNext();
+                            Node rhs = ParseAnd();
+                            lhs = new NodeConditionalOr(lhs, rhs);
+                            continue;
+                        }
+                    default:
+                        return lhs;
+                }
+            }
+        }
+
+        private Node ParseAnd()
+        {
+            Node lhs = ParseEqualsNotEquals();
+
+            while (true)
+            {
+                switch (Tokens.CurrentToken)
+                {
+                    case TokenType.And:
+                        {
+                            Tokens.ReadNext();
+                            Node rhs = ParseEqualsNotEquals();
+                            lhs = new NodeAnd(lhs, rhs);
+                            continue;
+                        }
+                    case TokenType.ConditionalAnd:
+                        {
+                            Tokens.ReadNext();
+                            Node rhs = ParseEqualsNotEquals();
+                            lhs = new NodeConditionalAnd(lhs, rhs);
+                            continue;
+                        }
+                    default:
+                        return lhs;
+                }
+            }
+        }
 
         private Node ParseEqualsNotEquals()
         {
