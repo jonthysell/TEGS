@@ -212,12 +212,12 @@ namespace TEGS.Test
 
             for (int i = 0; i < expectedValues.Length; i++)
             {
-                CustomFunction function = new CustomFunction((parameterValues) =>
+                CustomFunction function = new CustomFunction((args) =>
                 {
                     return new VariableValue(expectedValues[i]);
                 });
 
-                host.AddCustomFunction("test", function);
+                host.AssignCustomFunction("test", function);
                 VariableValue actualValue = host.Evaluate("test()", VariableValueType.Boolean);
 
                 Assert.AreEqual(VariableValueType.Boolean, actualValue.Type);
@@ -235,12 +235,12 @@ namespace TEGS.Test
 
             for (int i = 0; i < expectedValues.Length; i++)
             {
-                CustomFunction function = new CustomFunction((parameterValues) =>
+                CustomFunction function = new CustomFunction((args) =>
                 {
                     return new VariableValue(expectedValues[i]);
                 });
 
-                host.AddCustomFunction("test", function);
+                host.AssignCustomFunction("test", function);
                 VariableValue actualValue = host.Evaluate("test()", VariableValueType.Integer);
 
                 Assert.AreEqual(VariableValueType.Integer, actualValue.Type);
@@ -258,12 +258,12 @@ namespace TEGS.Test
 
             for (int i = 0; i < expectedValues.Length; i++)
             {
-                CustomFunction function = new CustomFunction((parameterValues) =>
+                CustomFunction function = new CustomFunction((args) =>
                 {
                     return new VariableValue(expectedValues[i]);
                 });
 
-                host.AddCustomFunction("test", function);
+                host.AssignCustomFunction("test", function);
                 VariableValue actualValue = host.Evaluate("test()", VariableValueType.Double);
 
                 Assert.AreEqual(VariableValueType.Double, actualValue.Type);
@@ -281,12 +281,12 @@ namespace TEGS.Test
 
             for (int i = 0; i < expectedValues.Length; i++)
             {
-                CustomFunction function = new CustomFunction((parameterValues) =>
+                CustomFunction function = new CustomFunction((args) =>
                 {
                     return new VariableValue(expectedValues[i]);
                 });
 
-                host.AddCustomFunction("test", function);
+                host.AssignCustomFunction("test", function);
                 VariableValue actualValue = host.Evaluate("test()", VariableValueType.String);
 
                 Assert.AreEqual(VariableValueType.String, actualValue.Type);

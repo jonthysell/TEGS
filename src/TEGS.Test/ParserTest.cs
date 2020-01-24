@@ -127,6 +127,19 @@ namespace TEGS.Test
             ParseAndEvaluate_ValidTests(tests, context);
         }
 
+        [TestMethod]
+        public void Parser_ComplicatedTest()
+        {
+            List<ParseAndEvaluateTestCase> tests = new List<ParseAndEvaluateTestCase>()
+            {
+                new ParseAndEvaluateTestCase("1+10*4-2*(16/4)/2/0.5+9", 42.0),
+            };
+
+            IContext context = new TestContext();
+
+            ParseAndEvaluate_ValidTests(tests, context);
+        }
+
         private void ParseAndEvaluate_ValidTests(IEnumerable<ParseAndEvaluateTestCase> tests, IContext context)
         {
             bool allPass = true;

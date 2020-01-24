@@ -28,12 +28,11 @@ using System;
 using System.Collections.Generic;
 
 using TEGS.Expressions;
+using TEGS.Libraries;
 
 namespace TEGS
 {
-    public delegate VariableValue CustomFunction(VariableValue[] argumentValues);
-
-    public class ScriptingHost : IContext
+    public class ScriptingHost : IContext, ILibrary
     {
         private readonly Dictionary<StateVariable, VariableValue> _stateVariables = new Dictionary<StateVariable, VariableValue>();
         private readonly Dictionary<string, VariableValue> _stateVariablesByName = new Dictionary<string, VariableValue>();
@@ -46,15 +45,8 @@ namespace TEGS
 
         public ScriptingHost()
         {
-            LoadCustomFunctions();
-        }
-
-        private void LoadCustomFunctions()
-        {
-            AddCustomFunction("t_uniformvariate", UniformVariate);
-            AddCustomFunction("t_expovariate", ExponentialVariate);
-            AddCustomFunction("t_normalvariate", NormalVariate);
-            AddCustomFunction("t_lognormalvariate", LogNormalVariate);
+            LoadLibrary(this);
+            LoadLibrary(new MathLibrary());
         }
 
         private VariableValue ParseAndEvaluate(string expression)
@@ -268,53 +260,86 @@ namespace TEGS
 
         #region Custom Functions
 
-        public void AddCustomFunction(string name, CustomFunction function)
+        public void AssignCustomFunction(string name, CustomFunction function)
         {
-            _customFunctions[name] = function;
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                throw new ArgumentNullException(nameof(name));
+            }
+
+            if (null == function && _customFunctions.ContainsKey(name))
+            {
+                _customFunctions.Remove(name);
+            }
+            else
+            {
+                _customFunctions[name] = function;
+            }
         }
 
-        private VariableValue UniformVariate(VariableValue[] parameterValues)
+        public void LoadLibrary(ILibrary library)
         {
-            if (parameterValues == null || parameterValues.Length == 0)
+            if (null == library)
+            {
+                throw new ArgumentNullException(nameof(library));
+            }
+
+            foreach (var kvp in library.GetCustomFunctions())
+            {
+                AssignCustomFunction(kvp.Key, kvp.Value);
+            }
+        }
+
+        public IEnumerable<KeyValuePair<string, CustomFunction>> GetCustomFunctions()
+        {
+            yield return new KeyValuePair<string, CustomFunction>("t_uniformvariate", UniformVariate);
+            yield return new KeyValuePair<string, CustomFunction>("t_expovariate", ExponentialVariate);
+            yield return new KeyValuePair<string, CustomFunction>("t_normalvariate", NormalVariate);
+            yield return new KeyValuePair<string, CustomFunction>("t_lognormalvariate", LogNormalVariate);
+        }
+
+        private VariableValue UniformVariate(VariableValue[] args)
+        {
+            if (args == null || args.Length == 0)
             {
                 return new VariableValue(_random.UniformVariate(0, 1));
             }
-            else if (parameterValues.Length == 2)
+            else if (args.Length == 2)
             {
-                return new VariableValue(_random.UniformVariate(parameterValues[0].AsDouble(), parameterValues[1].AsDouble()));
+                return new VariableValue(_random.UniformVariate(args[0].AsNumber(), args[1].AsNumber()));
             }
 
-            throw new ArgumentOutOfRangeException(nameof(parameterValues));
+            throw new ArgumentOutOfRangeException(nameof(args));
         }
 
-        private VariableValue ExponentialVariate(VariableValue[] parameterValues)
+        private VariableValue ExponentialVariate(VariableValue[] args)
         {
-            if (parameterValues != null && parameterValues.Length == 1)
+            if (args != null && args.Length == 1)
             {
-                return new VariableValue(_random.ExponentialVariate(parameterValues[0].AsDouble()));
+                return new VariableValue(_random.ExponentialVariate(args[0].AsNumber()));
             }
 
-            throw new ArgumentOutOfRangeException(nameof(parameterValues));
+            throw new ArgumentOutOfRangeException(nameof(args));
         }
 
-        private VariableValue NormalVariate(VariableValue[] parameterValues)
+        private VariableValue NormalVariate(VariableValue[] args)
         {
-            if (parameterValues != null && parameterValues.Length == 2)
+            if (args != null && args.Length == 2)
             {
-                return new VariableValue(_random.NormalVariate(parameterValues[0].AsDouble(), parameterValues[1].AsDouble()));
+                return new VariableValue(_random.NormalVariate(args[0].AsNumber(), args[1].AsNumber()));
             }
 
-            throw new ArgumentOutOfRangeException(nameof(parameterValues));
+            throw new ArgumentOutOfRangeException(nameof(args));
         }
 
-        private VariableValue LogNormalVariate(VariableValue[] parameterValues)
+        private VariableValue LogNormalVariate(VariableValue[] args)
         {
-            if (parameterValues != null && parameterValues.Length == 2)
+            if (args != null && args.Length == 2)
             {
-                return new VariableValue(_random.LogNormalVariate(parameterValues[0].AsDouble(), parameterValues[1].AsDouble()));
+                return new VariableValue(_random.LogNormalVariate(args[0].AsNumber(), args[1].AsNumber()));
             }
 
-            throw new ArgumentOutOfRangeException(nameof(parameterValues));
+            throw new ArgumentOutOfRangeException(nameof(args));
         }
 
         #endregion
@@ -351,7 +376,7 @@ namespace TEGS
 
         public VariableValue CallFunction(string name, VariableValue[] arguments)
         {
-            return _customFunctions[name].Invoke(arguments);
+            return _customFunctions[name](arguments);
         }
 
         #endregion

@@ -1,5 +1,5 @@
 ﻿// 
-// TestContext.cs
+// ILibrary.cs
 //  
 // Author:
 //       Jon Thysell <thysell@gmail.com>
@@ -26,20 +26,10 @@
 
 using System.Collections.Generic;
 
-using TEGS.Expressions;
-
-namespace TEGS.Test
+namespace TEGS.Libraries
 {
-    public class TestContext : IContext
+    public interface ILibrary
     {
-        public Dictionary<string, VariableValue> Variables { get; private set; } = new Dictionary<string, VariableValue>();
-
-        public Dictionary<string, CustomFunction> Functions { get; private set; } = new Dictionary<string, CustomFunction>();
-
-        public VariableValue GetVariable(string name) => Variables[name];
-
-        public void SetVariable(string name, VariableValue value) => Variables[name] = value;
-
-        public VariableValue CallFunction(string name, VariableValue[] args) => Functions[name](args);
+        IEnumerable<KeyValuePair<string, CustomFunction>> GetCustomFunctions();
     }
 }

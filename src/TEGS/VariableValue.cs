@@ -29,6 +29,8 @@ using System.Runtime.InteropServices;
 
 namespace TEGS
 {
+    public delegate VariableValue CustomFunction(VariableValue[] args);
+
     public struct VariableValue : IEquatable<VariableValue>
     {
         public readonly VariableValueType Type;
@@ -40,6 +42,10 @@ namespace TEGS
         public double DoubleValue => _value.DoubleValue;
 
         public string StringValue => (string)_objectValue;
+
+        public bool IsBoolean => Type == VariableValueType.Boolean;
+
+        public bool IsNumber => Type == VariableValueType.Integer || Type == VariableValueType.Double;
 
         private readonly PrimitiveUnionValue _value;
         private readonly object _objectValue;
@@ -71,19 +77,17 @@ namespace TEGS
             _objectValue = value;
         }
 
-        public double AsDouble()
+        public double AsNumber()
         {
             switch (Type)
             {
-                case VariableValueType.Boolean:
-                    return Convert.ToDouble(_value.BooleanValue);
                 case VariableValueType.Integer:
                     return _value.IntegerValue;
                 case VariableValueType.Double:
                     return _value.DoubleValue;
-                default:
-                    return Convert.ToDouble(_objectValue);
             }
+
+            throw new ValueIsNotANumberException(this);
         }
 
         public override string ToString()
@@ -115,7 +119,7 @@ namespace TEGS
         {
             int hash = 17;
             hash = hash * 31 + Type.GetHashCode();
-            hash = hash * 31 + AsDouble().GetHashCode();
+            hash = hash * 31 + AsNumber().GetHashCode();
             return hash;
         }
 
@@ -139,11 +143,11 @@ namespace TEGS
             }
             else if (Type == VariableValueType.Integer && other.Type == VariableValueType.Double)
             {
-                return other.AsDouble() == other.DoubleValue;
+                return other.AsNumber() == other.DoubleValue;
             }
             else if (Type == VariableValueType.Double && other.Type == VariableValueType.Integer)
             {
-                return DoubleValue == other.AsDouble();
+                return DoubleValue == other.AsNumber();
             }
 
             return false;
@@ -169,18 +173,17 @@ namespace TEGS
                     return new VariableValue(-a.DoubleValue);
             }
 
-            throw new ArithmeticException();
+            throw new ValueIsNotANumberException(a);
         }
 
         public static VariableValue operator !(VariableValue a)
         {
-            switch (a.Type)
+            if (!a.IsBoolean )
             {
-                case VariableValueType.Boolean:
-                    return new VariableValue(!a.BooleanValue);
+                throw new ValueIsNotABooleanException(a);
             }
 
-            throw new ArithmeticException();
+            return new VariableValue(!a.BooleanValue);
         }
 
         public static VariableValue operator +(VariableValue a, VariableValue b)
@@ -189,24 +192,16 @@ namespace TEGS
             {
                 return new VariableValue(a.IntegerValue + b.IntegerValue);
             }
-            else if (a.Type == VariableValueType.Double && b.Type == VariableValueType.Double)
+            else if (a.IsNumber && b.IsNumber)
             {
-                return new VariableValue(a.DoubleValue + b.DoubleValue);
+                return new VariableValue(a.AsNumber() + b.AsNumber());
             }
             else if (a.Type == VariableValueType.String && b.Type == VariableValueType.String)
             {
                 return new VariableValue(a.StringValue + b.StringValue);
             }
-            else if (a.Type == VariableValueType.Integer && b.Type == VariableValueType.Double)
-            {
-                return new VariableValue(a.AsDouble() + b.DoubleValue);
-            }
-            else if (a.Type == VariableValueType.Double && b.Type == VariableValueType.Integer)
-            {
-                return new VariableValue(a.DoubleValue + b.AsDouble());
-            }
 
-            throw new ArithmeticException();
+            throw new VariableValueValueOperationException(a, b);
         }
 
         public static VariableValue operator -(VariableValue a, VariableValue b)
@@ -215,20 +210,12 @@ namespace TEGS
             {
                 return new VariableValue(a.IntegerValue - b.IntegerValue);
             }
-            else if (a.Type == VariableValueType.Double && b.Type == VariableValueType.Double)
+            else if (a.IsNumber && b.IsNumber)
             {
-                return new VariableValue(a.DoubleValue - b.DoubleValue);
-            }
-            else if (a.Type == VariableValueType.Integer && b.Type == VariableValueType.Double)
-            {
-                return new VariableValue(a.AsDouble() - b.DoubleValue);
-            }
-            else if (a.Type == VariableValueType.Double && b.Type == VariableValueType.Integer)
-            {
-                return new VariableValue(a.DoubleValue - b.AsDouble());
+                return new VariableValue(a.AsNumber() - b.AsNumber());
             }
 
-            throw new ArithmeticException();
+            throw new VariableValueValueOperationException(a, b);
         }
 
         public static VariableValue operator *(VariableValue a, VariableValue b)
@@ -237,20 +224,12 @@ namespace TEGS
             {
                 return new VariableValue(a.IntegerValue * b.IntegerValue);
             }
-            else if (a.Type == VariableValueType.Double && b.Type == VariableValueType.Double)
+            else if (a.IsNumber && b.IsNumber)
             {
-                return new VariableValue(a.DoubleValue * b.DoubleValue);
-            }
-            else if (a.Type == VariableValueType.Integer && b.Type == VariableValueType.Double)
-            {
-                return new VariableValue(a.AsDouble() * b.DoubleValue);
-            }
-            else if (a.Type == VariableValueType.Double && b.Type == VariableValueType.Integer)
-            {
-                return new VariableValue(a.DoubleValue * b.AsDouble());
+                return new VariableValue(a.AsNumber() * b.AsNumber());
             }
 
-            throw new ArithmeticException();
+            throw new VariableValueValueOperationException(a, b);
         }
 
         public static VariableValue operator /(VariableValue a, VariableValue b)
@@ -259,20 +238,12 @@ namespace TEGS
             {
                 return new VariableValue(a.IntegerValue / b.IntegerValue);
             }
-            else if (a.Type == VariableValueType.Double && b.Type == VariableValueType.Double)
+            else if (a.IsNumber && b.IsNumber)
             {
-                return new VariableValue(a.DoubleValue / b.DoubleValue);
-            }
-            else if (a.Type == VariableValueType.Integer && b.Type == VariableValueType.Double)
-            {
-                return new VariableValue(a.AsDouble() / b.DoubleValue);
-            }
-            else if (a.Type == VariableValueType.Double && b.Type == VariableValueType.Integer)
-            {
-                return new VariableValue(a.DoubleValue / b.AsDouble());
+                return new VariableValue(a.AsNumber() / b.AsNumber());
             }
 
-            throw new ArithmeticException();
+            throw new VariableValueValueOperationException(a, b);
         }
 
         public static bool operator <(VariableValue a, VariableValue b)
@@ -281,20 +252,12 @@ namespace TEGS
             {
                 return a.IntegerValue < b.IntegerValue;
             }
-            else if (a.Type == VariableValueType.Double && b.Type == VariableValueType.Double)
+            else if (a.IsNumber && b.IsNumber)
             {
-                return a.DoubleValue < b.DoubleValue;
-            }
-            else if (a.Type == VariableValueType.Integer && b.Type == VariableValueType.Double)
-            {
-                return a.AsDouble() < b.DoubleValue;
-            }
-            else if (a.Type == VariableValueType.Double && b.Type == VariableValueType.Integer)
-            {
-                return a.DoubleValue < b.AsDouble();
+                return a.AsNumber() < b.AsNumber();
             }
 
-            throw new ArithmeticException();
+            throw new VariableValueValueOperationException(a, b);
         }
 
         public static bool operator >(VariableValue a, VariableValue b)
@@ -303,20 +266,12 @@ namespace TEGS
             {
                 return a.IntegerValue > b.IntegerValue;
             }
-            else if (a.Type == VariableValueType.Double && b.Type == VariableValueType.Double)
+            else if (a.IsNumber && b.IsNumber)
             {
-                return a.DoubleValue > b.DoubleValue;
-            }
-            else if (a.Type == VariableValueType.Integer && b.Type == VariableValueType.Double)
-            {
-                return a.AsDouble() > b.DoubleValue;
-            }
-            else if (a.Type == VariableValueType.Double && b.Type == VariableValueType.Integer)
-            {
-                return a.DoubleValue > b.AsDouble();
+                return a.AsNumber() > b.AsNumber();
             }
 
-            throw new ArithmeticException();
+            throw new VariableValueValueOperationException(a, b);
         }
 
         public static bool operator <=(VariableValue a, VariableValue b)
@@ -325,20 +280,12 @@ namespace TEGS
             {
                 return a.IntegerValue <= b.IntegerValue;
             }
-            else if (a.Type == VariableValueType.Double && b.Type == VariableValueType.Double)
+            else if (a.IsNumber && b.IsNumber)
             {
-                return a.DoubleValue <= b.DoubleValue;
-            }
-            else if (a.Type == VariableValueType.Integer && b.Type == VariableValueType.Double)
-            {
-                return a.AsDouble() <= b.DoubleValue;
-            }
-            else if (a.Type == VariableValueType.Double && b.Type == VariableValueType.Integer)
-            {
-                return a.DoubleValue <= b.AsDouble();
+                return a.AsNumber() <= b.AsNumber();
             }
 
-            throw new ArithmeticException();
+            throw new VariableValueValueOperationException(a, b);
         }
 
         public static bool operator >=(VariableValue a, VariableValue b)
@@ -347,60 +294,52 @@ namespace TEGS
             {
                 return a.IntegerValue >= b.IntegerValue;
             }
-            else if (a.Type == VariableValueType.Double && b.Type == VariableValueType.Double)
+            else if (a.IsNumber && b.IsNumber)
             {
-                return a.DoubleValue >= b.DoubleValue;
-            }
-            else if (a.Type == VariableValueType.Integer && b.Type == VariableValueType.Double)
-            {
-                return a.AsDouble() >= b.DoubleValue;
-            }
-            else if (a.Type == VariableValueType.Double && b.Type == VariableValueType.Integer)
-            {
-                return a.DoubleValue >= b.AsDouble();
+                return a.AsNumber() >= b.AsNumber();
             }
 
-            throw new ArithmeticException();
+            throw new VariableValueValueOperationException(a, b);
         }
 
         public static VariableValue operator &(VariableValue a, VariableValue b)
         {
-            if (a.Type == VariableValueType.Boolean && b.Type == VariableValueType.Boolean)
+            if (!a.IsBoolean || !b.IsBoolean)
             {
-                return new VariableValue(a.BooleanValue & b.BooleanValue);
+                throw new VariableValueValueOperationException(a, b);
             }
 
-            throw new ArithmeticException();
+            return new VariableValue(a.BooleanValue & b.BooleanValue);
         }
 
         public static VariableValue operator |(VariableValue a, VariableValue b)
         {
-            if (a.Type == VariableValueType.Boolean && b.Type == VariableValueType.Boolean)
+            if (!a.IsBoolean || !b.IsBoolean)
             {
-                return new VariableValue(a.BooleanValue | b.BooleanValue);
+                throw new VariableValueValueOperationException(a, b);
             }
 
-            throw new ArithmeticException();
+            return new VariableValue(a.BooleanValue | b.BooleanValue);
         }
 
         public static bool operator true(VariableValue a)
         {
-            if (a.Type == VariableValueType.Boolean)
+            if (!a.IsBoolean)
             {
-                return a.BooleanValue;
+                throw new ValueIsNotABooleanException(a);
             }
 
-            throw new ArithmeticException();
+            return a.BooleanValue;
         }
 
         public static bool operator false(VariableValue a)
         {
-            if (a.Type == VariableValueType.Boolean)
+            if (!a.IsBoolean)
             {
-                return a.BooleanValue;
+                throw new ValueIsNotABooleanException(a);
             }
 
-            throw new ArithmeticException();
+            return !a.BooleanValue;
         }
     }
 
@@ -419,4 +358,37 @@ namespace TEGS
         Double,
         String
     }
+
+    #region Exceptions
+
+    public abstract class VariableValueValueException : Exception
+    {
+        public readonly VariableValue Value;
+
+        public VariableValueValueException(VariableValue value) : base() => Value = value;
+    }
+
+    public class ValueIsNotABooleanException : VariableValueValueException
+    {
+        public ValueIsNotABooleanException(VariableValue value) : base(value) { }
+    }
+
+    public class ValueIsNotANumberException : VariableValueValueException
+    {
+        public ValueIsNotANumberException(VariableValue value) : base(value) { }
+    }
+
+    public class VariableValueValueOperationException : Exception
+    {
+        public readonly VariableValue ValueA;
+        public readonly VariableValue ValueB;
+
+        public VariableValueValueOperationException(VariableValue valueA, VariableValue valueB) : base()
+        {
+            ValueA = valueA;
+            ValueB = valueB;
+        }
+    }
+
+    #endregion
 }

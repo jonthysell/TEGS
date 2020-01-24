@@ -1,5 +1,5 @@
 ﻿// 
-// TestContext.cs
+// StaticLibrary.cs
 //  
 // Author:
 //       Jon Thysell <thysell@gmail.com>
@@ -24,22 +24,15 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System;
 using System.Collections.Generic;
 
-using TEGS.Expressions;
-
-namespace TEGS.Test
+namespace TEGS.Libraries
 {
-    public class TestContext : IContext
+    public abstract class StaticLibrary : ILibrary
     {
-        public Dictionary<string, VariableValue> Variables { get; private set; } = new Dictionary<string, VariableValue>();
+        protected Dictionary<string, CustomFunction> Functions { get; private set; } = new Dictionary<string, CustomFunction>();
 
-        public Dictionary<string, CustomFunction> Functions { get; private set; } = new Dictionary<string, CustomFunction>();
-
-        public VariableValue GetVariable(string name) => Variables[name];
-
-        public void SetVariable(string name, VariableValue value) => Variables[name] = value;
-
-        public VariableValue CallFunction(string name, VariableValue[] args) => Functions[name](args);
+        public IEnumerable<KeyValuePair<string, CustomFunction>> GetCustomFunctions() => Functions;
     }
 }

@@ -74,14 +74,14 @@ namespace TEGS.Expressions
                 return context.CallFunction(Name, null);
             }
 
-            VariableValue[] argumentValues = new VariableValue[Arguments.Length];
+            VariableValue[] args = new VariableValue[Arguments.Length];
 
             for (int i = 0; i < Arguments.Length; i++)
             {
-                argumentValues[i] = Arguments[i].Evaluate(context);
+                args[i] = Arguments[i].Evaluate(context);
             }
 
-            return context.CallFunction(Name, argumentValues);
+            return context.CallFunction(Name, args);
         }
     }
 

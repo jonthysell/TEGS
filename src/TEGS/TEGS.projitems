@@ -9,10 +9,13 @@
     <Import_RootNamespace>TEGS</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Libraries\StaticLibrary.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Libraries\MathLibrary.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DebugLogger.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Edge.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Expressions\IContext.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graph.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Libraries\ILibrary.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)RandomExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Expressions\Node.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Schedule.cs" />

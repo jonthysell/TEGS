@@ -28,6 +28,8 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
+using TEGS.Libraries;
+
 namespace TEGS
 {
     public delegate void SimulationStateChangedEventHandler(object sender, SimulationStateEventArgs e);
@@ -42,7 +44,7 @@ namespace TEGS
 
     public delegate void EdgeFiredEventHandler(object sender, EdgeEventArgs e);
 
-    public class Simulation
+    public class Simulation : ILibrary
     {
         public Graph Graph => Args.Graph;
 
@@ -87,18 +89,18 @@ namespace TEGS
 
         private Dictionary<Vertex, IReadOnlyList<StateVariable>> _vertexToParameterCache = new Dictionary<Vertex, IReadOnlyList<StateVariable>>();
 
+        public IEnumerable<KeyValuePair<string, CustomFunction>> GetCustomFunctions()
+        {
+            yield return new KeyValuePair<string, CustomFunction>("t_clock", (args) => new VariableValue(Clock));
+        }
+
         public Simulation(SimulationArgs args)
         {
             Args = args ?? throw new ArgumentNullException(nameof(args));
 
             Schedule = new Schedule(Graph);
 
-            InitCustomFunctions();
-        }
-
-        private void InitCustomFunctions()
-        {
-            ScriptingHost.AddCustomFunction("t_clock", (argumentValues) => new VariableValue(Clock));
+            ScriptingHost.LoadLibrary(this);
         }
 
         public void Run()
