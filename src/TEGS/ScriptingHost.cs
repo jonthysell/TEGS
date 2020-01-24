@@ -40,6 +40,7 @@ namespace TEGS
         private readonly Dictionary<string, CustomFunction> _customFunctions = new Dictionary<string, CustomFunction>();
 
         private readonly Dictionary<string, Node> _parsedNodes = new Dictionary<string, Node>();
+        private readonly Dictionary<string, List<Node>> _parsedCode = new Dictionary<string, List<Node>>();
 
         private Random _random;
 
@@ -49,7 +50,7 @@ namespace TEGS
             LoadLibrary(new MathLibrary());
         }
 
-        private VariableValue ParseAndEvaluate(string expression)
+        private Node GetCachedNode(string expression)
         {
             if (!_parsedNodes.TryGetValue(expression, out Node node))
             {
@@ -57,7 +58,12 @@ namespace TEGS
                 _parsedNodes[expression] = node;
             }
 
-            return node.Evaluate(this);
+            return node;
+        }
+
+        private VariableValue ParseAndEvaluate(string expression)
+        {
+            return GetCachedNode(expression).Evaluate(this);
         }
 
         #region Execution
@@ -66,10 +72,21 @@ namespace TEGS
         {
             if (!string.IsNullOrWhiteSpace(code))
             {
-                string[] lines = code.Split(LineSeparators, StringSplitOptions.RemoveEmptyEntries);
-                for (int i = 0; i < lines.Length; i++)
+                if (!_parsedCode.TryGetValue(code, out List<Node> nodes))
                 {
-                    ParseAndEvaluate(lines[i]);
+                    string[] lines = code.Split(LineSeparators, StringSplitOptions.RemoveEmptyEntries);
+
+                    nodes = new List<Node>(lines.Length);
+                    for (int i = 0; i < lines.Length; i++)
+                    {
+                        nodes.Add(GetCachedNode(lines[i]));
+                    }
+                    _parsedCode[code] = nodes;
+                }
+                
+                for (int i = 0; i < nodes.Count; i++)
+                {
+                    nodes[i].Evaluate(this);
                 }
             }
         }
