@@ -82,7 +82,33 @@ namespace TEGS.Expressions
 
         private Node ParseAnd() => ParseEqualsNotEquals();
 
-        private Node ParseEqualsNotEquals() => ParseLessThanGreaterThan();
+        private Node ParseEqualsNotEquals()
+        {
+            Node lhs = ParseLessThanGreaterThan();
+
+            while (true)
+            {
+                switch (Tokens.CurrentToken)
+                {
+                    case TokenType.Equals:
+                        {
+                            Tokens.ReadNext();
+                            Node rhs = ParseLessThanGreaterThan();
+                            lhs = new NodeEquals(lhs, rhs);
+                            continue;
+                        }
+                    case TokenType.NotEquals:
+                        {
+                            Tokens.ReadNext();
+                            Node rhs = ParseLessThanGreaterThan();
+                            lhs = new NodeNotEquals(lhs, rhs);
+                            continue;
+                        }
+                    default:
+                        return lhs;
+                }
+            }
+        }
 
         private Node ParseLessThanGreaterThan()
         {
@@ -194,6 +220,9 @@ namespace TEGS.Expressions
                     case TokenType.Subtract:
                         Tokens.ReadNext();
                         return new NodeNegative(ParseUnary());
+                    case TokenType.Not:
+                        Tokens.ReadNext();
+                        return new NodeNot(ParseUnary());
                     default:
                         return ParseLeaf();
                 }

@@ -101,21 +101,49 @@ namespace TEGS
             }
         }
 
+        public override bool Equals(object obj)
+        {
+            if (obj is VariableValue other)
+            {
+                return Equals(other);
+            }
+
+            return false;
+        }
+
+        public override int GetHashCode()
+        {
+            int hash = 17;
+            hash = hash * 31 + Type.GetHashCode();
+            hash = hash * 31 + AsDouble().GetHashCode();
+            return hash;
+        }
+
         public bool Equals(VariableValue other)
         {
-            if (Type == other.Type)
+            if (Type == VariableValueType.Boolean && other.Type == VariableValueType.Boolean)
             {
-                switch (Type)
-                {
-                    case VariableValueType.Boolean:
-                        return _value.BooleanValue == other._value.BooleanValue;
-                    case VariableValueType.Integer:
-                        return _value.IntegerValue == other._value.IntegerValue;
-                    case VariableValueType.Double:
-                        return _value.DoubleValue == other._value.DoubleValue;
-                    default:
-                        return _objectValue == other._objectValue;
-                }
+                return BooleanValue == other.BooleanValue;
+            }
+            else if (Type == VariableValueType.Integer && other.Type == VariableValueType.Integer)
+            {
+                return IntegerValue == other.IntegerValue;
+            }
+            else if (Type == VariableValueType.Double && other.Type == VariableValueType.Double)
+            {
+                return DoubleValue == other.DoubleValue;
+            }
+            else if (Type == VariableValueType.String && other.Type == VariableValueType.String)
+            {
+                return StringValue == other.StringValue;
+            }
+            else if (Type == VariableValueType.Integer && other.Type == VariableValueType.Double)
+            {
+                return other.AsDouble() == other.DoubleValue;
+            }
+            else if (Type == VariableValueType.Double && other.Type == VariableValueType.Integer)
+            {
+                return DoubleValue == other.AsDouble();
             }
 
             return false;
@@ -139,6 +167,17 @@ namespace TEGS
                     return new VariableValue(-a.IntegerValue);
                 case VariableValueType.Double:
                     return new VariableValue(-a.DoubleValue);
+            }
+
+            throw new ArithmeticException();
+        }
+
+        public static VariableValue operator !(VariableValue a)
+        {
+            switch (a.Type)
+            {
+                case VariableValueType.Boolean:
+                    return new VariableValue(!a.BooleanValue);
             }
 
             throw new ArithmeticException();

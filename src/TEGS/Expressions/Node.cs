@@ -113,6 +113,23 @@ namespace TEGS.Expressions
         }
     }
 
+    public class NodeNot : NodeUnary
+    {
+        public NodeNot(Node rhs) : base(rhs) { }
+
+        public override VariableValue Evaluate(IContext context)
+        {
+            try
+            {
+                return !RHS.Evaluate(context);
+            }
+            catch (ArithmeticException)
+            {
+                throw new NodeEvaluateException(this);
+            }
+        }
+    }
+
     public abstract class NodeBinary : NodeUnary
     {
         public Node LHS { get; private set; }
@@ -267,6 +284,40 @@ namespace TEGS.Expressions
             try
             {
                 return new VariableValue(LHS.Evaluate(context) >= RHS.Evaluate(context));
+            }
+            catch (ArithmeticException)
+            {
+                throw new NodeEvaluateException(this);
+            }
+        }
+    }
+
+    public class NodeEquals : NodeBinary
+    {
+        public NodeEquals(Node lhs, Node rhs) : base(lhs, rhs) { }
+
+        public override VariableValue Evaluate(IContext context)
+        {
+            try
+            {
+                return new VariableValue(LHS.Evaluate(context) == RHS.Evaluate(context));
+            }
+            catch (ArithmeticException)
+            {
+                throw new NodeEvaluateException(this);
+            }
+        }
+    }
+
+    public class NodeNotEquals : NodeBinary
+    {
+        public NodeNotEquals(Node lhs, Node rhs) : base(lhs, rhs) { }
+
+        public override VariableValue Evaluate(IContext context)
+        {
+            try
+            {
+                return new VariableValue(LHS.Evaluate(context) != RHS.Evaluate(context));
             }
             catch (ArithmeticException)
             {

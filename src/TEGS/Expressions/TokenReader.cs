@@ -132,7 +132,15 @@ namespace TEGS.Expressions
                     return true;
                 case '=':
                     ReadChar();
-                    result = TokenType.Assign;
+                    if (CurrentChar == '=')
+                    {
+                        ReadChar();
+                        result = TokenType.Equals;
+                    }
+                    else
+                    {
+                        result = TokenType.Assign;
+                    }
                     return true;
                 case '<':
                     ReadChar();
@@ -156,6 +164,18 @@ namespace TEGS.Expressions
                     else
                     {
                         result = TokenType.GreaterThan;
+                    }
+                    return true;
+                case '!':
+                    ReadChar();
+                    if (CurrentChar == '=')
+                    {
+                        ReadChar();
+                        result = TokenType.NotEquals;
+                    }
+                    else
+                    {
+                        result = TokenType.Not;
                     }
                     return true;
             }
@@ -229,6 +249,9 @@ namespace TEGS.Expressions
         GreaterThan,
         LessThanEquals,
         GreaterThanEquals,
+        Not,
+        Equals,
+        NotEquals,
         Symbol,
         Value,
     }
