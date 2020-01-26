@@ -44,13 +44,7 @@ namespace TEGS
         private readonly Dictionary<string, Node> _parsedNodes = new Dictionary<string, Node>();
         private readonly Dictionary<string, List<Node>> _parsedCode = new Dictionary<string, List<Node>>();
 
-        private Random _random;
-
-        public ScriptingHost()
-        {
-            LoadLibrary(ReflectionLibrary.Create(this));
-            LoadLibrary(ReflectionLibrary.Create(typeof(MathLibrary)));
-        }
+        public ScriptingHost() { }
 
         private Node GetCachedNode(string expression)
         {
@@ -340,71 +334,6 @@ namespace TEGS
             {
                 _customFunctions[name] = function;
             }
-        }
-
-        [LibraryFunction]
-        private VariableValue UniformVariate(VariableValue[] args)
-        {
-            if (args == null || args.Length == 0)
-            {
-                return new VariableValue(_random.UniformVariate(0, 1));
-            }
-            else if (args.Length == 2)
-            {
-                return new VariableValue(_random.UniformVariate(args[0].AsNumber(), args[1].AsNumber()));
-            }
-
-            throw new ArgumentOutOfRangeException(nameof(args));
-        }
-
-        [LibraryFunction]
-        private VariableValue ExponentialVariate(VariableValue[] args)
-        {
-            if (args != null && args.Length == 1)
-            {
-                return new VariableValue(_random.ExponentialVariate(args[0].AsNumber()));
-            }
-
-            throw new ArgumentOutOfRangeException(nameof(args));
-        }
-
-        [LibraryFunction]
-        private VariableValue NormalVariate(VariableValue[] args)
-        {
-            if (args != null && args.Length == 2)
-            {
-                return new VariableValue(_random.NormalVariate(args[0].AsNumber(), args[1].AsNumber()));
-            }
-
-            throw new ArgumentOutOfRangeException(nameof(args));
-        }
-
-        [LibraryFunction]
-        private VariableValue LogNormalVariate(VariableValue[] args)
-        {
-            if (args != null && args.Length == 2)
-            {
-                return new VariableValue(_random.LogNormalVariate(args[0].AsNumber(), args[1].AsNumber()));
-            }
-
-            throw new ArgumentOutOfRangeException(nameof(args));
-        }
-
-        #endregion
-
-        #region Seed
-
-        public void SetSeed()
-        {
-            // Adapted from http://lua-users.org/wiki/MathLibraryTutorial
-            char[] c = DateTime.UtcNow.Ticks.ToString().ToCharArray();
-            Array.Reverse(c);
-            SetSeed(int.Parse(new string(c).Substring(1, 6)));
-        }
-
-        public void SetSeed(int seed)
-        {
-            _random = new Random(seed);
         }
 
         #endregion

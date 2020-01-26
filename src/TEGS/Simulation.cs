@@ -50,7 +50,7 @@ namespace TEGS
 
         public IList<TraceExpression> TraceExpressions => Args.TraceExpressions;
 
-        public ScriptingHost ScriptingHost => Args.ScriptingHost;
+        public ScriptingHost ScriptingHost { get; private set; }
 
         public SimulationArgs Args { get; private set; }
 
@@ -94,8 +94,6 @@ namespace TEGS
             Args = args ?? throw new ArgumentNullException(nameof(args));
 
             Schedule = new Schedule(Graph);
-
-            ScriptingHost.LoadLibrary(ReflectionLibrary.Create(this));
         }
 
         #region Simulation Operations
@@ -171,20 +169,17 @@ namespace TEGS
 
         private void Start()
         {
+            // Create scripting host and load libraries
+
+            ScriptingHost = new ScriptingHost();
+            ScriptingHost.LoadLibrary(Library.Create(this));
+            ScriptingHost.LoadLibrary(Library.Create(typeof(MathLibrary)));
+            ScriptingHost.LoadLibrary(Library.Create(new RandomVariateLibrary()));
+
             // Initialize state variables
             foreach (StateVariable stateVariable in Graph.StateVariables.Values)
             {
                 ScriptingHost.Create(stateVariable);
-            }
-
-            // Set seed
-            if (Args.StartingSeed.HasValue)
-            {
-                ScriptingHost.SetSeed(Args.StartingSeed.Value);
-            }
-            else
-            {
-                ScriptingHost.SetSeed();
             }
 
             // Initialize clock

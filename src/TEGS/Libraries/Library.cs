@@ -1,5 +1,5 @@
 ﻿// 
-// ReflectionLibrary.cs
+// Library.cs
 //  
 // Author:
 //       Jon Thysell <thysell@gmail.com>
@@ -25,12 +25,15 @@
 // THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 
 namespace TEGS.Libraries
 {
-    public class ReflectionLibrary : StaticLibrary
+    public class Library : ILibrary
     {
+        #region Properties
+
         public TypeInfo TypeInfo
         {
             get
@@ -46,13 +49,21 @@ namespace TEGS.Libraries
 
         public object Instance { get; private set; } = null;
 
-        protected ReflectionLibrary()
+        protected Dictionary<string, VariableValue> Constants { get; private set; } = new Dictionary<string, VariableValue>();
+
+        protected Dictionary<string, CustomFunction> Functions { get; private set; } = new Dictionary<string, CustomFunction>();
+
+        #endregion
+
+        #region Constructors
+
+        protected Library()
         {
             RegisterConstants();
             RegisterCustomFunctions();
         }
 
-        private ReflectionLibrary(TypeInfo typeInfo)
+        private Library(TypeInfo typeInfo)
         {
             TypeInfo = typeInfo ?? throw new ArgumentNullException(nameof(typeInfo));
 
@@ -60,7 +71,7 @@ namespace TEGS.Libraries
             RegisterCustomFunctions();
         }
 
-        private ReflectionLibrary(object instance)
+        private Library(object instance)
         {
             Instance = instance ?? throw new ArgumentNullException(nameof(instance));
             TypeInfo = instance.GetType().GetTypeInfo();
@@ -69,9 +80,21 @@ namespace TEGS.Libraries
             RegisterCustomFunctions();
         }
 
-        public static ReflectionLibrary Create(Type type) => new ReflectionLibrary(type.GetTypeInfo());
+        #endregion
 
-        public static ReflectionLibrary Create(object instance) => new ReflectionLibrary(instance);
+        #region ILibrary
+
+        public IEnumerable<KeyValuePair<string, VariableValue>> GetConstants() => Constants;
+
+        public IEnumerable<KeyValuePair<string, CustomFunction>> GetCustomFunctions() => Functions;
+
+        #endregion
+
+        #region Reflection
+
+        public static Library Create(Type type) => new Library(type.GetTypeInfo());
+
+        public static Library Create(object instance) => new Library(instance);
 
         private void RegisterConstants()
         {
@@ -114,5 +137,7 @@ namespace TEGS.Libraries
                 }
             }
         }
+
+        #endregion
     }
 }

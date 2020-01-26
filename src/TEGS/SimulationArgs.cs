@@ -33,8 +33,6 @@ namespace TEGS
     {
         public Graph Graph { get; private set; }
 
-        public ScriptingHost ScriptingHost { get; private set; } = new ScriptingHost();
-
         public int? StartingSeed { get; set; } = null;
 
         public IReadOnlyList<string> StartParameterExpressions { get; set; } = null;

@@ -10,8 +10,8 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Libraries\LibraryAttributes.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Libraries\ReflectionLibrary.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Libraries\StaticLibrary.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Libraries\RandomVariateLibrary.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Libraries\Library.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Libraries\MathLibrary.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DebugLogger.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Edge.cs" />
