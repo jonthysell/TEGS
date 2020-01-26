@@ -174,6 +174,7 @@ namespace TEGS
             ScriptingHost = new ScriptingHost();
             ScriptingHost.LoadLibrary(Library.Create(this));
             ScriptingHost.LoadLibrary(Library.Create(typeof(MathLibrary)));
+            ScriptingHost.LoadLibrary(Library.Create(typeof(StringLibrary)));
             ScriptingHost.LoadLibrary(Library.Create(new RandomVariateLibrary()));
 
             // Initialize state variables

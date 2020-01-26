@@ -75,7 +75,9 @@ namespace TEGS.Test
                 new ParseAndEvaluateTestCase("1 + 1", 1 + 1),
                 new ParseAndEvaluateTestCase("1.0 + 1.0", 1.0 + 1.0),
                 new ParseAndEvaluateTestCase("-1 + -1", -1 + -1),
-                new ParseAndEvaluateTestCase("-1.0 + -1.0", -1.0 + -1.0)
+                new ParseAndEvaluateTestCase("-1.0 + -1.0", -1.0 + -1.0),
+                new ParseAndEvaluateTestCase(@"""""+""""", ""+""),
+                new ParseAndEvaluateTestCase(@"""test""+""test""", "test"+"test"),
             };
 
             IContext context = new TestContext();
