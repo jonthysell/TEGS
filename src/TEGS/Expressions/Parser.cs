@@ -309,7 +309,14 @@ namespace TEGS.Expressions
 
                         if (Tokens.CurrentToken != TokenType.OpenParens)
                         {
-                            return new NodeVariable(name);
+                            if (bool.TryParse(name, out bool result))
+                            {
+                                return new NodeValue(new VariableValue(result));
+                            }
+                            else
+                            {
+                                return new NodeVariable(name);
+                            }
                         }
                         else
                         {

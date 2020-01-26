@@ -37,8 +37,8 @@ namespace TEGS
         private readonly Dictionary<StateVariable, VariableValue> _stateVariables = new Dictionary<StateVariable, VariableValue>();
         private readonly Dictionary<string, VariableValue> _stateVariablesByName = new Dictionary<string, VariableValue>();
 
+        private readonly HashSet<string> _reservedKeywords = new HashSet<string>() { "true", "false" };
         private readonly Dictionary<string, VariableValue> _constants = new Dictionary<string, VariableValue>();
-
         private readonly Dictionary<string, CustomFunction> _customFunctions = new Dictionary<string, CustomFunction>();
 
         private readonly Dictionary<string, Node> _parsedNodes = new Dictionary<string, Node>();
@@ -160,14 +160,11 @@ namespace TEGS
                 throw new StateVariableAlreadyExistsException(stateVariable.Name);
             }
 
-            if (_constants.ContainsKey(stateVariable.Name))
+            if (_reservedKeywords.Contains(stateVariable.Name) ||
+                _constants.ContainsKey(stateVariable.Name) ||
+                _customFunctions.ContainsKey(stateVariable.Name))
             {
-                throw new StateVariableConstantAlreadyExistsException(stateVariable.Name);
-            }
-
-            if (_customFunctions.ContainsKey(stateVariable.Name))
-            {
-                throw new StateVariableCustomFunctionAlreadyExistsException(stateVariable.Name);
+                throw new StateVariableInvalidNameException(stateVariable.Name);
             }
 
             _stateVariables[stateVariable] = new VariableValue(stateVariable.Type);
@@ -361,16 +358,6 @@ namespace TEGS
 
     #region Exceptions
 
-    public class StateVariableAssignmentException : StateVariableException
-    {
-        public readonly VariableValue NewValue;
-
-        public StateVariableAssignmentException(StateVariable stateVariable, VariableValue newValue) : base(stateVariable)
-        {
-            NewValue = newValue;
-        }
-    }
-
     public class StateVariableAlreadyExistsException : Exception
     {
         public readonly string Name;
@@ -391,21 +378,21 @@ namespace TEGS
         }
     }
 
-    public class StateVariableConstantAlreadyExistsException : Exception
+    public class StateVariableAssignmentException : StateVariableException
     {
-        public readonly string Name;
+        public readonly VariableValue NewValue;
 
-        public StateVariableConstantAlreadyExistsException(string name) : base()
+        public StateVariableAssignmentException(StateVariable stateVariable, VariableValue newValue) : base(stateVariable)
         {
-            Name = name;
+            NewValue = newValue;
         }
     }
 
-    public class StateVariableCustomFunctionAlreadyExistsException : Exception
+    public class StateVariableInvalidNameException : Exception
     {
         public readonly string Name;
 
-        public StateVariableCustomFunctionAlreadyExistsException(string name) : base()
+        public StateVariableInvalidNameException(string name) : base()
         {
             Name = name;
         }

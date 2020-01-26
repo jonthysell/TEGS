@@ -42,6 +42,8 @@ namespace TEGS.Test
         {
             List<ParseAndEvaluateTestCase> tests = new List<ParseAndEvaluateTestCase>()
             {
+                new ParseAndEvaluateTestCase("true", true),
+                new ParseAndEvaluateTestCase("false", false),
                 new ParseAndEvaluateTestCase("0", 0),
                 new ParseAndEvaluateTestCase("0.0", 0.0),
                 new ParseAndEvaluateTestCase("1", 1),
