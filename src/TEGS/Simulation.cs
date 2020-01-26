@@ -44,7 +44,7 @@ namespace TEGS
 
     public delegate void EdgeFiredEventHandler(object sender, EdgeEventArgs e);
 
-    public class Simulation : ILibrary
+    public class Simulation
     {
         public Graph Graph => Args.Graph;
 
@@ -89,19 +89,16 @@ namespace TEGS
 
         private Dictionary<Vertex, IReadOnlyList<StateVariable>> _vertexToParameterCache = new Dictionary<Vertex, IReadOnlyList<StateVariable>>();
 
-        public IEnumerable<KeyValuePair<string, CustomFunction>> GetCustomFunctions()
-        {
-            yield return new KeyValuePair<string, CustomFunction>("t_clock", (args) => new VariableValue(Clock));
-        }
-
         public Simulation(SimulationArgs args)
         {
             Args = args ?? throw new ArgumentNullException(nameof(args));
 
             Schedule = new Schedule(Graph);
 
-            ScriptingHost.LoadLibrary(this);
+            ScriptingHost.LoadLibrary(ReflectionLibrary.Create(this));
         }
+
+        #region Simulation Operations
 
         public void Run()
         {
@@ -267,36 +264,6 @@ namespace TEGS
             }
         }
 
-        private void OnSimulationStateChanged()
-        {
-            SimulationStateChanged?.Invoke(this, new SimulationStateEventArgs(State));
-        }
-
-        private void OnClockChanged()
-        {
-            ClockChanged?.Invoke(this, new ClockChangedEventArgs(Clock));
-        }
-
-        private void OnVertexFiring(Vertex vertex)
-        {
-            VertexFiring?.Invoke(this, new VertexEventArgs(Clock, vertex, TraceExpressions));
-        }
-
-        private void OnVertexFired(Vertex vertex)
-        {
-            VertexFired?.Invoke(this, new VertexEventArgs(Clock, vertex, TraceExpressions));
-        }
-
-        private void OnEdgeFiring(Edge edge)
-        {
-            EdgeFiring?.Invoke(this, new EdgeEventArgs(Clock, edge));
-        }
-
-        private void OnEdgeFired(Edge edge)
-        {
-            EdgeFired?.Invoke(this, new EdgeEventArgs(Clock ,edge));
-        }
-
         private IReadOnlyList<StateVariable> GetStateVariables(Vertex target)
         {
             if (!_vertexToParameterCache.TryGetValue(target, out IReadOnlyList<StateVariable> stateVariables))
@@ -355,6 +322,52 @@ namespace TEGS
 
             return null;
         }
+
+        #endregion
+
+        #region Events
+
+        private void OnSimulationStateChanged()
+        {
+            SimulationStateChanged?.Invoke(this, new SimulationStateEventArgs(State));
+        }
+
+        private void OnClockChanged()
+        {
+            ClockChanged?.Invoke(this, new ClockChangedEventArgs(Clock));
+        }
+
+        private void OnVertexFiring(Vertex vertex)
+        {
+            VertexFiring?.Invoke(this, new VertexEventArgs(Clock, vertex, TraceExpressions));
+        }
+
+        private void OnVertexFired(Vertex vertex)
+        {
+            VertexFired?.Invoke(this, new VertexEventArgs(Clock, vertex, TraceExpressions));
+        }
+
+        private void OnEdgeFiring(Edge edge)
+        {
+            EdgeFiring?.Invoke(this, new EdgeEventArgs(Clock, edge));
+        }
+
+        private void OnEdgeFired(Edge edge)
+        {
+            EdgeFired?.Invoke(this, new EdgeEventArgs(Clock, edge));
+        }
+
+        #endregion
+
+        #region Custom Functions
+
+        [LibraryFunction(Name="Clock")]
+        private VariableValue GetClock(VariableValue[] args)
+        {
+            return new VariableValue(Clock);
+        }
+
+        #endregion
     }
 
     public enum SimulationState

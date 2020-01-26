@@ -1,10 +1,10 @@
 ﻿// 
-// CarwashSimulation.cs
+// Simulation.cs
 //  
 // Author:
 //       Jon Thysell <thysell@gmail.com>
 // 
-// Copyright (c) 2019 Jon Thysell <http://jonthysell.com>
+// Copyright (c) 2019, 2020 Jon Thysell <http://jonthysell.com>
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -81,7 +81,7 @@ namespace Carwash
             QUEUE = QUEUE + 1;
 
             // Edges
-            ScheduleEvent(EventType.ENTER, delay: t_uniformvariate(3, 8), priority: 6, parameterValues: null);
+            ScheduleEvent(EventType.ENTER, delay: UniformVariate(3, 8), priority: 6, parameterValues: null);
             if (SERVERS > 0)
             {
                 ScheduleEvent(EventType.START, delay: 0, priority: 5, parameterValues: null);
@@ -95,7 +95,7 @@ namespace Carwash
             QUEUE = QUEUE - 1;
 
             // Edges
-            ScheduleEvent(EventType.LEAVE, delay: t_uniformvariate(5, 20), priority: 6, parameterValues: null);
+            ScheduleEvent(EventType.LEAVE, delay: UniformVariate(5, 20), priority: 6, parameterValues: null);
         }
 
         public void Event_LEAVE()

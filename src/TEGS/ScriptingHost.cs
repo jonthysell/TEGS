@@ -32,10 +32,12 @@ using TEGS.Libraries;
 
 namespace TEGS
 {
-    public class ScriptingHost : IContext, ILibrary
+    public class ScriptingHost : IContext
     {
         private readonly Dictionary<StateVariable, VariableValue> _stateVariables = new Dictionary<StateVariable, VariableValue>();
         private readonly Dictionary<string, VariableValue> _stateVariablesByName = new Dictionary<string, VariableValue>();
+
+        private readonly Dictionary<string, VariableValue> _constants = new Dictionary<string, VariableValue>();
 
         private readonly Dictionary<string, CustomFunction> _customFunctions = new Dictionary<string, CustomFunction>();
 
@@ -46,8 +48,8 @@ namespace TEGS
 
         public ScriptingHost()
         {
-            LoadLibrary(this);
-            LoadLibrary(new MathLibrary());
+            LoadLibrary(ReflectionLibrary.Create(this));
+            LoadLibrary(ReflectionLibrary.Create(typeof(MathLibrary)));
         }
 
         private Node GetCachedNode(string expression)
@@ -275,6 +277,42 @@ namespace TEGS
 
         #endregion
 
+        #region Library
+
+        public void LoadLibrary(ILibrary library)
+        {
+            if (null == library)
+            {
+                throw new ArgumentNullException(nameof(library));
+            }
+
+            foreach (var kvp in library.GetConstants())
+            {
+                AssignConstant(kvp.Key, kvp.Value);
+            }
+
+            foreach (var kvp in library.GetCustomFunctions())
+            {
+                AssignCustomFunction(kvp.Key, kvp.Value);
+            }
+        }
+
+        #endregion
+
+        #region Constants
+
+        public void AssignConstant(string name, VariableValue value)
+        {
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                throw new ArgumentNullException(nameof(name));
+            }
+
+            _constants[name] = value;
+        }
+
+        #endregion
+
         #region Custom Functions
 
         public void AssignCustomFunction(string name, CustomFunction function)
@@ -294,27 +332,7 @@ namespace TEGS
             }
         }
 
-        public void LoadLibrary(ILibrary library)
-        {
-            if (null == library)
-            {
-                throw new ArgumentNullException(nameof(library));
-            }
-
-            foreach (var kvp in library.GetCustomFunctions())
-            {
-                AssignCustomFunction(kvp.Key, kvp.Value);
-            }
-        }
-
-        public IEnumerable<KeyValuePair<string, CustomFunction>> GetCustomFunctions()
-        {
-            yield return new KeyValuePair<string, CustomFunction>("t_uniformvariate", UniformVariate);
-            yield return new KeyValuePair<string, CustomFunction>("t_expovariate", ExponentialVariate);
-            yield return new KeyValuePair<string, CustomFunction>("t_normalvariate", NormalVariate);
-            yield return new KeyValuePair<string, CustomFunction>("t_lognormalvariate", LogNormalVariate);
-        }
-
+        [LibraryFunction]
         private VariableValue UniformVariate(VariableValue[] args)
         {
             if (args == null || args.Length == 0)
@@ -329,6 +347,7 @@ namespace TEGS
             throw new ArgumentOutOfRangeException(nameof(args));
         }
 
+        [LibraryFunction]
         private VariableValue ExponentialVariate(VariableValue[] args)
         {
             if (args != null && args.Length == 1)
@@ -339,6 +358,7 @@ namespace TEGS
             throw new ArgumentOutOfRangeException(nameof(args));
         }
 
+        [LibraryFunction]
         private VariableValue NormalVariate(VariableValue[] args)
         {
             if (args != null && args.Length == 2)
@@ -349,6 +369,7 @@ namespace TEGS
             throw new ArgumentOutOfRangeException(nameof(args));
         }
 
+        [LibraryFunction]
         private VariableValue LogNormalVariate(VariableValue[] args)
         {
             if (args != null && args.Length == 2)

@@ -30,6 +30,7 @@ namespace TEGS.Libraries
 {
     public interface ILibrary
     {
+        IEnumerable<KeyValuePair<string, VariableValue>> GetConstants();
         IEnumerable<KeyValuePair<string, CustomFunction>> GetCustomFunctions();
     }
 }

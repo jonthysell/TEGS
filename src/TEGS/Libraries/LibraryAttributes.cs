@@ -1,5 +1,5 @@
 ﻿// 
-// StaticLibrary.cs
+// LibraryAttributes.cs
 //  
 // Author:
 //       Jon Thysell <thysell@gmail.com>
@@ -25,18 +25,22 @@
 // THE SOFTWARE.
 
 using System;
-using System.Collections.Generic;
 
 namespace TEGS.Libraries
 {
-    public abstract class StaticLibrary : ILibrary
+    [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field)]
+    public class LibraryConstantAttribute : Attribute
     {
-        protected Dictionary<string, VariableValue> Constants { get; private set; } = new Dictionary<string, VariableValue>();
+        public string Name { get; set; } = null;
 
-        protected Dictionary<string, CustomFunction> Functions { get; private set; } = new Dictionary<string, CustomFunction>();
+        public LibraryConstantAttribute() { }
+    }
 
-        public IEnumerable<KeyValuePair<string, VariableValue>> GetConstants() => Constants;
+    [AttributeUsage(AttributeTargets.Method)]
+    public class LibraryFunctionAttribute : Attribute
+    {
+        public string Name { get; set; } = null;
 
-        public IEnumerable<KeyValuePair<string, CustomFunction>> GetCustomFunctions() => Functions;
+        public LibraryFunctionAttribute() { }
     }
 }

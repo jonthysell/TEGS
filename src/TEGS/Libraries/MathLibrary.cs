@@ -28,14 +28,15 @@ using System;
 
 namespace TEGS.Libraries
 {
-    public class MathLibrary : StaticLibrary
+    public class MathLibrary
     {
-        public MathLibrary()
-        {
-            Functions.Add("t_min", Min);
-            Functions.Add("t_max", Min);
-        }
+        [LibraryConstant]
+        public static readonly VariableValue PI = new VariableValue(Math.PI);
 
+        [LibraryConstant]
+        public static readonly VariableValue E = new VariableValue(Math.E);
+
+        [LibraryFunction]
         public static VariableValue Min(VariableValue[] args)
         {
             if (args != null && args.Length == 2)
@@ -53,6 +54,7 @@ namespace TEGS.Libraries
             throw new ArgumentOutOfRangeException(nameof(args));
         }
 
+        [LibraryFunction]
         public static VariableValue Max(VariableValue[] args)
         {
             if (args != null && args.Length == 2)

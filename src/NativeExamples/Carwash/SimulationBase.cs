@@ -4,7 +4,7 @@
 // Author:
 //       Jon Thysell <thysell@gmail.com>
 // 
-// Copyright (c) 2019 Jon Thysell <http://jonthysell.com>
+// Copyright (c) 2019, 2020 Jon Thysell <http://jonthysell.com>
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -122,9 +122,9 @@ namespace Carwash
             }
         }
 
-        protected double t_clock() => _clock;
+        protected double Clock() => _clock;
 
-        protected double t_uniformvariate(double alpha = 0.0, double beta = 1.0)
+        protected double UniformVariate(double alpha, double beta)
         {
             return alpha + (beta - alpha) * _random.NextDouble();
         }
