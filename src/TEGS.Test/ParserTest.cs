@@ -49,7 +49,15 @@ namespace TEGS.Test
                 new ParseAndEvaluateTestCase("1", 1),
                 new ParseAndEvaluateTestCase("1.0", 1.0),
                 new ParseAndEvaluateTestCase("-1", -1),
-                new ParseAndEvaluateTestCase("-1.0", -1.0)
+                new ParseAndEvaluateTestCase("-1.0", -1.0),
+                new ParseAndEvaluateTestCase(@"""""", ""),
+                new ParseAndEvaluateTestCase(@""" """, " "),
+                new ParseAndEvaluateTestCase(@"""test""", "test"),
+                new ParseAndEvaluateTestCase(@"""\""""", "\""),
+                new ParseAndEvaluateTestCase(@"""\r""", "\r"),
+                new ParseAndEvaluateTestCase(@"""\n""", "\n"),
+                new ParseAndEvaluateTestCase(@"""\t""", "\t"),
+                new ParseAndEvaluateTestCase(@"""\r\n""", "\r\n"),
             };
 
             IContext context = new TestContext();

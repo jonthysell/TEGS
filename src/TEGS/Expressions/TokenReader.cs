@@ -27,7 +27,9 @@
 // Adapted from https://medium.com/@toptensoftware/writing-a-simple-math-expression-engine-in-c-d414de18d4ce
 
 using System;
+using System.Collections.Generic;
 using System.Globalization;
+using System.Text;
 
 namespace TEGS.Expressions
 {
@@ -210,7 +212,7 @@ namespace TEGS.Expressions
 
         private bool TryParseValue(out VariableValue result)
         {
-            if (char.IsDigit(CurrentChar) || CurrentChar == '.')
+            if (char.IsDigit(CurrentChar) || CurrentChar == '.') // Number
             {
                 int startIndex = CurrentIndex;
                 bool hasDecimalPoint = false;
@@ -226,10 +228,9 @@ namespace TEGS.Expressions
                 result = hasDecimalPoint ? new VariableValue(double.Parse(value, CultureInfo.InvariantCulture)) : new VariableValue(int.Parse(value, CultureInfo.InvariantCulture));
                 return true;
             }
-            else if (CurrentChar == 't' || CurrentChar == 'f')
+            else if (CurrentChar == 't' || CurrentChar == 'f') // Boolean
             {
-                int startIndex = CurrentIndex;
-                string remaining = Expression.Substring(startIndex);
+                string remaining = Expression.Substring(CurrentIndex);
 
                 if (remaining.StartsWith("true"))
                 {
@@ -241,6 +242,43 @@ namespace TEGS.Expressions
                 {
                     result = new VariableValue(false);
                     ReadChar("false".Length);
+                    return true;
+                }
+            }
+            else if (CurrentChar == '"') // String
+            {
+                StringBuilder sb = new StringBuilder();
+
+                bool foundClosingQuote = false;
+
+                while (CurrentChar != EndChar)
+                {
+                    ReadChar();
+
+                    if (CurrentChar == '"')
+                    {
+                        foundClosingQuote = true;
+                        break;
+                    }
+                    else if (CurrentChar == '\\')
+                    {
+                        ReadChar();
+                        if (EscapedChars.TryGetValue(CurrentChar, out char escapedChar))
+                        {
+                            sb.Append(escapedChar);
+                        }
+                    }
+                    else
+                    {
+                        sb.Append(CurrentChar);
+                    }
+                }
+
+                if (foundClosingQuote)
+                {
+                    ReadChar();
+
+                    result = new VariableValue(sb.ToString());
                     return true;
                 }
             }
@@ -275,6 +313,15 @@ namespace TEGS.Expressions
         }
 
         protected const char EndChar = '\0';
+
+        protected readonly static Dictionary<char, char> EscapedChars = new Dictionary<char, char>()
+        {
+            { '\\', '\\'},
+            { '"', '"'},
+            { 'r', '\r'},
+            { 'n', '\n'},
+            { 't', '\t'},
+        };
     }
 
     #region Exceptions
