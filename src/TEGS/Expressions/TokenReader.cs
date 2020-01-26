@@ -226,6 +226,24 @@ namespace TEGS.Expressions
                 result = hasDecimalPoint ? new VariableValue(double.Parse(value, CultureInfo.InvariantCulture)) : new VariableValue(int.Parse(value, CultureInfo.InvariantCulture));
                 return true;
             }
+            else if (CurrentChar == 't' || CurrentChar == 'f')
+            {
+                int startIndex = CurrentIndex;
+                string remaining = Expression.Substring(startIndex);
+
+                if (remaining.StartsWith("true"))
+                {
+                    result = new VariableValue(true);
+                    ReadChar("true".Length);
+                    return true;
+                }
+                else if (remaining.StartsWith("false"))
+                {
+                    result = new VariableValue(false);
+                    ReadChar("false".Length);
+                    return true;
+                }
+            }
 
             result = default(VariableValue);
             return false;
@@ -250,9 +268,10 @@ namespace TEGS.Expressions
             return false;
         }
 
-        private void ReadChar()
+        private void ReadChar(int chars = 1)
         {
-            CurrentChar = ++CurrentIndex < Expression.Length ? Expression[CurrentIndex] : EndChar;
+            CurrentIndex += chars;
+            CurrentChar = CurrentIndex < Expression.Length ? Expression[CurrentIndex] : EndChar;
         }
 
         protected const char EndChar = '\0';
