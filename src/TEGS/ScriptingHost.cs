@@ -166,6 +166,16 @@ namespace TEGS
                 throw new StateVariableAlreadyExistsException(stateVariable.Name);
             }
 
+            if (_constants.ContainsKey(stateVariable.Name))
+            {
+                throw new StateVariableConstantAlreadyExistsException(stateVariable.Name);
+            }
+
+            if (_customFunctions.ContainsKey(stateVariable.Name))
+            {
+                throw new StateVariableCustomFunctionAlreadyExistsException(stateVariable.Name);
+            }
+
             _stateVariables[stateVariable] = new VariableValue(stateVariable.Type);
             _stateVariablesByName[stateVariable.Name] = new VariableValue(stateVariable.Type);
         }
@@ -420,6 +430,8 @@ namespace TEGS
         #endregion
     }
 
+    #region Exceptions
+
     public class StateVariableAssignmentException : StateVariableException
     {
         public readonly VariableValue NewValue;
@@ -449,4 +461,26 @@ namespace TEGS
             Name = name;
         }
     }
+
+    public class StateVariableConstantAlreadyExistsException : Exception
+    {
+        public readonly string Name;
+
+        public StateVariableConstantAlreadyExistsException(string name) : base()
+        {
+            Name = name;
+        }
+    }
+
+    public class StateVariableCustomFunctionAlreadyExistsException : Exception
+    {
+        public readonly string Name;
+
+        public StateVariableCustomFunctionAlreadyExistsException(string name) : base()
+        {
+            Name = name;
+        }
+    }
+
+    #endregion
 }
