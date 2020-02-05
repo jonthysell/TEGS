@@ -57,7 +57,7 @@ namespace TEGS.Test
 
                 VariableValue defaultValue = host.Get(sv);
                 Assert.AreEqual(VariableValueType.Boolean, defaultValue.Type);
-                Assert.AreEqual(default(bool), defaultValue.BooleanValue);
+                Assert.AreEqual(default, defaultValue.BooleanValue);
                 
                 host.Assign(sv, new VariableValue(expectedValues[i]));
 
@@ -82,7 +82,7 @@ namespace TEGS.Test
 
                 VariableValue defaultValue = host.Get(sv);
                 Assert.AreEqual(VariableValueType.Integer, defaultValue.Type);
-                Assert.AreEqual(default(int), defaultValue.IntegerValue);
+                Assert.AreEqual(default, defaultValue.IntegerValue);
 
                 host.Assign(sv, new VariableValue(expectedValues[i]));
 
@@ -107,7 +107,7 @@ namespace TEGS.Test
 
                 VariableValue defaultValue = host.Get(sv);
                 Assert.AreEqual(VariableValueType.Double, defaultValue.Type);
-                Assert.AreEqual(default(double), defaultValue.DoubleValue);
+                Assert.AreEqual(default, defaultValue.DoubleValue);
 
                 host.Assign(sv, new VariableValue(expectedValues[i]));
 
@@ -132,7 +132,7 @@ namespace TEGS.Test
 
                 VariableValue defaultValue = host.Get(sv);
                 Assert.AreEqual(VariableValueType.String, defaultValue.Type);
-                Assert.AreEqual(default(string), defaultValue.StringValue);
+                Assert.AreEqual(default, defaultValue.StringValue);
 
                 host.Assign(sv, new VariableValue(expectedValues[i]));
 

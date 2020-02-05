@@ -41,8 +41,8 @@ namespace Carwash
         protected override EventType StartingEvent => EventType.RUN;
 
         // User Variables
-        int QUEUE = default(int);
-        int SERVERS = default(int);
+        int QUEUE = default;
+        int SERVERS = default;
 
         public Simulation() { }
 

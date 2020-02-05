@@ -175,7 +175,7 @@ namespace TEGS
             ScriptingHost.LoadLibrary(Library.Create(this));
             ScriptingHost.LoadLibrary(Library.Create(typeof(MathLibrary)));
             ScriptingHost.LoadLibrary(Library.Create(typeof(StringLibrary)));
-            ScriptingHost.LoadLibrary(Library.Create(new RandomVariateLibrary()));
+            ScriptingHost.LoadLibrary(Library.Create(new RandomVariateLibrary(Args.StartingSeed)));
 
             // Initialize state variables
             foreach (StateVariable stateVariable in Graph.StateVariables.Values)

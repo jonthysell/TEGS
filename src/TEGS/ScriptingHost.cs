@@ -140,7 +140,7 @@ namespace TEGS
                 DebugLogger.LogException(ex);
             }
 
-            value = default(VariableValue);
+            value = default;
             return false;
         }
 
@@ -272,7 +272,7 @@ namespace TEGS
                 DebugLogger.LogException(ex);
             }
 
-            value = default(VariableValue);
+            value = default;
             return false;
         }
 

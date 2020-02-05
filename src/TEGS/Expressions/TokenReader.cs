@@ -58,8 +58,8 @@ namespace TEGS.Expressions
             CurrentToken = TokenType.End;
             CurrentIndex = -1;
             CurrentChar = EndChar;
-            CurrentValue = default(VariableValue);
-            CurrentSymbol = default(string);
+            CurrentValue = default;
+            CurrentSymbol = default;
             ReadChar();
             ReadNext();
         }
@@ -71,19 +71,19 @@ namespace TEGS.Expressions
             if (TryParseSpecial(out TokenType tokenType))
             {
                 CurrentToken = tokenType;
-                CurrentValue = default(VariableValue);
-                CurrentSymbol = default(string);
+                CurrentValue = default;
+                CurrentSymbol = default;
             }
             else if (TryParseValue(out VariableValue value))
             {
                 CurrentToken = TokenType.Value;
                 CurrentValue = value;
-                CurrentSymbol = default(string);
+                CurrentSymbol = default;
             }
             else if (TryParseSymbol(out string symbol))
             {
                 CurrentToken = TokenType.Symbol;
-                CurrentValue = default(VariableValue);
+                CurrentValue = default;
                 CurrentSymbol = symbol;
             }
         }
@@ -206,7 +206,7 @@ namespace TEGS.Expressions
                     return true;
             }
 
-            result = default(TokenType);
+            result = default;
             return false;
         }
 
@@ -283,7 +283,7 @@ namespace TEGS.Expressions
                 }
             }
 
-            result = default(VariableValue);
+            result = default;
             return false;
         }
 
@@ -302,7 +302,7 @@ namespace TEGS.Expressions
                 return true;
             }
 
-            result = default(string);
+            result = default;
             return false;
         }
 

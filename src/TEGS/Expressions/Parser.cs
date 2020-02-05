@@ -74,7 +74,7 @@ namespace TEGS.Expressions
             }
 
             Tokens.Reset();
-            result = default(Node);
+            result = default;
             return false;
         }
 
