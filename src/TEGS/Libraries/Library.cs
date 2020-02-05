@@ -57,16 +57,11 @@ namespace TEGS.Libraries
 
         #region Constructors
 
-        protected Library()
-        {
-            RegisterConstants();
-            RegisterCustomFunctions();
-        }
-
         private Library(TypeInfo typeInfo)
         {
             TypeInfo = typeInfo ?? throw new ArgumentNullException(nameof(typeInfo));
 
+            RegisterName();
             RegisterConstants();
             RegisterCustomFunctions();
         }
@@ -76,6 +71,7 @@ namespace TEGS.Libraries
             Instance = instance ?? throw new ArgumentNullException(nameof(instance));
             TypeInfo = instance.GetType().GetTypeInfo();
 
+            RegisterName();
             RegisterConstants();
             RegisterCustomFunctions();
         }
@@ -83,6 +79,8 @@ namespace TEGS.Libraries
         #endregion
 
         #region ILibrary
+
+        public string Name { get; private set; } = "";
 
         public IEnumerable<KeyValuePair<string, VariableValue>> GetConstants() => Constants;
 
@@ -95,6 +93,15 @@ namespace TEGS.Libraries
         public static Library Create(Type type) => new Library(type.GetTypeInfo());
 
         public static Library Create(object instance) => new Library(instance);
+
+        private void RegisterName()
+        {
+            var attribute = TypeInfo.GetCustomAttribute<LibraryAttribute>();
+            if (null != attribute)
+            {
+                Name = attribute.Name?.Trim() ?? "";
+            }
+        }
 
         private void RegisterConstants()
         {

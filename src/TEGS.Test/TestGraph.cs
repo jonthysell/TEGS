@@ -68,7 +68,7 @@ namespace TEGS.Test
 
                     Edge enter_enter = g.AddEdge(enter, enter);
                     enter_enter.Description = "The next customer enters in 3 to 8 minutes";
-                    enter_enter.Delay = "UniformVariate(3, 8)";
+                    enter_enter.Delay = "Random.UniformVariate(3, 8)";
                     enter_enter.Priority = "6";
 
                     Edge enter_start = g.AddEdge(enter, start);
@@ -78,7 +78,7 @@ namespace TEGS.Test
 
                     Edge start_leave = g.AddEdge(start, leave);
                     start_leave.Description = "The car will be in service for at least 5 minutes";
-                    start_leave.Delay = "UniformVariate(5, 20)";
+                    start_leave.Delay = "Random.UniformVariate(5, 20)";
                     start_leave.Priority = "6";
 
                     Edge leave_start = g.AddEdge(leave, start);
@@ -140,12 +140,12 @@ namespace TEGS.Test
 
                     Edge run_fail = g.AddEdge(run, fail);
                     run_fail.Description = "Schedule the first machine breakdown";
-                    run_fail.Delay = "ExponentialVariate(1.0/15.0)";
+                    run_fail.Delay = "Random.ExponentialVariate(1.0/15.0)";
                     run_fail.Priority = "4";
 
                     Edge enter_enter = g.AddEdge(enter, enter);
                     enter_enter.Description = "Schedule the next arrival";
-                    enter_enter.Delay = "ExponentialVariate(1.0/6.0)";
+                    enter_enter.Delay = "Random.ExponentialVariate(1.0/6.0)";
                     enter_enter.Priority = "6";
 
                     Edge enter_start = g.AddEdge(enter, start);
@@ -174,7 +174,7 @@ namespace TEGS.Test
 
                     Edge fix_fail = g.AddEdge(fix, fail);
                     fix_fail.Description = "Schedule the next machine failure";
-                    fix_fail.Delay = "ExponentialVariate(1.0/15.0)";
+                    fix_fail.Delay = "Random.ExponentialVariate(1.0/15.0)";
                     fix_fail.Priority = "4";
 
                     Edge fix_start = g.AddEdge(fix, start);

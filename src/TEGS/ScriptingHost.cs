@@ -37,7 +37,8 @@ namespace TEGS
         private readonly Dictionary<StateVariable, VariableValue> _stateVariables = new Dictionary<StateVariable, VariableValue>();
         private readonly Dictionary<string, VariableValue> _stateVariablesByName = new Dictionary<string, VariableValue>();
 
-        private readonly HashSet<string> _reservedKeywords = new HashSet<string>() { "true", "false" };
+        private readonly HashSet<string> _reservedKeywords = new HashSet<string>() { "true", "false", "default", "new" };
+        private readonly HashSet<string> _libraryNames = new HashSet<string>();
         private readonly Dictionary<string, VariableValue> _constants = new Dictionary<string, VariableValue>();
         private readonly Dictionary<string, CustomFunction> _customFunctions = new Dictionary<string, CustomFunction>();
 
@@ -161,6 +162,7 @@ namespace TEGS
             }
 
             if (_reservedKeywords.Contains(stateVariable.Name) ||
+                _libraryNames.Contains(stateVariable.Name) ||
                 _constants.ContainsKey(stateVariable.Name) ||
                 _customFunctions.ContainsKey(stateVariable.Name))
             {
@@ -287,14 +289,22 @@ namespace TEGS
                 throw new ArgumentNullException(nameof(library));
             }
 
+            string libraryName = library.Name?.Trim() ?? "";
+
+            if (libraryName != "")
+            {
+                _libraryNames.Add(libraryName);
+                libraryName += ".";
+            }
+
             foreach (var kvp in library.GetConstants())
             {
-                AssignConstant(kvp.Key, kvp.Value);
+                AssignConstant(libraryName + kvp.Key, kvp.Value);
             }
 
             foreach (var kvp in library.GetCustomFunctions())
             {
-                AssignCustomFunction(kvp.Key, kvp.Value);
+                AssignCustomFunction(libraryName + kvp.Key, kvp.Value);
             }
         }
 

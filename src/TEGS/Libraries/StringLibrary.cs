@@ -28,6 +28,7 @@ using System;
 
 namespace TEGS.Libraries
 {
+    [Library(Name = "String")]
     public class StringLibrary
     {
         [LibraryFunction]

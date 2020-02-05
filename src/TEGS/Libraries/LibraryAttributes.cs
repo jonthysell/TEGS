@@ -28,6 +28,14 @@ using System;
 
 namespace TEGS.Libraries
 {
+    [AttributeUsage(AttributeTargets.Class)]
+    public class LibraryAttribute : Attribute
+    {
+        public string Name { get; set; } = null;
+
+        public LibraryAttribute() { }
+    }
+
     [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field)]
     public class LibraryConstantAttribute : Attribute
     {

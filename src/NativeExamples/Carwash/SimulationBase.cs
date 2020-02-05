@@ -72,13 +72,13 @@ namespace Carwash
 
         private List<ScheduleEntry> _schedule = new List<ScheduleEntry>();
 
-        private Random _random;
+        protected Random Random;
 
         protected abstract EventType StartingEvent { get; }
 
         public void Run(SimulationArgs args)
         {
-            _random = new Random(args.Seed);
+            Random = new Random(args.Seed);
 
             ScheduleEvent(StartingEvent, delay: 0, priority: 0, parameterValues: args.ParameterValues);
 
@@ -123,10 +123,13 @@ namespace Carwash
         }
 
         protected double Clock() => _clock;
+    }
 
-        protected double UniformVariate(double alpha, double beta)
+    public static class RandomExtensions
+    {
+        public static double UniformVariate(this Random random, double alpha, double beta)
         {
-            return alpha + (beta - alpha) * _random.NextDouble();
+            return alpha + (beta - alpha) * random.NextDouble();
         }
     }
 }

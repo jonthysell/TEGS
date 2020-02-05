@@ -28,6 +28,7 @@ using System;
 
 namespace TEGS.Libraries
 {
+    [Library(Name = "Random")]
     public class RandomVariateLibrary
     {
         [LibraryConstant]

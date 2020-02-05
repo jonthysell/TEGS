@@ -81,7 +81,7 @@ namespace Carwash
             QUEUE = QUEUE + 1;
 
             // Edges
-            ScheduleEvent(EventType.ENTER, delay: UniformVariate(3, 8), priority: 6, parameterValues: null);
+            ScheduleEvent(EventType.ENTER, delay: Random.UniformVariate(3, 8), priority: 6, parameterValues: null);
             if (SERVERS > 0)
             {
                 ScheduleEvent(EventType.START, delay: 0, priority: 5, parameterValues: null);
@@ -95,7 +95,7 @@ namespace Carwash
             QUEUE = QUEUE - 1;
 
             // Edges
-            ScheduleEvent(EventType.LEAVE, delay: UniformVariate(5, 20), priority: 6, parameterValues: null);
+            ScheduleEvent(EventType.LEAVE, delay: Random.UniformVariate(5, 20), priority: 6, parameterValues: null);
         }
 
         public void Event_LEAVE()

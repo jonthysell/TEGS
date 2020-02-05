@@ -28,6 +28,7 @@ using System;
 
 namespace TEGS.Libraries
 {
+    [Library(Name="Math")]
     public class MathLibrary
     {
         [LibraryConstant]

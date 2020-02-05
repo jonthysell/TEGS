@@ -293,7 +293,7 @@ namespace TEGS.Expressions
             {
                 int startIndex = CurrentIndex;
 
-                while (char.IsLetterOrDigit(CurrentChar) || CurrentChar == '_')
+                while (char.IsLetterOrDigit(CurrentChar) || CurrentChar == '_' || CurrentChar == '.')
                 {
                     ReadChar();
                 }
