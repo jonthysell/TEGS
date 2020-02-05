@@ -37,17 +37,17 @@ namespace TEGS.Libraries
         public static readonly VariableValue E = new VariableValue(Math.E);
 
         [LibraryFunction]
-        public static VariableValue Min(VariableValue[] args)
+        public static VariableValue Abs(VariableValue[] args)
         {
-            if (args != null && args.Length == 2)
+            if (args != null && args.Length == 1)
             {
-                if (args[0].Type == VariableValueType.Integer && args[1].Type == VariableValueType.Integer)
+                if (args[0].Type == VariableValueType.Integer)
                 {
-                    return new VariableValue(Math.Min(args[0].IntegerValue, args[1].IntegerValue));
+                    return new VariableValue(Math.Abs(args[0].IntegerValue));
                 }
-                else if (args[0].IsNumber && args[1].IsNumber)
+                else if (args[0].Type == VariableValueType.Double)
                 {
-                    return new VariableValue(Math.Min(args[0].AsNumber(), args[1].AsNumber()));
+                    return new VariableValue(Math.Abs(args[0].DoubleValue));
                 }
             }
 
@@ -71,5 +71,111 @@ namespace TEGS.Libraries
 
             throw new ArgumentOutOfRangeException(nameof(args));
         }
+
+        [LibraryFunction]
+        public static VariableValue Min(VariableValue[] args)
+        {
+            if (args != null && args.Length == 2)
+            {
+                if (args[0].Type == VariableValueType.Integer && args[1].Type == VariableValueType.Integer)
+                {
+                    return new VariableValue(Math.Min(args[0].IntegerValue, args[1].IntegerValue));
+                }
+                else if (args[0].IsNumber && args[1].IsNumber)
+                {
+                    return new VariableValue(Math.Min(args[0].AsNumber(), args[1].AsNumber()));
+                }
+            }
+
+            throw new ArgumentOutOfRangeException(nameof(args));
+        }
+
+        [LibraryFunction]
+        public static VariableValue Cos(VariableValue[] args)
+        {
+            if (args != null && args.Length == 1 && args[0].IsNumber)
+            {
+                return new VariableValue(Math.Cos(args[0].AsNumber()));
+            }
+
+            throw new ArgumentOutOfRangeException(nameof(args));
+        }
+
+        [LibraryFunction]
+        public static VariableValue Acos(VariableValue[] args)
+        {
+            if (args != null && args.Length == 1 && args[0].IsNumber)
+            {
+                return new VariableValue(Math.Acos(args[0].AsNumber()));
+            }
+
+            throw new ArgumentOutOfRangeException(nameof(args));
+        }
+
+        [LibraryFunction]
+        public static VariableValue Sin(VariableValue[] args)
+        {
+            if (args != null && args.Length == 1 && args[0].IsNumber)
+            {
+                return new VariableValue(Math.Sin(args[0].AsNumber()));
+            }
+
+            throw new ArgumentOutOfRangeException(nameof(args));
+        }
+
+        [LibraryFunction]
+        public static VariableValue Asin(VariableValue[] args)
+        {
+            if (args != null && args.Length == 1 && args[0].IsNumber)
+            {
+                return new VariableValue(Math.Asin(args[0].AsNumber()));
+            }
+
+            throw new ArgumentOutOfRangeException(nameof(args));
+        }
+
+        [LibraryFunction]
+        public static VariableValue Tan(VariableValue[] args)
+        {
+            if (args != null && args.Length == 1 && args[0].IsNumber)
+            {
+                return new VariableValue(Math.Tan(args[0].AsNumber()));
+            }
+
+            throw new ArgumentOutOfRangeException(nameof(args));
+        }
+
+        [LibraryFunction]
+        public static VariableValue Atan(VariableValue[] args)
+        {
+            if (args != null && args.Length == 1 && args[0].IsNumber)
+            {
+                return new VariableValue(Math.Atan(args[0].AsNumber()));
+            }
+
+            throw new ArgumentOutOfRangeException(nameof(args));
+        }
+
+        [LibraryFunction]
+        public static VariableValue Round(VariableValue[] args)
+        {
+            if (args != null && args.Length == 1 && args[0].IsNumber)
+            {
+                return new VariableValue(Math.Round(args[0].AsNumber()));
+            }
+
+            throw new ArgumentOutOfRangeException(nameof(args));
+        }
+
+        [LibraryFunction]
+        public static VariableValue Sqrt(VariableValue[] args)
+        {
+            if (args != null && args.Length == 1 && args[0].IsNumber)
+            {
+                return new VariableValue(Math.Sqrt(args[0].AsNumber()));
+            }
+
+            throw new ArgumentOutOfRangeException(nameof(args));
+        }        
     }
 }
