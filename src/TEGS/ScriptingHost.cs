@@ -37,7 +37,6 @@ namespace TEGS
         private readonly Dictionary<StateVariable, VariableValue> _stateVariables = new Dictionary<StateVariable, VariableValue>();
         private readonly Dictionary<string, VariableValue> _stateVariablesByName = new Dictionary<string, VariableValue>();
 
-        private readonly HashSet<string> _reservedKeywords = new HashSet<string>() { "true", "false", "default", "new" };
         private readonly HashSet<string> _libraryNames = new HashSet<string>();
         private readonly Dictionary<string, VariableValue> _constants = new Dictionary<string, VariableValue>();
         private readonly Dictionary<string, CustomFunction> _customFunctions = new Dictionary<string, CustomFunction>();
@@ -161,7 +160,8 @@ namespace TEGS
                 throw new StateVariableAlreadyExistsException(stateVariable.Name);
             }
 
-            if (_reservedKeywords.Contains(stateVariable.Name) ||
+            if (ReservedKeywords.Contains(stateVariable.Name) ||
+                !IsValidSymbolName(stateVariable.Name, false) ||
                 _libraryNames.Contains(stateVariable.Name) ||
                 _constants.ContainsKey(stateVariable.Name) ||
                 _customFunctions.ContainsKey(stateVariable.Name))
@@ -299,12 +299,12 @@ namespace TEGS
 
             foreach (var kvp in library.GetConstants())
             {
-                AssignConstant(libraryName + kvp.Key, kvp.Value);
+                DefineConstant(libraryName + kvp.Key, kvp.Value);
             }
 
             foreach (var kvp in library.GetCustomFunctions())
             {
-                AssignCustomFunction(libraryName + kvp.Key, kvp.Value);
+                DefineCustomFunction(libraryName + kvp.Key, kvp.Value);
             }
         }
 
@@ -312,11 +312,17 @@ namespace TEGS
 
         #region Constants
 
-        public void AssignConstant(string name, VariableValue value)
+        public void DefineConstant(string name, VariableValue value)
         {
             if (string.IsNullOrWhiteSpace(name))
             {
                 throw new ArgumentNullException(nameof(name));
+            }
+
+            if (ReservedKeywords.Contains(name) ||
+                !IsValidSymbolName(name, true))
+            {
+                throw new ConstantInvalidNameException(name);
             }
 
             _constants[name] = value;
@@ -326,11 +332,17 @@ namespace TEGS
 
         #region Custom Functions
 
-        public void AssignCustomFunction(string name, CustomFunction function)
+        public void DefineCustomFunction(string name, CustomFunction function)
         {
             if (string.IsNullOrWhiteSpace(name))
             {
                 throw new ArgumentNullException(nameof(name));
+            }
+
+            if (ReservedKeywords.Contains(name) ||
+                !IsValidSymbolName(name, true))
+            {
+                throw new CustomFunctionInvalidNameException(name);
             }
 
             if (null == function && _customFunctions.ContainsKey(name))
@@ -364,6 +376,97 @@ namespace TEGS
         }
 
         #endregion
+
+        #region Valid Symbols
+
+        public static bool IsValidSymbolName(string name, bool allowDot)
+        {
+            if (string.IsNullOrEmpty(name))
+            {
+                return false;
+            }
+
+            for (int i = 0; i < name.Length; i++)
+            {
+                if (i == 0)
+                {
+                    // First letter
+                    if (char.IsLetter(name[i]) || name[i] == '_')
+                    {
+                        continue;
+                    }
+                }
+                else if (i > 0 && i < name.Length - 1)
+                {
+                    // Middle of name
+                    if (name[i-1] == '.')
+                    {
+                        // After a dot
+                        if (char.IsLetter(name[i]) || name[i] == '_')
+                        {
+                            continue;
+                        }
+                    }
+                    else
+                    {
+                        if (char.IsLetterOrDigit(name[i]) || name[i] == '_' || (allowDot && name[i] == '.'))
+                        {
+                            continue;
+                        }
+                    }
+                }
+                else if (i == name.Length - 1)
+                {
+                    // Last letter
+                    if (name[i - 1] == '.')
+                    {
+                        // After a dot
+                        if (char.IsLetter(name[i]) || name[i] == '_')
+                        {
+                            continue;
+                        }
+                    }
+                    else
+                    {
+                        if (char.IsLetterOrDigit(name[i]) || name[i] == '_')
+                        {
+                            continue;
+                        }
+                    }
+                }
+
+                return false;
+            }
+
+            return true;
+        }
+
+        public static readonly HashSet<string> ReservedKeywords = new HashSet<string>()
+        {
+            "abstract", "as", "base", "bool",
+            "break", "byte", "case", "catch",
+            "char", "checked", "class", "const",
+            "continue", "decimal", "default", "delegate",
+            "do", "double", "else", "enum",
+            "event", "explicit", "extern", "false",
+            "finally", "fixed", "float", "for",
+            "foreach", "goto", "if", "implicit",
+            "in", "int", "interface", "internal",
+            "is", "lock", "long", "namespace",
+            "new", "null", "object", "operator",
+            "out", "override", "params", "private",
+            "protected", "public", "readonly", "ref",
+            "return", "sbyte", "sealed", "short",
+            "sizeof", "stackalloc", "static", "string",
+            "struct", "switch", "this", "throw",
+            "true", "try", "typeof", "uint",
+            "ulong", "unchecked", "unsafe", "ushort",
+            "using", "using", "static", "virtual", "void",
+            "volatile", "while",
+        };
+
+        #endregion
+
     }
 
     #region Exceptions
@@ -403,6 +506,26 @@ namespace TEGS
         public readonly string Name;
 
         public StateVariableInvalidNameException(string name) : base()
+        {
+            Name = name;
+        }
+    }
+
+    public class ConstantInvalidNameException : Exception
+    {
+        public readonly string Name;
+
+        public ConstantInvalidNameException(string name) : base()
+        {
+            Name = name;
+        }
+    }
+
+    public class CustomFunctionInvalidNameException : Exception
+    {
+        public readonly string Name;
+
+        public CustomFunctionInvalidNameException(string name) : base()
         {
             Name = name;
         }

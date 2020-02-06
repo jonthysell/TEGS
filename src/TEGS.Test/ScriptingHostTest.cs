@@ -217,7 +217,7 @@ namespace TEGS.Test
                     return new VariableValue(expectedValues[i]);
                 });
 
-                host.AssignCustomFunction("test", function);
+                host.DefineCustomFunction("test", function);
                 VariableValue actualValue = host.Evaluate("test()", VariableValueType.Boolean);
 
                 Assert.AreEqual(VariableValueType.Boolean, actualValue.Type);
@@ -240,7 +240,7 @@ namespace TEGS.Test
                     return new VariableValue(expectedValues[i]);
                 });
 
-                host.AssignCustomFunction("test", function);
+                host.DefineCustomFunction("test", function);
                 VariableValue actualValue = host.Evaluate("test()", VariableValueType.Integer);
 
                 Assert.AreEqual(VariableValueType.Integer, actualValue.Type);
@@ -263,7 +263,7 @@ namespace TEGS.Test
                     return new VariableValue(expectedValues[i]);
                 });
 
-                host.AssignCustomFunction("test", function);
+                host.DefineCustomFunction("test", function);
                 VariableValue actualValue = host.Evaluate("test()", VariableValueType.Double);
 
                 Assert.AreEqual(VariableValueType.Double, actualValue.Type);
@@ -286,7 +286,7 @@ namespace TEGS.Test
                     return new VariableValue(expectedValues[i]);
                 });
 
-                host.AssignCustomFunction("test", function);
+                host.DefineCustomFunction("test", function);
                 VariableValue actualValue = host.Evaluate("test()", VariableValueType.String);
 
                 Assert.AreEqual(VariableValueType.String, actualValue.Type);
