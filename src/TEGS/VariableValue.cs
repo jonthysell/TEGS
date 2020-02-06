@@ -77,6 +77,41 @@ namespace TEGS
             _objectValue = value;
         }
 
+        public static VariableValue Parse(object value)
+        {
+            if (value is bool boolValue)
+            {
+                return new VariableValue(boolValue);
+            }
+            else if (value is int intValue)
+            {
+                return new VariableValue(intValue);
+            }
+            else if (value is double doubleValue)
+            {
+                return new VariableValue(doubleValue);
+            }
+            else if (value is string stringValue)
+            {
+                return new VariableValue(stringValue);
+            }
+
+            throw new ArgumentOutOfRangeException(nameof(value));
+        }
+
+        public static bool TryParse(object value, out VariableValue result)
+        {
+            try
+            {
+                result = Parse(value);
+                return true;
+            }
+            catch (Exception) { }
+
+            result = default;
+            return false;
+        }
+
         public double AsNumber()
         {
             switch (Type)

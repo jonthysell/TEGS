@@ -172,10 +172,10 @@ namespace TEGS
             // Create scripting host and load libraries
 
             ScriptingHost = new ScriptingHost();
+            ScriptingHost.LoadLibrary(BuiltinLibraries.Math);
+            ScriptingHost.LoadLibrary(BuiltinLibraries.String);
+            ScriptingHost.LoadLibrary(BuiltinLibraries.RandomVariate(Args.StartingSeed));
             ScriptingHost.LoadLibrary(new AttributedLibrary(this));
-            ScriptingHost.LoadLibrary(new AttributedLibrary(typeof(MathLibrary)));
-            ScriptingHost.LoadLibrary(new AttributedLibrary(typeof(StringLibrary)));
-            ScriptingHost.LoadLibrary(new AttributedLibrary(new RandomVariateLibrary(Args.StartingSeed)));
 
             // Initialize state variables
             foreach (StateVariable stateVariable in Graph.StateVariables.Values)

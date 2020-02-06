@@ -25,7 +25,6 @@
 // THE SOFTWARE.
 
 using System;
-using System.Collections.Generic;
 using System.Reflection;
 
 namespace TEGS.Libraries
@@ -54,113 +53,56 @@ namespace TEGS.Libraries
         public LibraryFunctionAttribute() { }
     }
 
-    public class AttributedLibrary : ILibrary
+    public class AttributedLibrary : ReflectionLibraryBase
     {
-        #region Properties
-
-        public TypeInfo TypeInfo
-        {
-            get
-            {
-                return _typeInfo ?? (_typeInfo = GetType().GetTypeInfo());
-            }
-            private set
-            {
-                _typeInfo = value;
-            }
-        }
-        private TypeInfo _typeInfo = null;
-
-        public object Instance { get; private set; } = null;
-
-        protected Dictionary<string, VariableValue> Constants { get; private set; } = new Dictionary<string, VariableValue>();
-
-        protected Dictionary<string, CustomFunction> Functions { get; private set; } = new Dictionary<string, CustomFunction>();
-
-        #endregion
-
         #region Constructors
 
-        public AttributedLibrary(TypeInfo typeInfo)
-        {
-            TypeInfo = typeInfo ?? throw new ArgumentNullException(nameof(typeInfo));
+        public AttributedLibrary(Type type) : base(type) { }
 
-            RegisterName();
-            RegisterConstants();
-            RegisterCustomFunctions();
-        }
-
-        public AttributedLibrary(object instance)
-        {
-            Instance = instance ?? throw new ArgumentNullException(nameof(instance));
-            TypeInfo = instance.GetType().GetTypeInfo();
-
-            RegisterName();
-            RegisterConstants();
-            RegisterCustomFunctions();
-        }
+        public AttributedLibrary(object instance) : base(instance) { }
 
         #endregion
 
-        #region ILibrary
+        #region ReflectionLibraryBase
 
-        public string Name { get; private set; } = "";
-
-        public IEnumerable<KeyValuePair<string, VariableValue>> GetConstants() => Constants;
-
-        public IEnumerable<KeyValuePair<string, CustomFunction>> GetCustomFunctions() => Functions;
-
-        #endregion
-
-        #region Reflection
-
-        private void RegisterName()
+        protected override void Initialize()
         {
-            var attribute = TypeInfo.GetCustomAttribute<LibraryAttribute>();
-            if (null != attribute)
+            // Get Name
+
+            var libraryAttribute = TypeInfo.GetCustomAttribute<LibraryAttribute>();
+            if (null != libraryAttribute)
             {
-                Name = attribute.Name?.Trim() ?? "";
+                Name = libraryAttribute.Name?.Trim() ?? "";
             }
-        }
 
-        private void RegisterConstants()
-        {
+            // Get Constants
+
             foreach (var fieldInfo in TypeInfo.DeclaredFields)
             {
-                var attribute = fieldInfo.GetCustomAttribute<LibraryConstantAttribute>();
-                if (null != attribute)
+                var constantAttribute = fieldInfo.GetCustomAttribute<LibraryConstantAttribute>();
+                if (null != constantAttribute && TryGetConstant(fieldInfo, out VariableValue constantValue))
                 {
-                    Constants.Add(attribute.Name ?? fieldInfo.Name, (VariableValue)fieldInfo.GetValue(Instance));
+                    Constants.Add(constantAttribute.Name ?? fieldInfo.Name, constantValue);
                 }
             }
 
             foreach (var propertyInfo in TypeInfo.DeclaredProperties)
             {
-                var attribute = propertyInfo.GetCustomAttribute<LibraryConstantAttribute>();
-                if (null != attribute)
+                var constantAttribute = propertyInfo.GetCustomAttribute<LibraryConstantAttribute>();
+                if (null != constantAttribute && TryGetConstant(propertyInfo, out VariableValue constantValue))
                 {
-                    Constants.Add(attribute.Name ?? propertyInfo.Name, (VariableValue)propertyInfo.GetMethod.Invoke(Instance, null));
+                    Constants.Add(constantAttribute.Name ?? propertyInfo.Name, constantValue);
                 }
             }
-        }
 
-        private void RegisterCustomFunctions()
-        {
+            // Get Functions
+
             foreach (var methodInfo in TypeInfo.DeclaredMethods)
             {
-                var attribute = methodInfo.GetCustomAttribute<LibraryFunctionAttribute>();
-                if (null != attribute)
+                var functionAttribute = methodInfo.GetCustomAttribute<LibraryFunctionAttribute>();
+                if (null != functionAttribute && TryGetCustomFunction(methodInfo, out CustomFunction customFunction))
                 {
-                    string name = attribute.Name ?? methodInfo.Name;
-
-                    if (null == Instance)
-                    {
-                        Functions.Add(name, (CustomFunction)Delegate.CreateDelegate(typeof(CustomFunction), methodInfo));
-                    }
-                    else
-                    {
-                        Functions.Add(name, (CustomFunction)Delegate.CreateDelegate(typeof(CustomFunction), Instance, methodInfo));
-                    }
+                    Functions.Add(functionAttribute.Name ?? methodInfo.Name, customFunction);
                 }
             }
         }
