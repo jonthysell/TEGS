@@ -29,7 +29,7 @@ using System;
 namespace TEGS.Libraries
 {
     [Library(Name="Math")]
-    public class MathLibrary
+    public static class MathLibrary
     {
         [LibraryConstant]
         public static readonly VariableValue PI = new VariableValue(Math.PI);

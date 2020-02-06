@@ -29,7 +29,7 @@ using System;
 namespace TEGS.Libraries
 {
     [Library(Name = "String")]
-    public class StringLibrary
+    public static class StringLibrary
     {
         [LibraryFunction]
         public static VariableValue Length(VariableValue[] args)

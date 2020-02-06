@@ -51,7 +51,7 @@ namespace TEGS.Libraries
         }
 
         [LibraryFunction]
-        private VariableValue UniformVariate(VariableValue[] args)
+        public VariableValue UniformVariate(VariableValue[] args)
         {
             if (args == null || args.Length == 0)
             {
@@ -66,7 +66,7 @@ namespace TEGS.Libraries
         }
 
         [LibraryFunction]
-        private VariableValue ExponentialVariate(VariableValue[] args)
+        public VariableValue ExponentialVariate(VariableValue[] args)
         {
             if (args != null && args.Length == 1)
             {
@@ -77,7 +77,7 @@ namespace TEGS.Libraries
         }
 
         [LibraryFunction]
-        private VariableValue NormalVariate(VariableValue[] args)
+        public VariableValue NormalVariate(VariableValue[] args)
         {
             if (args != null && args.Length == 2)
             {
@@ -88,7 +88,7 @@ namespace TEGS.Libraries
         }
 
         [LibraryFunction]
-        private VariableValue LogNormalVariate(VariableValue[] args)
+        public VariableValue LogNormalVariate(VariableValue[] args)
         {
             if (args != null && args.Length == 2)
             {

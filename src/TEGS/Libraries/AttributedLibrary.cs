@@ -1,5 +1,5 @@
 ﻿// 
-// Library.cs
+// AttributedLibrary.cs
 //  
 // Author:
 //       Jon Thysell <thysell@gmail.com>
@@ -30,7 +30,31 @@ using System.Reflection;
 
 namespace TEGS.Libraries
 {
-    public class Library : ILibrary
+    [AttributeUsage(AttributeTargets.Class)]
+    public class LibraryAttribute : Attribute
+    {
+        public string Name { get; set; } = null;
+
+        public LibraryAttribute() { }
+    }
+
+    [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field)]
+    public class LibraryConstantAttribute : Attribute
+    {
+        public string Name { get; set; } = null;
+
+        public LibraryConstantAttribute() { }
+    }
+
+    [AttributeUsage(AttributeTargets.Method)]
+    public class LibraryFunctionAttribute : Attribute
+    {
+        public string Name { get; set; } = null;
+
+        public LibraryFunctionAttribute() { }
+    }
+
+    public class AttributedLibrary : ILibrary
     {
         #region Properties
 
@@ -57,7 +81,7 @@ namespace TEGS.Libraries
 
         #region Constructors
 
-        private Library(TypeInfo typeInfo)
+        public AttributedLibrary(TypeInfo typeInfo)
         {
             TypeInfo = typeInfo ?? throw new ArgumentNullException(nameof(typeInfo));
 
@@ -66,7 +90,7 @@ namespace TEGS.Libraries
             RegisterCustomFunctions();
         }
 
-        private Library(object instance)
+        public AttributedLibrary(object instance)
         {
             Instance = instance ?? throw new ArgumentNullException(nameof(instance));
             TypeInfo = instance.GetType().GetTypeInfo();
@@ -89,10 +113,6 @@ namespace TEGS.Libraries
         #endregion
 
         #region Reflection
-
-        public static Library Create(Type type) => new Library(type.GetTypeInfo());
-
-        public static Library Create(object instance) => new Library(instance);
 
         private void RegisterName()
         {
