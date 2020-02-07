@@ -30,11 +30,6 @@ namespace TEGS
 {
     public static class RandomExtensions
     {
-        public static double UniformVariate(this Random random)
-        {
-            return random.NextDouble();
-        }
-
         public static double UniformVariate(this Random random, double alpha, double beta)
         {
             return alpha + (beta - alpha) * random.NextDouble();

@@ -36,6 +36,8 @@ namespace TEGS.Libraries
 
         protected TypeInfo TypeInfo { get; private set; }
 
+        protected TypeInfo ExtensionsTypeInfo { get; private set; }
+
         protected object Instance { get; private set; } = null;
 
         protected Dictionary<string, VariableValue> Constants { get; private set; } = new Dictionary<string, VariableValue>();
@@ -46,17 +48,19 @@ namespace TEGS.Libraries
 
         #region Constructors
 
-        public ReflectionLibraryBase(Type type)
+        public ReflectionLibraryBase(Type type, Type extensions = null)
         {
             TypeInfo = type?.GetTypeInfo() ?? throw new ArgumentNullException(nameof(type));
+            ExtensionsTypeInfo = extensions?.GetTypeInfo();
 
             Initialize();
         }
 
-        public ReflectionLibraryBase(object instance)
+        public ReflectionLibraryBase(object instance, Type extensions = null)
         {
             Instance = instance ?? throw new ArgumentNullException(nameof(instance));
             TypeInfo = instance.GetType().GetTypeInfo();
+            ExtensionsTypeInfo = extensions?.GetTypeInfo();
 
             Initialize();
         }
@@ -106,6 +110,17 @@ namespace TEGS.Libraries
                 if (TryGetCustomFunction(methodInfo, out CustomFunction customFunction))
                 {
                     Functions.Add(methodInfo.Name, customFunction);
+                }
+            }
+
+            if (null != ExtensionsTypeInfo)
+            {
+                foreach (var methodInfo in ExtensionsTypeInfo.DeclaredMethods)
+                {
+                    if (TryGetCustomFunction(methodInfo, out CustomFunction customFunction))
+                    {
+                        Functions.Add(methodInfo.Name, customFunction);
+                    }
                 }
             }
         }

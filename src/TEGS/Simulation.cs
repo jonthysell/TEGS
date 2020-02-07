@@ -172,10 +172,15 @@ namespace TEGS
             // Create scripting host and load libraries
 
             ScriptingHost = new ScriptingHost();
-            ScriptingHost.LoadLibrary(BuiltinLibraries.Math);
-            ScriptingHost.LoadLibrary(BuiltinLibraries.String);
-            ScriptingHost.LoadLibrary(BuiltinLibraries.RandomVariate(Args.StartingSeed));
-            ScriptingHost.LoadLibrary(new AttributedLibrary(this));
+
+            ScriptingHost.LoadLibrary(BaseLibraries.SystemMath);
+            ScriptingHost.LoadLibrary(BaseLibraries.SystemString);
+            ScriptingHost.LoadLibrary(BaseLibraries.StringLibrary);
+            ScriptingHost.LoadLibrary(BaseLibraries.RandomVariateLibrary(Args.StartingSeed.HasValue ? Args.StartingSeed.Value : GenerateSeed()));
+
+            // Expose Simulation functions
+
+            ScriptingHost.DefineCustomFunction(nameof(Clock), (args) => new VariableValue(Clock));
 
             // Initialize state variables
             foreach (StateVariable stateVariable in Graph.StateVariables.Values)
@@ -355,15 +360,13 @@ namespace TEGS
 
         #endregion
 
-        #region Custom Functions
-
-        [LibraryFunction(Name="Clock")]
-        private VariableValue GetClock(VariableValue[] args)
+        private static int GenerateSeed()
         {
-            return new VariableValue(Clock);
+            // Adapted from http://lua-users.org/wiki/MathLibraryTutorial
+            char[] c = DateTime.UtcNow.Ticks.ToString().ToCharArray();
+            Array.Reverse(c);
+            return int.Parse(new string(c).Substring(1, 6));
         }
-
-        #endregion
     }
 
     public enum SimulationState

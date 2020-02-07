@@ -90,7 +90,7 @@ namespace TEGS.Test
             t1.Wait();
 
             Task t2 = s.RunAsync();
-            Thread.Sleep(5);
+            Thread.Sleep(0);
             Assert.AreEqual(SimulationState.Running, s.State);
 
             t2.Wait();

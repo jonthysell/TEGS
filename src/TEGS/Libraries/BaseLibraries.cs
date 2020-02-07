@@ -1,5 +1,5 @@
 ﻿// 
-// BuiltinLibraries.cs
+// BaseLibraries.cs
 //  
 // Author:
 //       Jon Thysell <thysell@gmail.com>
@@ -28,12 +28,14 @@ using System;
 
 namespace TEGS.Libraries
 {
-    public static class BuiltinLibraries
+    public static class BaseLibraries
     {
-        public static ILibrary Math => new SystemLibrary(typeof(Math));
+        public static ILibrary SystemMath => new SystemLibrary(typeof(Math));
 
-        public static ILibrary String => new AttributedLibrary(typeof(StringLibrary));
+        public static ILibrary SystemString => new SystemLibrary(typeof(string));
 
-        public static ILibrary RandomVariate(int? seed) => new AttributedLibrary(new RandomVariateLibrary(seed));
+        public static ILibrary StringLibrary => new AttributedLibrary(typeof(StringLibrary));
+
+        public static ILibrary RandomVariateLibrary(int seed) => new SystemLibrary(new Random(seed), typeof(RandomExtensions));
     }
 }

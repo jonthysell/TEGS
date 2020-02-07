@@ -33,9 +33,9 @@ namespace TEGS.Libraries
     {
         #region Constructors
 
-        public SystemLibrary(Type type) : base(type) { }
+        public SystemLibrary(Type type, Type extensions = null) : base(type, extensions) { }
 
-        public SystemLibrary(object instance) : base(instance) { }
+        public SystemLibrary(object instance, Type extensions = null) : base(instance, extensions) { }
 
         #endregion
 
@@ -50,19 +50,27 @@ namespace TEGS.Libraries
             if (!Functions.ContainsKey(methodInfo.Name))
             {
                 var returnType = methodInfo.ReturnType;
-                var parameterInfo = methodInfo.GetParameters();
+                var parameterInfos = methodInfo.GetParameters();
 
-                if (returnType == typeof(bool) &&
-                    parameterInfo.Length == 1 &&
-                    parameterInfo[0].ParameterType == typeof(bool))
+                if (returnType == typeof(bool) && CheckParams(parameterInfos))
+                {
+                    // void => bool
+                    var boolFunc = MakeDelegate<Func<bool>>(methodInfo);
+                    return MakeFunction(boolFunc);
+                }
+                else if (returnType == typeof(bool) && CheckParams<bool>(parameterInfos))
                 {
                     // bool => bool
                     var boolFunc = MakeDelegate<Func<bool, bool>>(methodInfo);
                     return MakeFunction(boolFunc);
                 }
-                else if (returnType == typeof(int) &&
-                    parameterInfo.Length == 1 &&
-                    parameterInfo[0].ParameterType == typeof(int))
+                else if (returnType == typeof(int) && CheckParams(parameterInfos))
+                {
+                    // void => int
+                    var intFunc = MakeDelegate<Func<int>>(methodInfo);
+                    return MakeFunction(intFunc);
+                }
+                else if (returnType == typeof(int) && CheckParams<int>(parameterInfos))
                 {
                     // int => int
                     var intFunc = MakeDelegate<Func<int, int>>(methodInfo);
@@ -79,10 +87,7 @@ namespace TEGS.Libraries
                         return MakeFunction(intFunc);
                     }
                 }
-                else if (returnType == typeof(int) &&
-                    parameterInfo.Length == 2 &&
-                    parameterInfo[0].ParameterType == typeof(int) &&
-                    parameterInfo[1].ParameterType == typeof(int))
+                else if (returnType == typeof(int) && CheckParams<int, int>(parameterInfos))
                 {
                     // int, int => int
                     var intFunc = MakeDelegate<Func<int, int, int>>(methodInfo);
@@ -99,12 +104,16 @@ namespace TEGS.Libraries
                         return MakeFunction(intFunc);
                     }
                 }
-                else if (returnType == typeof(double) &&
-                    parameterInfo.Length == 1 &&
-                    parameterInfo[0].ParameterType == typeof(double))
+                else if (returnType == typeof(double) && CheckParams(parameterInfos))
+                {
+                    // void => double
+                    var doubleFunc = MakeDelegate<Func<double>>(methodInfo);
+                    return MakeFunction(doubleFunc);
+                }
+                else if (returnType == typeof(double) && CheckParams<double>(parameterInfos))
                 {
                     // double => double
-                    var doubleFunc = (Func<double, double>)methodInfo.CreateDelegate(typeof(Func<double, double>));
+                    var doubleFunc = MakeDelegate<Func<double, double>>(methodInfo);
 
                     if (TryFindRelatedMethod<int, int>(methodInfo, out MethodInfo relatedMethodInfo))
                     {
@@ -118,13 +127,10 @@ namespace TEGS.Libraries
                         return MakeFunction(doubleFunc);
                     }
                 }
-                else if (returnType == typeof(double) &&
-                    parameterInfo.Length == 2 &&
-                    parameterInfo[0].ParameterType == typeof(double) &&
-                    parameterInfo[1].ParameterType == typeof(double))
+                else if (returnType == typeof(double) && CheckParams<double, double>(parameterInfos))
                 {
                     // double, double => double
-                    var doubleFunc = (Func<double, double, double>)methodInfo.CreateDelegate(typeof(Func<double, double, double>));
+                    var doubleFunc = MakeDelegate<Func<double, double, double>>(methodInfo);
 
                     if (TryFindRelatedMethod<int, int, int>(methodInfo, out MethodInfo relatedMethodInfo))
                     {
@@ -138,11 +144,20 @@ namespace TEGS.Libraries
                         return MakeFunction(doubleFunc);
                     }
                 }
-                else if (returnType == typeof(string) &&
-                    parameterInfo.Length == 1 &&
-                    parameterInfo[0].ParameterType == typeof(string))
+                else if (returnType == typeof(string) && CheckParams(parameterInfos))
+                {
+                    // void => string
+                    var strFunc = MakeDelegate<Func<string>>(methodInfo);
+                    return MakeFunction(strFunc);
+                }
+                else if (returnType == typeof(string) && CheckParams<string>(parameterInfos))
                 {
                     var strFunc = MakeDelegate<Func<string, string>>(methodInfo);
+                    return MakeFunction(strFunc);
+                }
+                else if (returnType == typeof(string) && CheckParams<string, string>(parameterInfos))
+                {
+                    var strFunc = MakeDelegate<Func<string, string, string>>(methodInfo);
                     return MakeFunction(strFunc);
                 }
             }
@@ -163,9 +178,7 @@ namespace TEGS.Libraries
                     var returnType = methodInfo.ReturnType;
                     var parameterInfo = methodInfo.GetParameters();
 
-                    if (returnType == typeof(TResult) &&
-                        parameterInfo.Length == 1 &&
-                        parameterInfo[0].ParameterType == typeof(TArg))
+                    if (returnType == typeof(TResult) && CheckParams<TArg>(parameterInfo))
                     {
                         result = methodInfo;
                         return true;
@@ -186,10 +199,7 @@ namespace TEGS.Libraries
                     var returnType = methodInfo.ReturnType;
                     var parameterInfo = methodInfo.GetParameters();
 
-                    if (returnType == typeof(TResult) &&
-                        parameterInfo.Length == 2 &&
-                        parameterInfo[0].ParameterType == typeof(TArg0) &&
-                        parameterInfo[1].ParameterType == typeof(TArg1))
+                    if (returnType == typeof(TResult) && CheckParams<TArg0, TArg1>(parameterInfo))
                     {
                         result = methodInfo;
                         return true;
@@ -201,6 +211,37 @@ namespace TEGS.Libraries
             return false;
         }
 
+        private bool CheckParams(ParameterInfo[] parameterInfos)
+        {
+            return parameterInfos.Length == 0 ||
+                (null != Instance && parameterInfos.Length == 1 && parameterInfos[0].ParameterType == TypeInfo);
+        }
+
+        private bool CheckParams<TArg>(ParameterInfo[] parameterInfos)
+        {
+            return (parameterInfos.Length == 1 && parameterInfos[0].ParameterType == typeof(TArg)) ||
+                (null != Instance && parameterInfos.Length == 2 && parameterInfos[0].ParameterType == TypeInfo && parameterInfos[1].ParameterType == typeof(TArg));
+        }
+
+        private bool CheckParams<TArg0, TArg1>(ParameterInfo[] parameterInfos)
+        {
+            return (parameterInfos.Length == 2 && parameterInfos[0].ParameterType == typeof(TArg0) && parameterInfos[1].ParameterType == typeof(TArg1)) ||
+                (null != Instance && parameterInfos.Length == 3 && parameterInfos[0].ParameterType == TypeInfo && parameterInfos[1].ParameterType == typeof(TArg0) && parameterInfos[2].ParameterType == typeof(TArg1));
+        }
+
+        private CustomFunction MakeFunction(Func<bool> func)
+        {
+            return (args) =>
+            {
+                if (args == null || args.Length == 0)
+                {
+                    return new VariableValue(func());
+                }
+
+                throw new ArgumentOutOfRangeException(nameof(args));
+            };
+        }
+
         private CustomFunction MakeFunction(Func<bool, bool> func)
         {
             return (args) =>
@@ -208,6 +249,19 @@ namespace TEGS.Libraries
                 if (args != null && args.Length == 1 && args[0].Type == VariableValueType.Boolean)
                 {
                     return new VariableValue(func(args[0].BooleanValue));
+                }
+
+                throw new ArgumentOutOfRangeException(nameof(args));
+            };
+        }
+
+        private CustomFunction MakeFunction(Func<int> func)
+        {
+            return (args) =>
+            {
+                if (args == null || args.Length == 0)
+                {
+                    return new VariableValue(func());
                 }
 
                 throw new ArgumentOutOfRangeException(nameof(args));
@@ -234,6 +288,19 @@ namespace TEGS.Libraries
                 if (args != null && args.Length == 2 && args[0].Type == VariableValueType.Integer && args[1].Type == VariableValueType.Integer)
                 {
                     return new VariableValue(func(args[0].IntegerValue, args[1].IntegerValue));
+                }
+
+                throw new ArgumentOutOfRangeException(nameof(args));
+            };
+        }
+
+        private CustomFunction MakeFunction(Func<double> func)
+        {
+            return (args) =>
+            {
+                if (args == null || args.Length == 0)
+                {
+                    return new VariableValue(func());
                 }
 
                 throw new ArgumentOutOfRangeException(nameof(args));
@@ -306,6 +373,19 @@ namespace TEGS.Libraries
             };
         }
 
+        private CustomFunction MakeFunction(Func<string> func)
+        {
+            return (args) =>
+            {
+                if (args == null || args.Length == 0)
+                {
+                    return new VariableValue(func());
+                }
+
+                throw new ArgumentOutOfRangeException(nameof(args));
+            };
+        }
+
         private CustomFunction MakeFunction(Func<string, string> func)
         {
             return (args) =>
@@ -313,6 +393,19 @@ namespace TEGS.Libraries
                 if (args != null && args.Length == 1 && args[0].Type == VariableValueType.String)
                 {
                     return new VariableValue(func(args[0].StringValue));
+                }
+
+                throw new ArgumentOutOfRangeException(nameof(args));
+            };
+        }
+
+        private CustomFunction MakeFunction(Func<string, string, string> func)
+        {
+            return (args) =>
+            {
+                if (args != null && args.Length == 2 && args[0].Type == VariableValueType.String && args[1].Type == VariableValueType.String)
+                {
+                    return new VariableValue(func(args[0].StringValue, args[1].StringValue));
                 }
 
                 throw new ArgumentOutOfRangeException(nameof(args));
