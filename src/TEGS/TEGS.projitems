@@ -34,11 +34,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)VariableValue.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)StateVariable.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)StopCondition.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)UI\IDialogService.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)UI\MainViewModel.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)UI\ObservableEdge.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)UI\ObservableGraph.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)UI\ObservableVertex.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Vertex.cs" />
   </ItemGroup>
 </Project>
