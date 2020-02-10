@@ -80,7 +80,7 @@ namespace TEGS.Libraries
             foreach (var fieldInfo in TypeInfo.DeclaredFields)
             {
                 var constantAttribute = fieldInfo.GetCustomAttribute<LibraryConstantAttribute>();
-                if (null != constantAttribute && TryGetConstant(fieldInfo, out VariableValue constantValue))
+                if (null != constantAttribute && fieldInfo.IsPublic && TryGetConstant(fieldInfo, out VariableValue constantValue))
                 {
                     Constants.Add(constantAttribute.Name ?? fieldInfo.Name, constantValue);
                 }
@@ -89,7 +89,7 @@ namespace TEGS.Libraries
             foreach (var propertyInfo in TypeInfo.DeclaredProperties)
             {
                 var constantAttribute = propertyInfo.GetCustomAttribute<LibraryConstantAttribute>();
-                if (null != constantAttribute && TryGetConstant(propertyInfo, out VariableValue constantValue))
+                if (null != constantAttribute && null != propertyInfo.GetGetMethod() && TryGetConstant(propertyInfo, out VariableValue constantValue))
                 {
                     Constants.Add(constantAttribute.Name ?? propertyInfo.Name, constantValue);
                 }
@@ -100,7 +100,7 @@ namespace TEGS.Libraries
             foreach (var methodInfo in TypeInfo.DeclaredMethods)
             {
                 var functionAttribute = methodInfo.GetCustomAttribute<LibraryFunctionAttribute>();
-                if (null != functionAttribute && TryGetCustomFunction(methodInfo, out CustomFunction customFunction))
+                if (null != functionAttribute && methodInfo.IsPublic && TryGetCustomFunction(methodInfo, out CustomFunction customFunction))
                 {
                     Functions.Add(functionAttribute.Name ?? methodInfo.Name, customFunction);
                 }
