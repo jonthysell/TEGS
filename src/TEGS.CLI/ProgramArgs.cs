@@ -26,7 +26,7 @@
 
 using System.IO;
 
-namespace TEGS.Run
+namespace TEGS.CLI
 {
     class ProgramArgs
     {

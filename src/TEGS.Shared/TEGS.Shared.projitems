@@ -10,7 +10,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Libraries\ReflectionLibraryBase.cs" />
-    <Compile Include="..\TEGS\Libraries\BaseLibraries.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Libraries\BaseLibraries.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Libraries\SystemLibrary.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Libraries\StringLibrary.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Libraries\AttributedLibrary.cs" />

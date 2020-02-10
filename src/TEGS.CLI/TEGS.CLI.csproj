@@ -3,7 +3,7 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
-    <StartupObject>TEGS.Run.Program</StartupObject>
+    <StartupObject>TEGS.CLI.Program</StartupObject>
     <Product>TEGS</Product>
     <Company>Jon Thysell</Company>
     <Authors>Jon Thysell</Authors>
@@ -19,6 +19,6 @@
     </None>
   </ItemGroup>
 
-  <Import Project="..\TEGS\TEGS.projitems" Label="Shared" />
+  <Import Project="..\TEGS.Shared\TEGS.Shared.projitems" Label="Shared" />
 
 </Project>

@@ -11,17 +11,17 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Example Graphs", "Example G
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "NativeExamples", "NativeExamples", "{7A230B6C-BC82-4778-BAEF-ABF790363088}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TEGS.Run", "TEGS.Run\TEGS.Run.csproj", "{5897F2C0-9F57-4E15-9EEA-6D0444A1965F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TEGS.CLI", "TEGS.CLI\TEGS.CLI.csproj", "{5897F2C0-9F57-4E15-9EEA-6D0444A1965F}"
 EndProject
-Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "TEGS", "TEGS\TEGS.shproj", "{CE581CF7-25A3-461F-B5B3-691086B847CA}"
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "TEGS.Shared", "TEGS.Shared\TEGS.Shared.shproj", "{CE581CF7-25A3-461F-B5B3-691086B847CA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TEGS.Test", "TEGS.Test\TEGS.Test.csproj", "{0C3B897B-DD3E-437E-94E9-ADF113FDA360}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TEGS.Test", "TEGS.Test\TEGS.Test.csproj", "{0C3B897B-DD3E-437E-94E9-ADF113FDA360}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Carwash", "NativeExamples\Carwash\Carwash.csproj", "{19AD9C90-B96F-49F2-A782-F8B79F986A9A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Carwash", "NativeExamples\Carwash\Carwash.csproj", "{19AD9C90-B96F-49F2-A782-F8B79F986A9A}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
-		TEGS\TEGS.projitems*{ce581cf7-25a3-461f-b5b3-691086b847ca}*SharedItemsImports = 13
+		TEGS.Shared\TEGS.Shared.projitems*{ce581cf7-25a3-461f-b5b3-691086b847ca}*SharedItemsImports = 13
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

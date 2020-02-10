@@ -4,7 +4,7 @@
 // Author:
 //       Jon Thysell <thysell@gmail.com>
 // 
-// Copyright (c) 2019 Jon Thysell <http://jonthysell.com>
+// Copyright (c) 2019, 2020 Jon Thysell <http://jonthysell.com>
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -31,7 +31,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 
-namespace TEGS.Run
+namespace TEGS.CLI
 {
     class Program
     {
@@ -57,7 +57,7 @@ namespace TEGS.Run
 
                     if (ProgramArgs.ShowOutput)
                     {
-                        Console.WriteLine("TEGS.Run v{0}", Assembly.GetEntryAssembly().GetName().Version.ToString());
+                        Console.WriteLine("TEGS.CLI v{0}", Assembly.GetEntryAssembly().GetName().Version.ToString());
                         Console.WriteLine();
 
                         int? columnWidth = (Console.WindowWidth / (numTraceExpressions + 2)) - 1; // 
@@ -154,11 +154,11 @@ namespace TEGS.Run
 
         static void ShowHelp()
         {
-            Console.WriteLine("TEGS.Run v{0}", Assembly.GetEntryAssembly().GetName().Version.ToString());
+            Console.WriteLine("TEGS.CLI v{0}", Assembly.GetEntryAssembly().GetName().Version.ToString());
             Console.WriteLine();
 
             Console.WriteLine("Usage:");
-            Console.WriteLine("TEGS.Run.exe [options] graph.xml");
+            Console.WriteLine("TEGS.CLI.exe [options] graph.xml");
             Console.WriteLine();
 
             Console.WriteLine("Options:");
