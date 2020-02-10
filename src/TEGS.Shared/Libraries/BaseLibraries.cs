@@ -32,10 +32,30 @@ namespace TEGS.Libraries
     {
         public static ILibrary SystemMath => new SystemLibrary(typeof(Math));
 
-        public static ILibrary SystemString => new SystemLibrary(typeof(string));
+        public static ILibrary SystemString => new SystemLibrary(typeof(string), ReflectionType.StandardConstants);
 
         public static ILibrary StringLibrary => new AttributedLibrary(typeof(StringLibrary));
 
-        public static ILibrary RandomVariateLibrary(int seed) => new SystemLibrary(new Random(seed), typeof(RandomExtensions));
+        public static ILibrary RandomVariateLibrary(int seed) => new SystemLibrary(new Random(seed), ReflectionType.ExtensionOnly, typeof(RandomExtensions));
+
+        public static ScriptingHost GetBaseScriptingHost(int? seed = null)
+        {
+            ScriptingHost scriptingHost = new ScriptingHost();
+
+            scriptingHost.LoadLibrary(SystemMath);
+            scriptingHost.LoadLibrary(SystemString);
+            scriptingHost.LoadLibrary(StringLibrary);
+            scriptingHost.LoadLibrary(RandomVariateLibrary(seed ?? GenerateSeed()));
+
+            return scriptingHost;
+        }
+
+        private static int GenerateSeed()
+        {
+            // Adapted from http://lua-users.org/wiki/MathLibraryTutorial
+            char[] c = DateTime.UtcNow.Ticks.ToString().ToCharArray();
+            Array.Reverse(c);
+            return int.Parse(new string(c).Substring(1, 6));
+        }
     }
 }

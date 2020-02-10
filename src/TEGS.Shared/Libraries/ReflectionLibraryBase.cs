@@ -34,6 +34,8 @@ namespace TEGS.Libraries
     {
         #region Properties
 
+        protected ReflectionType ReflectionType { get; private set; }
+
         protected TypeInfo TypeInfo { get; private set; }
 
         protected TypeInfo ExtensionsTypeInfo { get; private set; }
@@ -48,16 +50,18 @@ namespace TEGS.Libraries
 
         #region Constructors
 
-        public ReflectionLibraryBase(Type type, Type extensions = null)
+        public ReflectionLibraryBase(Type type, ReflectionType reflectionType, Type extensions)
         {
+            ReflectionType = reflectionType;
             TypeInfo = type?.GetTypeInfo() ?? throw new ArgumentNullException(nameof(type));
             ExtensionsTypeInfo = extensions?.GetTypeInfo();
 
             Initialize();
         }
 
-        public ReflectionLibraryBase(object instance, Type extensions = null)
+        public ReflectionLibraryBase(object instance, ReflectionType reflectionType, Type extensions)
         {
+            ReflectionType = reflectionType;
             Instance = instance ?? throw new ArgumentNullException(nameof(instance));
             TypeInfo = instance.GetType().GetTypeInfo();
             ExtensionsTypeInfo = extensions?.GetTypeInfo();
@@ -79,15 +83,42 @@ namespace TEGS.Libraries
 
         #region Reflection
 
-        protected virtual void Initialize()
+        protected void Initialize()
         {
-            // Get Name
+            LoadName(TypeInfo);
 
+            if (ReflectionType.HasFlag(ReflectionType.StandardConstants))
+            {
+                LoadConstants(TypeInfo);
+            }
+
+            if (ReflectionType.HasFlag(ReflectionType.StandardMethods))
+            {
+                LoadMethods(TypeInfo);
+            }
+
+            if (null != ExtensionsTypeInfo)
+            {
+                if (ReflectionType.HasFlag(ReflectionType.ExtensionConstants))
+                {
+                    LoadConstants(ExtensionsTypeInfo);
+                }
+
+                if (ReflectionType.HasFlag(ReflectionType.ExtensionMethods))
+                {
+                    LoadMethods(ExtensionsTypeInfo);
+                }
+            }
+        }
+
+        protected virtual void LoadName(TypeInfo typeInfo)
+        {
             Name = TypeInfo.Name;
+        }
 
-            // Get Constants
-
-            foreach (var fieldInfo in TypeInfo.DeclaredFields)
+        protected virtual void LoadConstants(TypeInfo typeInfo)
+        {
+            foreach (var fieldInfo in typeInfo.DeclaredFields)
             {
                 if (fieldInfo.IsPublic && TryGetConstant(fieldInfo, out VariableValue constantValue))
                 {
@@ -95,32 +126,22 @@ namespace TEGS.Libraries
                 }
             }
 
-            foreach (var propertyInfo in TypeInfo.DeclaredProperties)
+            foreach (var propertyInfo in typeInfo.DeclaredProperties)
             {
                 if (null != propertyInfo.GetGetMethod() && TryGetConstant(propertyInfo, out VariableValue constantValue))
                 {
                     Constants.Add(propertyInfo.Name, constantValue);
                 }
             }
+        }
 
-            // Get Methods
-
-            foreach (var methodInfo in TypeInfo.DeclaredMethods)
+        protected virtual void LoadMethods(TypeInfo typeInfo)
+        {
+            foreach (var methodInfo in typeInfo.DeclaredMethods)
             {
                 if (methodInfo.IsPublic && TryGetCustomFunction(methodInfo, out CustomFunction customFunction))
                 {
                     Functions.Add(methodInfo.Name, customFunction);
-                }
-            }
-
-            if (null != ExtensionsTypeInfo)
-            {
-                foreach (var methodInfo in ExtensionsTypeInfo.DeclaredMethods)
-                {
-                    if (methodInfo.IsPublic && TryGetCustomFunction(methodInfo, out CustomFunction customFunction))
-                    {
-                        Functions.Add(methodInfo.Name, customFunction);
-                    }
                 }
             }
         }
@@ -197,5 +218,18 @@ namespace TEGS.Libraries
         }
 
         #endregion
+    }
+
+    [Flags]
+    public enum ReflectionType
+    {
+        None = 0x0,
+        StandardConstants = 0x1,
+        StandardMethods = 0x2,
+        ExtensionConstants = 0x4,
+        ExtensionMethods = 0x8,
+        StandardOnly = StandardConstants + StandardMethods,
+        ExtensionOnly = ExtensionConstants + ExtensionMethods,
+        All = StandardOnly + ExtensionMethods,
     }
 }

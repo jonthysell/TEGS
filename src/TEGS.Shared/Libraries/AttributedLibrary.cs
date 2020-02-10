@@ -57,27 +57,26 @@ namespace TEGS.Libraries
     {
         #region Constructors
 
-        public AttributedLibrary(Type type) : base(type) { }
+        public AttributedLibrary(Type type) : base(type, ReflectionType.All, null) { }
 
-        public AttributedLibrary(object instance) : base(instance) { }
+        public AttributedLibrary(object instance) : base(instance, ReflectionType.All, null) { }
 
         #endregion
 
         #region ReflectionLibraryBase
 
-        protected override void Initialize()
+        protected override void LoadName(TypeInfo typeInfo)
         {
-            // Get Name
-
             var libraryAttribute = TypeInfo.GetCustomAttribute<LibraryAttribute>();
             if (null != libraryAttribute)
             {
                 Name = libraryAttribute.Name?.Trim() ?? "";
             }
+        }
 
-            // Get Constants
-
-            foreach (var fieldInfo in TypeInfo.DeclaredFields)
+        protected override void LoadConstants(TypeInfo typeInfo)
+        {
+            foreach (var fieldInfo in typeInfo.DeclaredFields)
             {
                 var constantAttribute = fieldInfo.GetCustomAttribute<LibraryConstantAttribute>();
                 if (null != constantAttribute && fieldInfo.IsPublic && TryGetConstant(fieldInfo, out VariableValue constantValue))
@@ -86,7 +85,7 @@ namespace TEGS.Libraries
                 }
             }
 
-            foreach (var propertyInfo in TypeInfo.DeclaredProperties)
+            foreach (var propertyInfo in typeInfo.DeclaredProperties)
             {
                 var constantAttribute = propertyInfo.GetCustomAttribute<LibraryConstantAttribute>();
                 if (null != constantAttribute && null != propertyInfo.GetGetMethod() && TryGetConstant(propertyInfo, out VariableValue constantValue))
@@ -94,10 +93,11 @@ namespace TEGS.Libraries
                     Constants.Add(constantAttribute.Name ?? propertyInfo.Name, constantValue);
                 }
             }
+        }
 
-            // Get Functions
-
-            foreach (var methodInfo in TypeInfo.DeclaredMethods)
+        protected override void LoadMethods(TypeInfo typeInfo)
+        {
+            foreach (var methodInfo in typeInfo.DeclaredMethods)
             {
                 var functionAttribute = methodInfo.GetCustomAttribute<LibraryFunctionAttribute>();
                 if (null != functionAttribute && methodInfo.IsPublic && TryGetCustomFunction(methodInfo, out CustomFunction customFunction))

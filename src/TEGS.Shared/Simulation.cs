@@ -169,17 +169,10 @@ namespace TEGS
 
         private void Start()
         {
-            // Create scripting host and load libraries
-
-            ScriptingHost = new ScriptingHost();
-
-            ScriptingHost.LoadLibrary(BaseLibraries.SystemMath);
-            ScriptingHost.LoadLibrary(BaseLibraries.SystemString);
-            ScriptingHost.LoadLibrary(BaseLibraries.StringLibrary);
-            ScriptingHost.LoadLibrary(BaseLibraries.RandomVariateLibrary(Args.StartingSeed.HasValue ? Args.StartingSeed.Value : GenerateSeed()));
+            // Get a base scripting host with built in libraries
+            ScriptingHost = BaseLibraries.GetBaseScriptingHost(Args.StartingSeed);
 
             // Expose Simulation functions
-
             ScriptingHost.DefineCustomFunction(nameof(Clock), (args) => new VariableValue(Clock));
 
             // Initialize state variables
@@ -359,14 +352,6 @@ namespace TEGS
         }
 
         #endregion
-
-        private static int GenerateSeed()
-        {
-            // Adapted from http://lua-users.org/wiki/MathLibraryTutorial
-            char[] c = DateTime.UtcNow.Ticks.ToString().ToCharArray();
-            Array.Reverse(c);
-            return int.Parse(new string(c).Substring(1, 6));
-        }
     }
 
     public enum SimulationState

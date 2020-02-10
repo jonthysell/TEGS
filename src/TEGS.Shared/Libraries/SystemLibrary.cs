@@ -33,9 +33,9 @@ namespace TEGS.Libraries
     {
         #region Constructors
 
-        public SystemLibrary(Type type, Type extensions = null) : base(type, extensions) { }
+        public SystemLibrary(Type type, ReflectionType reflectionType = ReflectionType.All, Type extensions = null) : base(type, reflectionType, extensions) { }
 
-        public SystemLibrary(object instance, Type extensions = null) : base(instance, extensions) { }
+        public SystemLibrary(object instance, ReflectionType reflectionType = ReflectionType.All, Type extensions = null) : base(instance, reflectionType, extensions) { }
 
         #endregion
 
