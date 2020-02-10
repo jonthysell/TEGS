@@ -234,13 +234,13 @@ namespace TEGS.Expressions
 
                 if (remaining.StartsWith("true"))
                 {
-                    result = new VariableValue(true);
+                    result = VariableValue.True;
                     ReadChar("true".Length);
                     return true;
                 }
                 else if (remaining.StartsWith("false"))
                 {
-                    result = new VariableValue(false);
+                    result = VariableValue.False;
                     ReadChar("false".Length);
                     return true;
                 }

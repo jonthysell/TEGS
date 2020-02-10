@@ -4,7 +4,7 @@
 // Author:
 //       Jon Thysell <thysell@gmail.com>
 // 
-// Copyright (c) 2019 Jon Thysell <http://jonthysell.com>
+// Copyright (c) 2019, 2020 Jon Thysell <http://jonthysell.com>
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -52,10 +52,25 @@ namespace TEGS
             return new StopCondition(sim => sim.Clock >= maxTime);
         }
 
+        public static StopCondition StopAfterMaxEventCount(string eventName, int maxEventCount)
+        {
+            if (string.IsNullOrWhiteSpace(eventName))
+            {
+                throw new ArgumentOutOfRangeException(nameof(eventName));
+            }
+
+            if (maxEventCount <= 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(maxEventCount));
+            }
+
+            return new StopCondition(sim => sim.CurrentVertex.Name == eventName && sim.EventCount[sim.CurrentVertex.Id] >= maxEventCount);
+        }
+
         public static StopCondition StopOnCondition(string code)
         {
             code = code?.Trim();
-            return new StopCondition(sim => sim.ScriptingHost.Evaluate(code, new VariableValue(false)).BooleanValue);
+            return new StopCondition(sim => sim.ScriptingHost.Evaluate(code, VariableValue.False).BooleanValue);
         }
     }
 }

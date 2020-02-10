@@ -47,6 +47,8 @@ namespace TEGS
 
         public bool IsNumber => Type == VariableValueType.Integer || Type == VariableValueType.Double;
 
+        public bool IsString => Type == VariableValueType.String;
+
         private readonly PrimitiveUnionValue _value;
         private readonly object _objectValue;
 
@@ -376,6 +378,10 @@ namespace TEGS
 
             return !a.BooleanValue;
         }
+
+        public static readonly VariableValue True = new VariableValue(true);
+
+        public static readonly VariableValue False = new VariableValue(false);
     }
 
     [StructLayout(LayoutKind.Explicit)]

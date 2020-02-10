@@ -163,13 +163,14 @@ namespace TEGS.CLI
 
             Console.WriteLine("Options:");
 
-            Console.WriteLine("-o, --output-file [file]     Write simulation output to the given file.");
-            Console.WriteLine("--seed [int]                 Set the starting seed for the simulation.");
-            Console.WriteLine("--show-output                Show simulation output to the console.");
-            Console.WriteLine("--start-parameter [string]   Add a simulation start parameter.");
-            Console.WriteLine("--stop-condition [string]    Stop the simulation if the given condition is met.");
-            Console.WriteLine("--stop-time [double]         Stop the simulation if the clock passes the given time.");
-            Console.WriteLine("--trace-variable [string]    Add a trace variable by name.");
+            Console.WriteLine("-o, --output-file [file]           Write simulation output to the given file.");
+            Console.WriteLine("--seed [int]                       Set the starting seed for the simulation.");
+            Console.WriteLine("--show-output                      Show simulation output to the console.");
+            Console.WriteLine("--start-parameter [expression]     Add a simulation start parameter.");
+            Console.WriteLine("--stop-condition [expression]      Stop the simulation if the given condition is met.");
+            Console.WriteLine("--stop-event-count [name] [count]  Stop the simulation if the named event occurs count times.");
+            Console.WriteLine("--stop-time [time]                 Stop the simulation if the clock passes the given time.");
+            Console.WriteLine("--trace-variable [name]            Add a trace variable by name.");
             Console.WriteLine();
         }
 
@@ -245,8 +246,11 @@ namespace TEGS.CLI
                         case "--stop-condition":
                             stopCondition = StopCondition.StopOnCondition(args[++i]);
                             break;
+                        case "--stop-event-count":
+                            stopCondition = StopCondition.StopAfterMaxEventCount(args[++i], int.Parse(args[++i]));
+                            break;
                         case "--stop-time":
-                            stopCondition = StopCondition.StopAfterMaxTime(double.Parse(args[++i]));
+                            stopCondition = StopCondition.StopAfterMaxTime(int.Parse(args[++i]));
                             break;
                         case "--trace-variable":
                             string name = args[++i];

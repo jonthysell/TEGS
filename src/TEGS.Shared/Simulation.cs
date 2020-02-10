@@ -75,9 +75,13 @@ namespace TEGS
 
         public double Clock { get; private set; }
 
-        public event SimulationStateChangedEventHandler SimulationStateChanged;
+        public int[] EventCount { get; private set; }
 
-        public event ClockChangedEventHandler ClockChanged;
+        public Vertex CurrentVertex { get; private set; }
+
+        public Edge CurrentEdge { get; private set; }
+
+        public event SimulationStateChangedEventHandler SimulationStateChanged;
 
         public event VertexFiringEventHandler VertexFiring;
 
@@ -173,7 +177,8 @@ namespace TEGS
             ScriptingHost = BaseLibraries.GetBaseScriptingHost(Args.StartingSeed);
 
             // Expose Simulation functions
-            ScriptingHost.DefineCustomFunction(nameof(Clock), (args) => new VariableValue(Clock));
+            ScriptingHost.DefineCustomFunction(nameof(Clock), GetClock);
+            ScriptingHost.DefineCustomFunction(nameof(EventCount), GetCurrentEventCount);
 
             // Initialize state variables
             foreach (StateVariable stateVariable in Graph.StateVariables.Values)
@@ -183,6 +188,12 @@ namespace TEGS
 
             // Initialize clock
             Clock = Schedule.MinTime;
+
+            // Initialize event count
+            EventCount = new int[Graph.Verticies.Count];
+
+            CurrentVertex = null;
+            CurrentEdge = null;
 
             // Insert starting event
             Schedule.Insert(Graph.StartingVertex, Schedule.DefaultDelay, Schedule.DefaultPriority, EvaluateParameters(Graph.StartingVertex, Args.StartParameterExpressions));
@@ -197,6 +208,7 @@ namespace TEGS
 
             // Update internal variables
             Clock = nextEvent.Time;
+            EventCount[nextEvent.Target.Id]++;
 
             // Assign parameters
             AssignParameters(nextEvent.Target, nextEvent.ParameterValues);
@@ -213,7 +225,7 @@ namespace TEGS
             foreach (Edge edge in nextEvent.Target.Edges)
             {
                 // Check condition
-                if (ScriptingHost.Evaluate(edge.Condition, new VariableValue(true)).BooleanValue)
+                if (ScriptingHost.Evaluate(edge.Condition, VariableValue.True).BooleanValue)
                 {
                     OnEdgeFiring(edge);
 
@@ -326,13 +338,9 @@ namespace TEGS
             SimulationStateChanged?.Invoke(this, new SimulationStateEventArgs(State));
         }
 
-        private void OnClockChanged()
-        {
-            ClockChanged?.Invoke(this, new ClockChangedEventArgs(Clock));
-        }
-
         private void OnVertexFiring(Vertex vertex)
         {
+            CurrentVertex = vertex;
             VertexFiring?.Invoke(this, new VertexEventArgs(Clock, vertex, TraceExpressions));
         }
 
@@ -343,12 +351,37 @@ namespace TEGS
 
         private void OnEdgeFiring(Edge edge)
         {
+            CurrentEdge = edge;
             EdgeFiring?.Invoke(this, new EdgeEventArgs(Clock, edge));
         }
 
         private void OnEdgeFired(Edge edge)
         {
             EdgeFired?.Invoke(this, new EdgeEventArgs(Clock, edge));
+        }
+
+        #endregion
+
+        #region Custom Functions
+
+        private VariableValue GetClock(VariableValue[] args)
+        {
+            if (null == args || args.Length == 0)
+            {
+                return new VariableValue(Clock);
+            }
+
+            throw new ArgumentOutOfRangeException(nameof(args));
+        }
+
+        private VariableValue GetCurrentEventCount(VariableValue[] args)
+        {
+            if (null == args || args.Length == 0)
+            {
+                return new VariableValue(EventCount[CurrentVertex.Id]);
+            }
+
+            throw new ArgumentOutOfRangeException(nameof(args));
         }
 
         #endregion
