@@ -156,7 +156,11 @@ namespace TEGS
         {
             int hash = 17;
             hash = hash * 31 + Type.GetHashCode();
-            hash = hash * 31 + AsNumber().GetHashCode();
+            hash = hash * 31 + _value.GetHashCode();
+            if (null != _objectValue)
+            {
+                hash = hash * 31 + _objectValue.GetHashCode();
+            }
             return hash;
         }
 

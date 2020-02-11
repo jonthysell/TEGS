@@ -48,7 +48,7 @@ namespace TEGS.Test
             ScriptingHost host = new ScriptingHost();
             Assert.IsNotNull(host);
 
-            bool[] expectedValues = ValidBooleans;
+            bool[] expectedValues = VariableValueTest.ValidBooleanValues;
 
             for (int i = 0; i < expectedValues.Length; i++)
             {
@@ -73,7 +73,7 @@ namespace TEGS.Test
             ScriptingHost host = new ScriptingHost();
             Assert.IsNotNull(host);
 
-            int[] expectedValues = ValidIntegers;
+            int[] expectedValues = VariableValueTest.ValidIntegerValues;
 
             for (int i = 0; i < expectedValues.Length; i++)
             {
@@ -98,7 +98,7 @@ namespace TEGS.Test
             ScriptingHost host = new ScriptingHost();
             Assert.IsNotNull(host);
 
-            double[] expectedValues = ValidDoubles;
+            double[] expectedValues = VariableValueTest.ValidDoubleValues;
 
             for (int i = 0; i < expectedValues.Length; i++)
             {
@@ -123,7 +123,7 @@ namespace TEGS.Test
             ScriptingHost host = new ScriptingHost();
             Assert.IsNotNull(host);
 
-            string[] expectedValues = ValidStrings;
+            string[] expectedValues = VariableValueTest.ValidStringValues;
 
             for (int i = 0; i < expectedValues.Length; i++)
             {
@@ -156,7 +156,7 @@ namespace TEGS.Test
 
             Assert.ThrowsException<StateVariableNotFoundException>(() => host.Get(sv));
             Assert.ThrowsException<StateVariableNotFoundException>(() => host.Assign(sv, new VariableValue(default(bool))));
-            Assert.ThrowsException<StateVariableAssignmentException>(() => host.Assign(sv, new VariableValue(default(string))));
+            Assert.ThrowsException<StateVariableAssignmentException>(() => host.Assign(sv, new VariableValue(VariableValueType.String)));
         }
 
         [TestMethod]
@@ -194,7 +194,7 @@ namespace TEGS.Test
             StateVariable sv = new StateVariable("test", VariableValueType.String);
 
             Assert.ThrowsException<StateVariableNotFoundException>(() => host.Get(sv));
-            Assert.ThrowsException<StateVariableNotFoundException>(() => host.Assign(sv, new VariableValue(default(string))));
+            Assert.ThrowsException<StateVariableNotFoundException>(() => host.Assign(sv, new VariableValue(VariableValueType.String)));
             Assert.ThrowsException<StateVariableAssignmentException>(() => host.Assign(sv, new VariableValue(default(double))));
         }
 
@@ -208,20 +208,18 @@ namespace TEGS.Test
             ScriptingHost host = new ScriptingHost();
             Assert.IsNotNull(host);
 
-            bool[] expectedValues = ValidBooleans;
-
-            for (int i = 0; i < expectedValues.Length; i++)
+            foreach (var expectedValue in VariableValueTest.ValidBooleanValues)
             {
                 CustomFunction function = new CustomFunction((args) =>
                 {
-                    return new VariableValue(expectedValues[i]);
+                    return new VariableValue(expectedValue);
                 });
 
                 host.DefineCustomFunction("test", function);
                 VariableValue actualValue = host.Evaluate("test()", VariableValueType.Boolean);
 
                 Assert.AreEqual(VariableValueType.Boolean, actualValue.Type);
-                Assert.AreEqual(expectedValues[i], actualValue.BooleanValue);
+                Assert.AreEqual(expectedValue, actualValue.BooleanValue);
             }
         }
 
@@ -231,20 +229,18 @@ namespace TEGS.Test
             ScriptingHost host = new ScriptingHost();
             Assert.IsNotNull(host);
 
-            int[] expectedValues = ValidIntegers;
-
-            for (int i = 0; i < expectedValues.Length; i++)
+            foreach (var expectedValue in VariableValueTest.ValidIntegerValues)
             {
                 CustomFunction function = new CustomFunction((args) =>
                 {
-                    return new VariableValue(expectedValues[i]);
+                    return new VariableValue(expectedValue);
                 });
 
                 host.DefineCustomFunction("test", function);
                 VariableValue actualValue = host.Evaluate("test()", VariableValueType.Integer);
 
                 Assert.AreEqual(VariableValueType.Integer, actualValue.Type);
-                Assert.AreEqual(expectedValues[i], actualValue.IntegerValue);
+                Assert.AreEqual(expectedValue, actualValue.IntegerValue);
             }
         }
 
@@ -254,20 +250,18 @@ namespace TEGS.Test
             ScriptingHost host = new ScriptingHost();
             Assert.IsNotNull(host);
 
-            double[] expectedValues = ValidDoubles;
-
-            for (int i = 0; i < expectedValues.Length; i++)
+            foreach (var expectedValue in VariableValueTest.ValidDoubleValues)
             {
                 CustomFunction function = new CustomFunction((args) =>
                 {
-                    return new VariableValue(expectedValues[i]);
+                    return new VariableValue(expectedValue);
                 });
 
                 host.DefineCustomFunction("test", function);
                 VariableValue actualValue = host.Evaluate("test()", VariableValueType.Double);
 
                 Assert.AreEqual(VariableValueType.Double, actualValue.Type);
-                Assert.AreEqual(expectedValues[i], actualValue.DoubleValue);
+                Assert.AreEqual(expectedValue, actualValue.DoubleValue);
             }
         }
 
@@ -277,31 +271,21 @@ namespace TEGS.Test
             ScriptingHost host = new ScriptingHost();
             Assert.IsNotNull(host);
 
-            string[] expectedValues = ValidStrings;
-
-            for (int i = 0; i < expectedValues.Length; i++)
+            foreach (var expectedValue in VariableValueTest.ValidStringValues)
             {
                 CustomFunction function = new CustomFunction((args) =>
                 {
-                    return new VariableValue(expectedValues[i]);
+                    return new VariableValue(expectedValue);
                 });
 
                 host.DefineCustomFunction("test", function);
                 VariableValue actualValue = host.Evaluate("test()", VariableValueType.String);
 
                 Assert.AreEqual(VariableValueType.String, actualValue.Type);
-                Assert.AreEqual(expectedValues[i], actualValue.StringValue);
+                Assert.AreEqual(expectedValue, actualValue.StringValue);
             }
         }
 
         #endregion
-
-        protected readonly static bool[] ValidBooleans = { true, false };
-
-        protected readonly static int[] ValidIntegers = { 0, 1, int.MinValue, int.MaxValue };
-
-        protected readonly static double[] ValidDoubles = { 0, 1, double.MinValue, double.MinValue };
-
-        protected readonly static string[] ValidStrings = { null, "", "test" };
     }
 }
