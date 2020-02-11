@@ -219,7 +219,7 @@ namespace TEGS
 
         public static VariableValue operator !(VariableValue a)
         {
-            if (!a.IsBoolean )
+            if (!a.IsBoolean)
             {
                 throw new ValueIsNotABooleanException(a);
             }
