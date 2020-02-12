@@ -158,12 +158,15 @@ namespace TEGS.CLI
             Console.WriteLine();
 
             Console.WriteLine("Usage:");
-            Console.WriteLine("TEGS.CLI.exe [options] graph.xml");
+            Console.WriteLine("TEGS.CLI.exe [command] [options] graph.xml");
+            Console.WriteLine();
+
+            Console.WriteLine("Commands:");
+            Console.WriteLine("run                                Run the simulation with the given graph.");
             Console.WriteLine();
 
             Console.WriteLine("Options:");
-
-            Console.WriteLine("-o, --output-file [file]           Write simulation output to the given file.");
+            Console.WriteLine("-o, --output-file [file]           Write the output to the given file.");
             Console.WriteLine("--seed [int]                       Set the starting seed for the simulation.");
             Console.WriteLine("--show-output                      Show simulation output to the console.");
             Console.WriteLine("--start-parameter [expression]     Add a simulation start parameter.");
@@ -216,6 +219,21 @@ namespace TEGS.CLI
                 throw new ValidationException(validationErrors);
             }
 
+            try
+            {
+                switch (args[0].ToLower())
+                {
+                    case "run":
+                        break;
+                    default:
+                        throw new Exception($"Did not recognize command \"{args[0]}\"");
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Unable to parse command.", ex);
+            }
+
             string outputFile = null;
             bool showOutput = false;
             int? startingSeed = null;
@@ -226,7 +244,7 @@ namespace TEGS.CLI
 
             try
             {
-                for (int i = 0; i < args.Length - 1; i++)
+                for (int i = 1; i < args.Length - 1; i++)
                 {
                     switch (args[i].ToLower())
                     {

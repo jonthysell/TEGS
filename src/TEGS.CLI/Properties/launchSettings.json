@@ -2,7 +2,7 @@
   "profiles": {
     "Carwash": {
       "commandName": "Project",
-      "commandLineArgs": "--seed 12345 --show-output --start-parameter 5 --start-parameter 3 --stop-time 10000 $(ProjectDir)\\..\\..\\examples\\carwash.xml"
+      "commandLineArgs": "run --seed 12345 --show-output --start-parameter 5 --start-parameter 3 --stop-time 10000 $(ProjectDir)\\..\\..\\examples\\carwash.xml"
     },
     "TEGS.CLI": {
       "commandName": "Project"
