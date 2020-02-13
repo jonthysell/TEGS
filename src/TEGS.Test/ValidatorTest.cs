@@ -114,7 +114,7 @@ namespace TEGS.Test
 
             List<ValidationError> expectedErrors = new List<ValidationError>
             {
-                new DuplicateVertexNamesValidationError(new List<Vertex>(new Vertex[] { vertex1, vertex2 }))
+                new DuplicateVertexNamesValidationError(new List<Vertex>() { vertex1, vertex2 })
             };
 
             Validator_InvalidTest(graph, expectedErrors);
@@ -129,7 +129,68 @@ namespace TEGS.Test
 
             List<ValidationError> expectedErrors = new List<ValidationError>
             {
-                new MultipleStartingVertexValidationError(new List<Vertex>(new Vertex[] { vertex1, vertex2 }))
+                new MultipleStartingVertexValidationError(new List<Vertex>() { vertex1, vertex2 })
+            };
+
+            Validator_InvalidTest(graph, expectedErrors);
+        }
+
+        [TestMethod]
+        public void Validator_BlankStateVariableNameInvalidTest()
+        {
+            Graph graph = new Graph();
+            StateVariable stateVariable = graph.AddStateVariable("", VariableValueType.Integer);
+            graph.AddVertex("RUN", true);
+
+            List<ValidationError> expectedErrors = new List<ValidationError>
+            {
+                new BlankStateVariableNameValidationError(stateVariable)
+            };
+
+            Validator_InvalidTest(graph, expectedErrors);
+        }
+
+        [TestMethod]
+        public void Validator_InvalidStateVariableNameInvalidTest()
+        {
+            Graph graph = new Graph();
+            StateVariable stateVariable = graph.AddStateVariable("0test", VariableValueType.Integer);
+            graph.AddVertex("RUN", true);
+
+            List<ValidationError> expectedErrors = new List<ValidationError>
+            {
+                new InvalidStateVariableNameValidationError(stateVariable)
+            };
+
+            Validator_InvalidTest(graph, expectedErrors);
+        }
+
+        [TestMethod]
+        public void Validator_ReservedKeywordStateVariableInvalidTest()
+        {
+            Graph graph = new Graph();
+            StateVariable stateVariable = graph.AddStateVariable("new", VariableValueType.Integer);
+            graph.AddVertex("RUN", true);
+
+            List<ValidationError> expectedErrors = new List<ValidationError>
+            {
+                new ReservedKeywordStateVariableValidationError(stateVariable)
+            };
+
+            Validator_InvalidTest(graph, expectedErrors);
+        }
+
+        [TestMethod]
+        public void Validator_DuplicateStateVariableNamesInvalidTest()
+        {
+            Graph graph = new Graph();
+            StateVariable stateVariable1 = graph.AddStateVariable("test", VariableValueType.Integer);
+            StateVariable stateVariable2 = graph.AddStateVariable("test", VariableValueType.Integer);
+            graph.AddVertex("RUN", true);
+
+            List<ValidationError> expectedErrors = new List<ValidationError>
+            {
+                new DuplicateStateVariableNamesValidationError(new List<StateVariable>(){ stateVariable1, stateVariable2 })
             };
 
             Validator_InvalidTest(graph, expectedErrors);

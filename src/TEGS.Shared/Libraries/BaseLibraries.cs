@@ -38,7 +38,7 @@ namespace TEGS.Libraries
 
         public static ILibrary RandomVariateLibrary(int? seed = null) => new SystemLibrary(seed.HasValue ? new Random(seed.Value) : new Random(), ReflectionType.ExtensionOnly, typeof(RandomExtensions));
 
-        public static ScriptingHost GetBaseScriptingHost(int? seed = null)
+        public static ScriptingHost MakeBaseScriptingHost(int? seed = null)
         {
             ScriptingHost scriptingHost = new ScriptingHost();
 

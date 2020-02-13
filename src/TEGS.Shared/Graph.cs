@@ -4,7 +4,7 @@
 // Author:
 //       Jon Thysell <thysell@gmail.com>
 // 
-// Copyright (c) 2019 Jon Thysell <http://jonthysell.com>
+// Copyright (c) 2019, 2020 Jon Thysell <http://jonthysell.com>
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -62,8 +62,8 @@ namespace TEGS
         }
         private string _description = "";
 
-        public IReadOnlyDictionary<string, StateVariable> StateVariables => _stateVariables;
-        private Dictionary<string, StateVariable> _stateVariables = new Dictionary<string, StateVariable>();
+        public IReadOnlyList<StateVariable> StateVariables => _stateVariables;
+        private List<StateVariable> _stateVariables = new List<StateVariable>();
 
         public Vertex StartingVertex
         {
@@ -94,8 +94,23 @@ namespace TEGS
         public StateVariable AddStateVariable(string name, VariableValueType type)
         {
             StateVariable item = new StateVariable(name, type);
-            _stateVariables.Add(item.Name, item);
+            AddStateVariable(item);
             return item;
+        }
+
+        private void AddStateVariable(StateVariable item)
+        {
+            _stateVariables.Add(item);
+        }
+
+        public bool RemoveStateVariable(StateVariable item)
+        {
+            if (null == item)
+            {
+                throw new ArgumentNullException(nameof(item));
+            }
+
+            return _stateVariables.Remove(item);
         }
 
         public bool HasStateVariable(string name)
@@ -105,7 +120,69 @@ namespace TEGS
                 throw new ArgumentNullException(nameof(name));
             }
 
-            return StateVariables.ContainsKey(name);
+            foreach (StateVariable sv in _stateVariables)
+            {
+                if (sv.Name == name)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        public bool HasStateVariable(string name, VariableValueType type)
+        {
+            if (string.IsNullOrEmpty(name))
+            {
+                throw new ArgumentNullException(nameof(name));
+            }
+
+            foreach (StateVariable sv in _stateVariables)
+            {
+                if (sv.Name == name & sv.Type == type)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        public StateVariable GetStateVariable(string name)
+        {
+            if (string.IsNullOrEmpty(name))
+            {
+                throw new ArgumentNullException(nameof(name));
+            }
+
+            foreach (StateVariable sv in _stateVariables)
+            {
+                if (sv.Name == name)
+                {
+                    return sv;
+                }
+            }
+
+            throw new StateVariableNotFoundException(name);
+        }
+
+        public StateVariable GetStateVariable(string name, VariableValueType type)
+        {
+            if (string.IsNullOrEmpty(name))
+            {
+                throw new ArgumentNullException(nameof(name));
+            }
+
+            foreach (StateVariable sv in _stateVariables)
+            {
+                if (sv.Name == name && sv.Type == type)
+                {
+                    return sv;
+                }
+            }
+
+            throw new StateVariableNotFoundException(name, type);
         }
 
         #endregion
@@ -325,7 +402,7 @@ namespace TEGS
 
                 xmlWriter.WriteStartElement("variables");
 
-                foreach (StateVariable stateVariable in _stateVariables.Values)
+                foreach (StateVariable stateVariable in _stateVariables)
                 {
                     xmlWriter.WriteStartElement("variable");
 
@@ -419,17 +496,5 @@ namespace TEGS
 
             return base.ToString();
         }
-    }
-
-    [Serializable]
-    public class GraphMismatchException : Exception
-    {
-        public GraphMismatchException() : base() { }
-    }
-
-    [Serializable]
-    public class VertexNotInGraphException : Exception
-    {
-        public VertexNotInGraphException() : base() { }
     }
 }

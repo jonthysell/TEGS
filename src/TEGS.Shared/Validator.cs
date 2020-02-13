@@ -27,6 +27,8 @@
 using System;
 using System.Collections.Generic;
 
+using TEGS.Libraries;
+
 namespace TEGS
 {
     public static class Validator
@@ -39,6 +41,64 @@ namespace TEGS
             }
 
             List<ValidationError> errors = new List<ValidationError>();
+
+            // Verify state variables
+
+            Dictionary<string, List<StateVariable>> uniqueStateVariableNames= new Dictionary<string, List<StateVariable>>();
+
+            HashSet<StateVariable> badStateVariables = new HashSet<StateVariable>();
+
+            foreach (StateVariable sv in graph.StateVariables)
+            {
+                // Verify name
+                if (string.IsNullOrWhiteSpace(sv.Name))
+                {
+                    errors.Add(new BlankStateVariableNameValidationError(sv));
+                    badStateVariables.Add(sv);
+                }
+                else
+                {
+                    if (!uniqueStateVariableNames.ContainsKey(sv.Name))
+                    {
+                        uniqueStateVariableNames[sv.Name] = new List<StateVariable>();
+                    }
+
+                    uniqueStateVariableNames[sv.Name].Add(sv);
+
+                    if (ScriptingHost.ReservedKeywords.Contains(sv.Name))
+                    {
+                        errors.Add(new ReservedKeywordStateVariableValidationError(sv));
+                        badStateVariables.Add(sv);
+                    }
+                    else if (!ScriptingHost.IsValidSymbolName(sv.Name, false))
+                    {
+                        errors.Add(new InvalidStateVariableNameValidationError(sv));
+                        badStateVariables.Add(sv);
+                    }
+                }
+            }
+
+            foreach (var kvp in uniqueStateVariableNames)
+            {
+                if (kvp.Value.Count > 1)
+                {
+                    errors.Add(new DuplicateStateVariableNamesValidationError(kvp.Value));
+                    foreach (StateVariable sv in kvp.Value)
+                    {
+                        badStateVariables.Add(sv);
+                    }
+                }
+            }
+
+            ScriptingHost scriptingHost = MakeValidationScriptingHost();
+
+            foreach (StateVariable sv in graph.StateVariables)
+            {
+                if (!badStateVariables.Contains(sv))
+                {
+                    scriptingHost.Create(sv);
+                }
+            }
 
             // Verify verticies
             List<Vertex> startingVerticies = new List<Vertex>();
@@ -119,6 +179,16 @@ namespace TEGS
             }
 
             return errors;
+        }
+
+        public static ScriptingHost MakeValidationScriptingHost()
+        {
+            ScriptingHost scriptingHost = BaseLibraries.MakeBaseScriptingHost();
+
+            scriptingHost.DefineCustomFunction(nameof(Simulation.Clock), (args) => new VariableValue(0.0));
+            scriptingHost.DefineCustomFunction(nameof(Simulation.EventCount), (args) => new VariableValue(0));
+
+            return scriptingHost;
         }
     }
 

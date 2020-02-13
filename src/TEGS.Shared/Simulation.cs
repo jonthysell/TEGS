@@ -174,14 +174,14 @@ namespace TEGS
         private void Start()
         {
             // Get a base scripting host with built in libraries
-            ScriptingHost = BaseLibraries.GetBaseScriptingHost(Args.StartingSeed);
+            ScriptingHost = BaseLibraries.MakeBaseScriptingHost(Args.StartingSeed);
 
             // Expose Simulation functions
             ScriptingHost.DefineCustomFunction(nameof(Clock), GetClock);
             ScriptingHost.DefineCustomFunction(nameof(EventCount), GetCurrentEventCount);
 
             // Initialize state variables
-            foreach (StateVariable stateVariable in Graph.StateVariables.Values)
+            foreach (StateVariable stateVariable in Graph.StateVariables)
             {
                 ScriptingHost.Create(stateVariable);
             }
@@ -283,7 +283,7 @@ namespace TEGS
                     List<StateVariable> parameters = new List<StateVariable>();
                     foreach (string parameterName in target.ParameterNames)
                     {
-                        parameters.Add(Graph.StateVariables[parameterName]);
+                        parameters.Add(Graph.GetStateVariable(parameterName));
                     }
                     stateVariables = parameters;
                 }

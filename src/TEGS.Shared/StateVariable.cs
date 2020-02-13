@@ -4,7 +4,7 @@
 // Author:
 //       Jon Thysell <thysell@gmail.com>
 // 
-// Copyright (c) 2019 Jon Thysell <http://jonthysell.com>
+// Copyright (c) 2019, 2020 Jon Thysell <http://jonthysell.com>
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -36,25 +36,22 @@ namespace TEGS
 
         public StateVariable(string name, VariableValueType type)
         {
-            if (string.IsNullOrWhiteSpace(name))
-            {
-                throw new ArgumentNullException(nameof(name));
-            }
-
-            Name = name.Trim();
+            Name = name?.Trim() ?? "";
             Type = type;
         }
 
         public int CompareTo(StateVariable other)
         {
-            return Name.CompareTo(other.Name);
+            int compareName = Name.CompareTo(other.Name);
+
+            return compareName == 0 ? Type.CompareTo(other.Type) : compareName;
         }
 
         public override bool Equals(object obj)
         {
             if (obj is StateVariable other)
             {
-                return Name == other.Name;
+                return Name == other.Name && Type == other.Type;
             }
 
             return false;
@@ -62,12 +59,15 @@ namespace TEGS
 
         public override int GetHashCode()
         {
-            return Name.GetHashCode();
+            int hash = 17;
+            hash = hash * 31 + Name.GetHashCode();
+            hash = hash * 31 + Type.GetHashCode();
+            return hash;
         }
 
         public override string ToString()
         {
-            return $"{Name}";
+            return $"{Name} ({Type.ToString()})";
         }
     }
 
@@ -78,6 +78,25 @@ namespace TEGS
         public StateVariableException(StateVariable stateVariable) : base()
         {
             StateVariable = stateVariable;
+        }
+    }
+
+    public class StateVariableNotFoundException : Exception
+    {
+        public readonly string Name;
+
+        public readonly VariableValueType? Type;
+
+        public StateVariableNotFoundException(string name) : base()
+        {
+            Name = name;
+            Type = null;
+        }
+
+        public StateVariableNotFoundException(string name, VariableValueType type) : base()
+        {
+            Name = name;
+            Type = type;
         }
     }
 }

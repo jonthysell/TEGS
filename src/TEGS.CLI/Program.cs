@@ -272,7 +272,7 @@ namespace TEGS.CLI
                             break;
                         case "--trace-variable":
                             string name = args[++i];
-                            traceExpressions.Add(new StateVariableTraceExpression(graph.StateVariables.Single(kvp => kvp.Key == name).Value));
+                            traceExpressions.Add(new StateVariableTraceExpression(graph.GetStateVariable(name)));
                             break;
                         default:
                             throw new Exception($"Did not recognize option \"{args[i]}\"");

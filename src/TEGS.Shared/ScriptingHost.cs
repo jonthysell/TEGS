@@ -481,16 +481,6 @@ namespace TEGS
         }
     }
 
-    public class StateVariableNotFoundException : Exception
-    {
-        public readonly string Name;
-
-        public StateVariableNotFoundException(string name) : base()
-        {
-            Name = name;
-        }
-    }
-
     public class StateVariableAssignmentException : StateVariableException
     {
         public readonly VariableValue NewValue;

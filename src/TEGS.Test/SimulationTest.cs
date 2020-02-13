@@ -159,8 +159,8 @@ namespace TEGS.Test
                 StopCondition = StopCondition.StopAfterMaxTime(500)
             };
 
-            args.TraceExpressions.Add(new StateVariableTraceExpression(args.Graph.StateVariables.Single(kvp => kvp.Key == "QUEUE").Value));
-            args.TraceExpressions.Add(new StateVariableTraceExpression(args.Graph.StateVariables.Single(kvp => kvp.Key == "SERVERS").Value));
+            args.TraceExpressions.Add(new StateVariableTraceExpression(args.Graph.GetStateVariable("QUEUE")));
+            args.TraceExpressions.Add(new StateVariableTraceExpression(args.Graph.GetStateVariable("SERVERS")));
 
             Simulation s = new Simulation(args);
             Assert.AreEqual(SimulationState.None, s.State);

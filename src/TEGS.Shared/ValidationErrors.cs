@@ -4,7 +4,7 @@
 // Author:
 //       Jon Thysell <thysell@gmail.com>
 // 
-// Copyright (c) 2019 Jon Thysell <http://jonthysell.com>
+// Copyright (c) 2019, 2020 Jon Thysell <http://jonthysell.com>
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -38,6 +38,82 @@ namespace TEGS
     {
         public override string Message => "Graph has no starting vertex.";
     }
+
+    #region State Variable Validation Errors
+
+    public abstract class StateVariableValidationError : ValidationError
+    {
+        public readonly StateVariable StateVariable;
+
+        public StateVariableValidationError(StateVariable stateVariable)
+        {
+            StateVariable = stateVariable ?? throw new ArgumentNullException(nameof(stateVariable));
+        }
+    }
+
+    public class BlankStateVariableNameValidationError : StateVariableValidationError
+    {
+        public override string Message => $"StateVariable has a blank name.";
+
+        public BlankStateVariableNameValidationError(StateVariable stateVariable) : base(stateVariable) { }
+    }
+
+    public class InvalidStateVariableNameValidationError : StateVariableValidationError
+    {
+        public override string Message => $"StateVariable cannot be named \"{StateVariable.Name}\".";
+
+        public InvalidStateVariableNameValidationError(StateVariable stateVariable) : base(stateVariable) { }
+    }
+
+    public class ReservedKeywordStateVariableValidationError : StateVariableValidationError
+    {
+        public override string Message => $"StateVariable cannot be named after reserved keyword \"{StateVariable.Name}\".";
+
+        public ReservedKeywordStateVariableValidationError(StateVariable stateVariable) : base(stateVariable) { }
+    }
+
+    #endregion
+
+    #region State Variables Validation Errors
+
+    public abstract class StateVariablesValidationError : ValidationError
+    {
+        public readonly IReadOnlyList<StateVariable> StateVariables;
+
+        public StateVariablesValidationError(IReadOnlyList<StateVariable> stateVariables)
+        {
+            StateVariables = stateVariables ?? throw new ArgumentNullException(nameof(stateVariables));
+        }
+
+        protected string[] GetNames()
+        {
+            List<string> names = new List<string>();
+
+            foreach (StateVariable sv in StateVariables)
+            {
+                names.Add(sv.Name);
+            }
+
+            return names.ToArray();
+        }
+    }
+
+    public class DuplicateStateVariableNamesValidationError : StateVariablesValidationError
+    {
+        public override string Message
+        {
+            get
+            {
+                string[] names = GetNames();
+
+                return $"Graph has {names.Length} state variables named \"{names[0]}\".";
+            }
+        }
+
+        public DuplicateStateVariableNamesValidationError(IReadOnlyList<StateVariable> stateVariables) : base(stateVariables) { }
+    }
+
+    #endregion
 
     #region Vertex Validation Errors
 
