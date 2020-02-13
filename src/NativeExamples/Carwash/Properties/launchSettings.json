@@ -1,6 +1,6 @@
 {
   "profiles": {
-    "Carwash": {
+    "Carwash (No Output)": {
       "commandName": "Project",
       "commandLineArgs": "--seed 12345 --start-parameter 5 --start-parameter 3 --stop-time 10000"
     }

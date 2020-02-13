@@ -62,12 +62,12 @@ namespace TEGS.CLI
 
                         int? columnWidth = (Console.WindowWidth / (numTraceExpressions + 2)) - 1; // 
 
-                        simulation.VertexFired += MakeOutputEventHandler(Console.WriteLine, numTraceExpressions, " ", columnWidth);
+                        simulation.VertexFired += MakeOutputEventHandler(Console.Write, numTraceExpressions, " ", columnWidth);
                     }
 
                     if (null != ProgramArgs.OutputWriter)
                     {
-                        simulation.VertexFired += MakeOutputEventHandler(ProgramArgs.OutputWriter.WriteLine, numTraceExpressions);
+                        simulation.VertexFired += MakeOutputEventHandler(ProgramArgs.OutputWriter.Write, numTraceExpressions);
                     }
 
                     simulation.Run();
@@ -101,37 +101,41 @@ namespace TEGS.CLI
             }
         }
 
-        private static VertexFiredEventHandler MakeOutputEventHandler(Action<string> writeLine, int numTraceVariables, string seperator = "\t", int? columnWidth = null)
+        private static VertexFiredEventHandler MakeOutputEventHandler(Action<string> writer, int numTraceVariables, string seperator = "\t", int? columnWidth = null)
         {
             bool hasHeader = false;
 
-            string[] headerItems = new string[numTraceVariables + 2];
-            headerItems[0] = Truncate("Clock", columnWidth);
-            headerItems[1] = Truncate("Event", columnWidth);
-
-            string[] dataItems = new string[numTraceVariables + 2];
-
             return (sender, e) =>
             {
-                dataItems[0] = Truncate(e.Clock.ToString(), columnWidth);
-                dataItems[1] = Truncate(e.Vertex.Name.ToString(), columnWidth);
-
-                for (int i = 0; i < e.TraceExpressions.Count; i++)
-                {
-                    if (!hasHeader)
-                    {
-                        headerItems[i + 2] = Truncate(e.TraceExpressions[i].Label, columnWidth);
-                    }
-                    dataItems[i + 2] = Truncate(e.TraceExpressions[i].Value.ToString(), columnWidth);
-                }
-
                 if (!hasHeader)
                 {
-                    writeLine(string.Join(seperator, headerItems));
+                    writer(Truncate("Clock", columnWidth));
+
+                    writer(seperator);
+                    writer(Truncate("Event", columnWidth));
+
+                    for (int i = 0; i < e.TraceExpressions.Count; i++)
+                    {
+                        writer(seperator);
+                        writer(Truncate(e.TraceExpressions[i].Value.ToString(), columnWidth));
+                    }
+
+                    writer(Environment.NewLine);
                     hasHeader = true;
                 }
 
-                writeLine(string.Join(seperator, dataItems));
+                writer(Truncate(e.Clock.ToString(), columnWidth));
+
+                writer(seperator);
+                writer(Truncate(e.Vertex.Name.ToString(), columnWidth));
+
+                for (int i = 0; i < e.TraceExpressions.Count; i++)
+                {
+                    writer(seperator);
+                    writer(Truncate(e.TraceExpressions[i].Value.ToString(), columnWidth));
+                }
+
+                writer(Environment.NewLine);
             };
         }
 

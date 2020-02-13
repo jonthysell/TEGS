@@ -1,11 +1,15 @@
 {
   "profiles": {
-    "Carwash": {
+    "Carwash (No Output)": {
       "commandName": "Project",
-      "commandLineArgs": "run --seed 12345 --show-output --start-parameter 5 --start-parameter 3 --stop-time 10000 $(ProjectDir)\\..\\..\\examples\\carwash.xml"
+      "commandLineArgs": "run --seed 12345 --start-parameter 5 --start-parameter 3 --stop-time 10000 $(ProjectDir)\\..\\..\\examples\\carwash.xml"
     },
     "TEGS.CLI": {
       "commandName": "Project"
+    },
+    "Carwash (Console Out)": {
+      "commandName": "Project",
+      "commandLineArgs": "run --seed 12345 --show-output --start-parameter 5 --start-parameter 3 --stop-time 10000 --trace-variable QUEUE --trace-variable SERVERS $(ProjectDir)\\..\\..\\examples\\carwash.xml"
     }
   }
 }
