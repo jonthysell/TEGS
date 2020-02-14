@@ -27,7 +27,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Reflection;
 using System.Text;
 
@@ -62,12 +61,12 @@ namespace TEGS.CLI
 
                         int? columnWidth = (Console.WindowWidth / (numTraceExpressions + 2)) - 1; // 
 
-                        simulation.VertexFired += MakeOutputEventHandler(Console.Write, numTraceExpressions, " ", columnWidth);
+                        simulation.VertexFired += MakeOutputEventHandler(Console.Write, " ", columnWidth);
                     }
 
                     if (null != ProgramArgs.OutputWriter)
                     {
-                        simulation.VertexFired += MakeOutputEventHandler(ProgramArgs.OutputWriter.Write, numTraceExpressions);
+                        simulation.VertexFired += MakeOutputEventHandler(ProgramArgs.OutputWriter.Write);
                     }
 
                     simulation.Run();
@@ -101,7 +100,7 @@ namespace TEGS.CLI
             }
         }
 
-        private static VertexFiredEventHandler MakeOutputEventHandler(Action<string> writer, int numTraceVariables, string seperator = "\t", int? columnWidth = null)
+        private static VertexFiredEventHandler MakeOutputEventHandler(Action<string> writer, string seperator = "\t", int? columnWidth = null)
         {
             bool hasHeader = false;
 
@@ -204,12 +203,10 @@ namespace TEGS.CLI
 
             try
             {
-                string graphFile = args[args.Length - 1];
+                string graphFile = args[^1];
 
-                using (FileStream fs = new FileStream(graphFile, FileMode.Open))
-                {
-                    graph = Graph.LoadXml(fs);
-                }
+                using FileStream fs = new FileStream(graphFile, FileMode.Open);
+                graph = Graph.LoadXml(fs);
             }
             catch (Exception ex)
             {
