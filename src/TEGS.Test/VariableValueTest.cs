@@ -70,7 +70,7 @@ namespace TEGS.Test
         }
 
         [TestMethod]
-        public void VariableValue_ParseBooleanTest()
+        public void VariableValue_ParseTest()
         {
             foreach (var expectedValue in ValidBooleanValues)
             {
@@ -164,30 +164,36 @@ namespace TEGS.Test
                 var expectedValue = ! value;
                 var actualValue = ! new VariableValue(value);
 
-                Assert.AreEqual(VariableValueType.Boolean, actualValue.Type);
-                Assert.AreEqual(expectedValue, actualValue.BooleanValue);
+                Assert.AreEqual(expectedValue, actualValue);
             }
         }
 
         [TestMethod]
         public void VariableValue_OperatorAddTest()
         {
-            foreach (var value in ValidIntegerValues)
+            foreach (var value1 in SimpleIntValues)
             {
-                var expectedValue = value + value;
-                var actualValue = new VariableValue(value) + new VariableValue(value);
+                foreach (var value2 in SimpleIntValues)
+                {
+                    var expectedValue = value1 + value2;
+                    var actualValue = new VariableValue(value1) + new VariableValue(value2);
 
-                Assert.AreEqual(VariableValueType.Integer, actualValue.Type);
-                Assert.AreEqual(expectedValue, actualValue.IntegerValue);
+                    Assert.AreEqual(VariableValueType.Integer, actualValue.Type);
+                    Assert.AreEqual(expectedValue, actualValue.IntegerValue);
+                }
             }
 
-            foreach (var value in ValidDoubleValues)
+            foreach (var value1 in SimpleDoubleValues)
             {
-                var expectedValue = value + value;
-                var actualValue = new VariableValue(value) + new VariableValue(value);
+                foreach (var value2 in SimpleDoubleValues)
+                {
+                    var expectedValue = value1 + value2;
+                    var actualValue = new VariableValue(value1) + new VariableValue(value2);
 
-                Assert.AreEqual(VariableValueType.Double, actualValue.Type);
-                Assert.AreEqual(expectedValue, actualValue.DoubleValue);
+                    Assert.AreEqual(VariableValueType.Double, actualValue.Type);
+                    Assert.AreEqual(expectedValue, actualValue.DoubleValue);
+
+                }
             }
 
             foreach (var value in ValidStringValues)
@@ -203,55 +209,67 @@ namespace TEGS.Test
         [TestMethod]
         public void VariableValue_OperatorSubtractTest()
         {
-            foreach (var value in ValidIntegerValues)
+            foreach (var value1 in SimpleIntValues)
             {
-                var expectedValue = value - value;
-                var actualValue = new VariableValue(value) - new VariableValue(value);
+                foreach (var value2 in SimpleIntValues)
+                {
+                    var expectedValue = value1 - value2;
+                    var actualValue = new VariableValue(value1) - new VariableValue(value2);
 
-                Assert.AreEqual(VariableValueType.Integer, actualValue.Type);
-                Assert.AreEqual(expectedValue, actualValue.IntegerValue);
+                    Assert.AreEqual(VariableValueType.Integer, actualValue.Type);
+                    Assert.AreEqual(expectedValue, actualValue.IntegerValue);
+                }
             }
 
-            foreach (var value in ValidDoubleValues)
+            foreach (var value1 in SimpleDoubleValues)
             {
-                var expectedValue = value - value;
-                var actualValue = new VariableValue(value) - new VariableValue(value);
+                foreach (var value2 in SimpleDoubleValues)
+                {
+                    var expectedValue = value1 - value2;
+                    var actualValue = new VariableValue(value1) - new VariableValue(value2);
 
-                Assert.AreEqual(VariableValueType.Double, actualValue.Type);
-                Assert.AreEqual(expectedValue, actualValue.DoubleValue);
+                    Assert.AreEqual(VariableValueType.Double, actualValue.Type);
+                    Assert.AreEqual(expectedValue, actualValue.DoubleValue);
+
+                }
             }
         }
 
         [TestMethod]
         public void VariableValue_OperatorMultiplyTest()
         {
-            foreach (var value in ValidIntegerValues)
+            foreach (var value1 in SimpleIntValues)
             {
-                var expectedValue = value * value;
-                var actualValue = new VariableValue(value) * new VariableValue(value);
+                foreach (var value2 in SimpleIntValues)
+                {
+                    var expectedValue = value1 * value2;
+                    var actualValue = new VariableValue(value1) * new VariableValue(value2);
 
-                Assert.AreEqual(VariableValueType.Integer, actualValue.Type);
-                Assert.AreEqual(expectedValue, actualValue.IntegerValue);
+                    Assert.AreEqual(VariableValueType.Integer, actualValue.Type);
+                    Assert.AreEqual(expectedValue, actualValue.IntegerValue);
+                }
             }
 
-            foreach (var value in ValidDoubleValues)
+            foreach (var value1 in SimpleDoubleValues)
             {
-                var expectedValue = value * value;
-                var actualValue = new VariableValue(value) * new VariableValue(value);
+                foreach (var value2 in SimpleDoubleValues)
+                {
+                    var expectedValue = value1 * value2;
+                    var actualValue = new VariableValue(value1) * new VariableValue(value2);
 
-                Assert.AreEqual(VariableValueType.Double, actualValue.Type);
-                Assert.AreEqual(expectedValue, actualValue.DoubleValue);
+                    Assert.AreEqual(VariableValueType.Double, actualValue.Type);
+                    Assert.AreEqual(expectedValue, actualValue.DoubleValue);
+
+                }
             }
         }
 
         [TestMethod]
         public void VariableValue_OperatorDivideTest()
         {
-            int[] intValues = new int[] { -2, -1, 0, 1, 2 };
-
-            foreach (var value1 in intValues)
+            foreach (var value1 in SimpleIntValues)
             {
-                foreach (var value2 in intValues)
+                foreach (var value2 in SimpleIntValues)
                 {
                     if (value2 != 0)
                     {
@@ -264,11 +282,9 @@ namespace TEGS.Test
                 }
             }
 
-            double[] doubleValues = new double[] { -2.0, -1.0, 0.0, 1.0, 2.0 };
-
-            foreach (var value1 in doubleValues)
+            foreach (var value1 in SimpleDoubleValues)
             {
-                foreach (var value2 in doubleValues)
+                foreach (var value2 in SimpleDoubleValues)
                 {
                     if (value2 != 0.0)
                     {
@@ -283,6 +299,110 @@ namespace TEGS.Test
         }
 
         [TestMethod]
+        public void VariableValue_OperatorLessThanTest()
+        {
+            foreach (var value1 in SimpleIntValues)
+            {
+                foreach (var value2 in SimpleIntValues)
+                {
+                    var expectedValue = value1 < value2;
+                    var actualValue = new VariableValue(value1) < new VariableValue(value2);
+
+                    Assert.AreEqual(expectedValue, actualValue);
+                }
+            }
+
+            foreach (var value1 in SimpleDoubleValues)
+            {
+                foreach (var value2 in SimpleDoubleValues)
+                {
+                    var expectedValue = value1 < value2;
+                    var actualValue = new VariableValue(value1) < new VariableValue(value2);
+
+                    Assert.AreEqual(expectedValue, actualValue);
+                }
+            }
+        }
+
+        [TestMethod]
+        public void VariableValue_OperatorGreaterThanTest()
+        {
+            foreach (var value1 in SimpleIntValues)
+            {
+                foreach (var value2 in SimpleIntValues)
+                {
+                    var expectedValue = value1 > value2;
+                    var actualValue = new VariableValue(value1) > new VariableValue(value2);
+
+                    Assert.AreEqual(expectedValue, actualValue);
+                }
+            }
+
+            foreach (var value1 in SimpleDoubleValues)
+            {
+                foreach (var value2 in SimpleDoubleValues)
+                {
+                    var expectedValue = value1 > value2;
+                    var actualValue = new VariableValue(value1) > new VariableValue(value2);
+
+                    Assert.AreEqual(expectedValue, actualValue);
+                }
+            }
+        }
+
+        [TestMethod]
+        public void VariableValue_OperatorLessThanEqualsTest()
+        {
+            foreach (var value1 in SimpleIntValues)
+            {
+                foreach (var value2 in SimpleIntValues)
+                {
+                    var expectedValue = value1 <= value2;
+                    var actualValue = new VariableValue(value1) <= new VariableValue(value2);
+
+                    Assert.AreEqual(expectedValue, actualValue);
+                }
+            }
+
+            foreach (var value1 in SimpleDoubleValues)
+            {
+                foreach (var value2 in SimpleDoubleValues)
+                {
+                    var expectedValue = value1 <= value2;
+                    var actualValue = new VariableValue(value1) <= new VariableValue(value2);
+
+                    Assert.AreEqual(expectedValue, actualValue);
+                }
+            }
+        }
+
+        [TestMethod]
+        public void VariableValue_OperatorGreaterThanEqualsTest()
+        {
+            foreach (var value1 in SimpleIntValues)
+            {
+                foreach (var value2 in SimpleIntValues)
+                {
+                    var expectedValue = value1 >= value2;
+                    var actualValue = new VariableValue(value1) >= new VariableValue(value2);
+
+                    Assert.AreEqual(expectedValue, actualValue);
+                }
+            }
+
+            foreach (var value1 in SimpleDoubleValues)
+            {
+                foreach (var value2 in SimpleDoubleValues)
+                {
+                    var expectedValue = value1 >= value2;
+                    var actualValue = new VariableValue(value1) >= new VariableValue(value2);
+
+                    Assert.AreEqual(expectedValue, actualValue);
+                }
+            }
+        }
+
+        [TestMethod]
         public void VariableValue_OperatorAndTest()
         {
             foreach (var value1 in ValidBooleanValues)
@@ -292,24 +412,7 @@ namespace TEGS.Test
                     var expectedValue = value1 & value2;
                     var actualValue = new VariableValue(value1) & new VariableValue(value2);
 
-                    Assert.AreEqual(VariableValueType.Boolean, actualValue.Type);
-                    Assert.AreEqual(expectedValue, actualValue.BooleanValue);
-                }
-            }
-        }
-
-        [TestMethod]
-        public void VariableValue_OperatorConditionalAndTest()
-        {
-            foreach (var value1 in ValidBooleanValues)
-            {
-                foreach (var value2 in ValidBooleanValues)
-                {
-                    var expectedValue = value1 && value2;
-                    var actualValue = new VariableValue(value1) && new VariableValue(value2);
-
-                    Assert.AreEqual(VariableValueType.Boolean, actualValue.Type);
-                    Assert.AreEqual(expectedValue, actualValue.BooleanValue);
+                    Assert.AreEqual(expectedValue, actualValue);
                 }
             }
         }
@@ -324,24 +427,7 @@ namespace TEGS.Test
                     var expectedValue = value1 | value2;
                     var actualValue = new VariableValue(value1) | new VariableValue(value2);
 
-                    Assert.AreEqual(VariableValueType.Boolean, actualValue.Type);
-                    Assert.AreEqual(expectedValue, actualValue.BooleanValue);
-                }
-            }
-        }
-
-        [TestMethod]
-        public void VariableValue_OperatorConditionalOrTest()
-        {
-            foreach (var value1 in ValidBooleanValues)
-            {
-                foreach (var value2 in ValidBooleanValues)
-                {
-                    var expectedValue = value1 || value2;
-                    var actualValue = new VariableValue(value1) || new VariableValue(value2);
-
-                    Assert.AreEqual(VariableValueType.Boolean, actualValue.Type);
-                    Assert.AreEqual(expectedValue, actualValue.BooleanValue);
+                    Assert.AreEqual(expectedValue, actualValue);
                 }
             }
         }
@@ -373,5 +459,9 @@ namespace TEGS.Test
         public static readonly string[] ValidStringValues = new string[] { null, "", "test" };
 
         public static readonly object[] ValidParseValues = new object[] { false, true, int.MinValue, -1, 0, 1, int.MaxValue, double.NegativeInfinity, double.MinValue, -1.0, 0.0, double.Epsilon, 1.0, double.MaxValue, double.PositiveInfinity, "", "test" };
+
+        public static readonly int[] SimpleIntValues = new int[] { -2, -1, 0, 1, 2 };
+
+        public static readonly double[] SimpleDoubleValues = new double[] { -2.0, -1.0, -0.1, 0.0, 0.1, 1.0, 2.0 };
     }
 }

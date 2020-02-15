@@ -121,7 +121,7 @@ namespace TEGS.Expressions
         {
             try
             {
-                return !RHS.Evaluate(context);
+                return new VariableValue(!RHS.Evaluate(context));
             }
             catch (ArithmeticException)
             {
@@ -334,7 +334,7 @@ namespace TEGS.Expressions
         {
             try
             {
-                return LHS.Evaluate(context) & RHS.Evaluate(context);
+                return new VariableValue(LHS.Evaluate(context) & RHS.Evaluate(context));
             }
             catch (ArithmeticException)
             {
@@ -351,7 +351,7 @@ namespace TEGS.Expressions
         {
             try
             {
-                return LHS.Evaluate(context) | RHS.Evaluate(context);
+                return new VariableValue(LHS.Evaluate(context) | RHS.Evaluate(context));
             }
             catch (ArithmeticException)
             {
@@ -368,7 +368,7 @@ namespace TEGS.Expressions
         {
             try
             {
-                return LHS.Evaluate(context) && RHS.Evaluate(context);
+                return LHS.Evaluate(context) ? RHS.Evaluate(context) : VariableValue.False;
             }
             catch (ArithmeticException)
             {
@@ -385,7 +385,7 @@ namespace TEGS.Expressions
         {
             try
             {
-                return LHS.Evaluate(context) || RHS.Evaluate(context);
+                return LHS.Evaluate(context) ? VariableValue.True : RHS.Evaluate(context);
             }
             catch (ArithmeticException)
             {

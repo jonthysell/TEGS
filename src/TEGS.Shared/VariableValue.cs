@@ -217,14 +217,14 @@ namespace TEGS
             throw new ValueIsNotANumberException(a);
         }
 
-        public static VariableValue operator !(VariableValue a)
+        public static bool operator !(VariableValue a)
         {
             if (!a.IsBoolean)
             {
                 throw new ValueIsNotABooleanException(a);
             }
 
-            return new VariableValue(!a.BooleanValue);
+            return !a.BooleanValue;
         }
 
         public static VariableValue operator +(VariableValue a, VariableValue b)
@@ -343,24 +343,24 @@ namespace TEGS
             throw new VariableValueValueOperationException(a, b);
         }
 
-        public static VariableValue operator &(VariableValue a, VariableValue b)
+        public static bool operator &(VariableValue a, VariableValue b)
         {
             if (!a.IsBoolean || !b.IsBoolean)
             {
                 throw new VariableValueValueOperationException(a, b);
             }
 
-            return new VariableValue(a.BooleanValue & b.BooleanValue);
+            return a.BooleanValue & b.BooleanValue;
         }
 
-        public static VariableValue operator |(VariableValue a, VariableValue b)
+        public static bool operator |(VariableValue a, VariableValue b)
         {
             if (!a.IsBoolean || !b.IsBoolean)
             {
                 throw new VariableValueValueOperationException(a, b);
             }
 
-            return new VariableValue(a.BooleanValue | b.BooleanValue);
+            return a.BooleanValue | b.BooleanValue;
         }
 
         public static bool operator true(VariableValue a)
