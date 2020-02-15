@@ -1,0 +1,19 @@
+<Project>
+
+  <PropertyGroup>
+    <Product>TEGS</Product>
+    <Company>Jon Thysell</Company>
+    <Authors>Jon Thysell</Authors>
+    <Copyright>Copyright © 2019-2020 Jon Thysell</Copyright>
+    <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
+    <RepositoryUrl>https://github.com/jonthysell/tegs</RepositoryUrl>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="$(MSBuildThisFileDirectory)..\LICENSE.md">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
+  </ItemGroup>
+
+</Project>

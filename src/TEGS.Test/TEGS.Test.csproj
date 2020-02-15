@@ -2,26 +2,11 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
-
     <IsPackable>false</IsPackable>
-
-    <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
-
-    <RepositoryUrl>https://github.com/jonthysell/tegs</RepositoryUrl>
-
-    <Authors>Jon Thysell</Authors>
-
-    <Product>TEGS</Product>
-
-    <Copyright>Copyright © 2019-2020 Jon Thysell</Copyright>
   </PropertyGroup>
 
   <ItemGroup>
     <None Remove="TestGraphs\carwash.xml" />
-    <None Include="..\..\LICENSE.md">
-      <Pack>True</Pack>
-      <PackagePath></PackagePath>
-    </None>
   </ItemGroup>
 
   <ItemGroup>
