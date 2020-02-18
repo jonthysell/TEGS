@@ -104,7 +104,7 @@ namespace TEGS.Expressions
         {
             try
             {
-                return -RHS.Evaluate(context);
+                return - RHS.Evaluate(context);
             }
             catch (ArithmeticException)
             {
@@ -121,7 +121,7 @@ namespace TEGS.Expressions
         {
             try
             {
-                return new VariableValue(!RHS.Evaluate(context));
+                return new VariableValue(! RHS.Evaluate(context));
             }
             catch (ArithmeticException)
             {

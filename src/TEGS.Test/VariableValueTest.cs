@@ -196,13 +196,16 @@ namespace TEGS.Test
                 }
             }
 
-            foreach (var value in ValidStringValues)
+            foreach (var value1 in ValidStringValues)
             {
-                var expectedValue = value + value;
-                var actualValue = new VariableValue(value) + new VariableValue(value);
+                foreach (var value2 in ValidStringValues)
+                {
+                    var expectedValue = value1 + value2;
+                    var actualValue = new VariableValue(value1) + new VariableValue(value2);
 
-                Assert.AreEqual(VariableValueType.String, actualValue.Type);
-                Assert.AreEqual(expectedValue, actualValue.StringValue);
+                    Assert.AreEqual(VariableValueType.String, actualValue.Type);
+                    Assert.AreEqual(expectedValue, actualValue.StringValue);
+                }
             }
         }
 
