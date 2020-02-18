@@ -136,6 +136,23 @@ namespace TEGS.Expressions
 
         public NodeBinary(Node lhs, Node rhs) : base(rhs) => LHS = lhs ?? throw new ArgumentNullException(nameof(lhs));
     }
+    public class NodeAssign : NodeBinary
+    {
+        public NodeAssign(Node lhs, Node rhs) : base(lhs, rhs) { }
+
+        public override VariableValue Evaluate(IContext context)
+        {
+            try
+            {
+                context.SetVariable((LHS as NodeVariable).Name, RHS.Evaluate(context));
+                return LHS.Evaluate(context);
+            }
+            catch (ArithmeticException)
+            {
+                throw new NodeEvaluateException(this);
+            }
+        }
+    }
 
     public class NodeAddition : NodeBinary
     {
@@ -197,25 +214,6 @@ namespace TEGS.Expressions
             try
             {
                 return LHS.Evaluate(context) / RHS.Evaluate(context);
-            }
-            catch (ArithmeticException)
-            {
-                throw new NodeEvaluateException(this);
-            }
-        }
-    }
-
-
-    public class NodeAssign : NodeBinary
-    {
-        public NodeAssign(Node lhs, Node rhs) : base(lhs, rhs) { }
-
-        public override VariableValue Evaluate(IContext context)
-        {
-            try
-            {
-                context.SetVariable((LHS as NodeVariable).Name, RHS.Evaluate(context));
-                return LHS.Evaluate(context);
             }
             catch (ArithmeticException)
             {

@@ -113,24 +113,128 @@ namespace TEGS.Test
         [TestMethod]
         public void VariableValue_OperatorEqualsTest()
         {
-            foreach (var expectedValue in ValidParseValues)
+            foreach (var value1 in ValidBooleanValues)
             {
-                var actualValue1 = VariableValue.Parse(expectedValue);
-                var actualValue2 =  VariableValue.Parse(expectedValue);
+                foreach (var value2 in ValidBooleanValues)
+                {
+                    var expectedValue = value1 == value2;
+                    var actualValue = new VariableValue(value1) == new VariableValue(value2);
 
-                Assert.IsTrue(actualValue1 == actualValue2);
+                    Assert.AreEqual(expectedValue, actualValue);
+                }
+            }
+
+            foreach (var value1 in ValidIntegerValues)
+            {
+                foreach (var value2 in ValidIntegerValues)
+                {
+                    var expectedValue = value1 == value2;
+                    var actualValue = new VariableValue(value1) == new VariableValue(value2);
+
+                    Assert.AreEqual(expectedValue, actualValue);
+                }
+
+                foreach (var value2 in ValidDoubleValues)
+                {
+                    var expectedValue = value1 == value2;
+                    var actualValue = new VariableValue(value1) == new VariableValue(value2);
+
+                    Assert.AreEqual(expectedValue, actualValue);
+                }
+            }
+
+            foreach (var value1 in ValidDoubleValues)
+            {
+                foreach (var value2 in ValidDoubleValues)
+                {
+                    var expectedValue = value1 == value2;
+                    var actualValue = new VariableValue(value1) == new VariableValue(value2);
+
+                    Assert.AreEqual(expectedValue, actualValue);
+                }
+
+                foreach (var value2 in ValidIntegerValues)
+                {
+                    var expectedValue = value1 == value2;
+                    var actualValue = new VariableValue(value1) == new VariableValue(value2);
+
+                    Assert.AreEqual(expectedValue, actualValue);
+                }
+            }
+
+            foreach (var value1 in ValidStringValues)
+            {
+                foreach (var value2 in ValidStringValues)
+                {
+                    var expectedValue = value1 == value2;
+                    var actualValue = new VariableValue(value1) == new VariableValue(value2);
+
+                    Assert.AreEqual(expectedValue, actualValue);
+                }
             }
         }
 
         [TestMethod]
         public void VariableValue_OperatorNotEqualsTest()
         {
-            foreach (var expectedValue in ValidParseValues)
+            foreach (var value1 in ValidBooleanValues)
             {
-                var actualValue1 = VariableValue.Parse(expectedValue);
-                var actualValue2 = VariableValue.Parse(expectedValue);
+                foreach (var value2 in ValidBooleanValues)
+                {
+                    var expectedValue = value1 != value2;
+                    var actualValue = new VariableValue(value1) != new VariableValue(value2);
 
-                Assert.IsFalse(actualValue1 != actualValue2);
+                    Assert.AreEqual(expectedValue, actualValue);
+                }
+            }
+
+            foreach (var value1 in ValidIntegerValues)
+            {
+                foreach (var value2 in ValidIntegerValues)
+                {
+                    var expectedValue = value1 != value2;
+                    var actualValue = new VariableValue(value1) != new VariableValue(value2);
+
+                    Assert.AreEqual(expectedValue, actualValue);
+                }
+
+                foreach (var value2 in ValidDoubleValues)
+                {
+                    var expectedValue = value1 != value2;
+                    var actualValue = new VariableValue(value1) != new VariableValue(value2);
+
+                    Assert.AreEqual(expectedValue, actualValue);
+                }
+            }
+
+            foreach (var value1 in ValidDoubleValues)
+            {
+                foreach (var value2 in ValidDoubleValues)
+                {
+                    var expectedValue = value1 != value2;
+                    var actualValue = new VariableValue(value1) != new VariableValue(value2);
+
+                    Assert.AreEqual(expectedValue, actualValue);
+                }
+
+                foreach (var value2 in ValidIntegerValues)
+                {
+                    var expectedValue = value1 != value2;
+                    var actualValue = new VariableValue(value1) != new VariableValue(value2);
+
+                    Assert.AreEqual(expectedValue, actualValue);
+                }
+            }
+
+            foreach (var value1 in ValidStringValues)
+            {
+                foreach (var value2 in ValidStringValues)
+                {
+                    var expectedValue = value1 != value2;
+                    var actualValue = new VariableValue(value1) != new VariableValue(value2);
+
+                    Assert.AreEqual(expectedValue, actualValue);
+                }
             }
         }
 
@@ -181,11 +285,29 @@ namespace TEGS.Test
                     Assert.AreEqual(VariableValueType.Integer, actualValue.Type);
                     Assert.AreEqual(expectedValue, actualValue.IntegerValue);
                 }
+
+                foreach (var value2 in SimpleDoubleValues)
+                {
+                    var expectedValue = value1 + value2;
+                    var actualValue = new VariableValue(value1) + new VariableValue(value2);
+
+                    Assert.AreEqual(VariableValueType.Double, actualValue.Type);
+                    Assert.AreEqual(expectedValue, actualValue.DoubleValue);
+                }
             }
 
             foreach (var value1 in SimpleDoubleValues)
             {
                 foreach (var value2 in SimpleDoubleValues)
+                {
+                    var expectedValue = value1 + value2;
+                    var actualValue = new VariableValue(value1) + new VariableValue(value2);
+
+                    Assert.AreEqual(VariableValueType.Double, actualValue.Type);
+                    Assert.AreEqual(expectedValue, actualValue.DoubleValue);
+                }
+
+                foreach (var value2 in SimpleIntValues)
                 {
                     var expectedValue = value1 + value2;
                     var actualValue = new VariableValue(value1) + new VariableValue(value2);
@@ -222,11 +344,30 @@ namespace TEGS.Test
                     Assert.AreEqual(VariableValueType.Integer, actualValue.Type);
                     Assert.AreEqual(expectedValue, actualValue.IntegerValue);
                 }
+
+                foreach (var value2 in SimpleDoubleValues)
+                {
+                    var expectedValue = value1 - value2;
+                    var actualValue = new VariableValue(value1) - new VariableValue(value2);
+
+                    Assert.AreEqual(VariableValueType.Double, actualValue.Type);
+                    Assert.AreEqual(expectedValue, actualValue.DoubleValue);
+                }
             }
 
             foreach (var value1 in SimpleDoubleValues)
             {
                 foreach (var value2 in SimpleDoubleValues)
+                {
+                    var expectedValue = value1 - value2;
+                    var actualValue = new VariableValue(value1) - new VariableValue(value2);
+
+                    Assert.AreEqual(VariableValueType.Double, actualValue.Type);
+                    Assert.AreEqual(expectedValue, actualValue.DoubleValue);
+
+                }
+
+                foreach (var value2 in SimpleIntValues)
                 {
                     var expectedValue = value1 - value2;
                     var actualValue = new VariableValue(value1) - new VariableValue(value2);
@@ -251,11 +392,30 @@ namespace TEGS.Test
                     Assert.AreEqual(VariableValueType.Integer, actualValue.Type);
                     Assert.AreEqual(expectedValue, actualValue.IntegerValue);
                 }
+
+                foreach (var value2 in SimpleDoubleValues)
+                {
+                    var expectedValue = value1 * value2;
+                    var actualValue = new VariableValue(value1) * new VariableValue(value2);
+
+                    Assert.AreEqual(VariableValueType.Double, actualValue.Type);
+                    Assert.AreEqual(expectedValue, actualValue.DoubleValue);
+                }
             }
 
             foreach (var value1 in SimpleDoubleValues)
             {
                 foreach (var value2 in SimpleDoubleValues)
+                {
+                    var expectedValue = value1 * value2;
+                    var actualValue = new VariableValue(value1) * new VariableValue(value2);
+
+                    Assert.AreEqual(VariableValueType.Double, actualValue.Type);
+                    Assert.AreEqual(expectedValue, actualValue.DoubleValue);
+
+                }
+
+                foreach (var value2 in SimpleIntValues)
                 {
                     var expectedValue = value1 * value2;
                     var actualValue = new VariableValue(value1) * new VariableValue(value2);
@@ -283,6 +443,18 @@ namespace TEGS.Test
                         Assert.AreEqual(expectedValue, actualValue.IntegerValue);
                     }
                 }
+
+                foreach (var value2 in SimpleDoubleValues)
+                {
+                    if (value2 != 0.0)
+                    {
+                        var expectedValue = value1 / value2;
+                        var actualValue = new VariableValue(value1) / new VariableValue(value2);
+
+                        Assert.AreEqual(VariableValueType.Double, actualValue.Type);
+                        Assert.AreEqual(expectedValue, actualValue.DoubleValue);
+                    }
+                }
             }
 
             foreach (var value1 in SimpleDoubleValues)
@@ -290,6 +462,18 @@ namespace TEGS.Test
                 foreach (var value2 in SimpleDoubleValues)
                 {
                     if (value2 != 0.0)
+                    {
+                        var expectedValue = value1 / value2;
+                        var actualValue = new VariableValue(value1) / new VariableValue(value2);
+
+                        Assert.AreEqual(VariableValueType.Double, actualValue.Type);
+                        Assert.AreEqual(expectedValue, actualValue.DoubleValue);
+                    }
+                }
+
+                foreach (var value2 in SimpleIntValues)
+                {
+                    if (value2 != 0)
                     {
                         var expectedValue = value1 / value2;
                         var actualValue = new VariableValue(value1) / new VariableValue(value2);
@@ -313,11 +497,27 @@ namespace TEGS.Test
 
                     Assert.AreEqual(expectedValue, actualValue);
                 }
+
+                foreach (var value2 in SimpleDoubleValues)
+                {
+                    var expectedValue = value1 < value2;
+                    var actualValue = new VariableValue(value1) < new VariableValue(value2);
+
+                    Assert.AreEqual(expectedValue, actualValue);
+                }
             }
 
             foreach (var value1 in SimpleDoubleValues)
             {
                 foreach (var value2 in SimpleDoubleValues)
+                {
+                    var expectedValue = value1 < value2;
+                    var actualValue = new VariableValue(value1) < new VariableValue(value2);
+
+                    Assert.AreEqual(expectedValue, actualValue);
+                }
+
+                foreach (var value2 in SimpleIntValues)
                 {
                     var expectedValue = value1 < value2;
                     var actualValue = new VariableValue(value1) < new VariableValue(value2);
@@ -339,11 +539,27 @@ namespace TEGS.Test
 
                     Assert.AreEqual(expectedValue, actualValue);
                 }
+
+                foreach (var value2 in SimpleDoubleValues)
+                {
+                    var expectedValue = value1 > value2;
+                    var actualValue = new VariableValue(value1) > new VariableValue(value2);
+
+                    Assert.AreEqual(expectedValue, actualValue);
+                }
             }
 
             foreach (var value1 in SimpleDoubleValues)
             {
                 foreach (var value2 in SimpleDoubleValues)
+                {
+                    var expectedValue = value1 > value2;
+                    var actualValue = new VariableValue(value1) > new VariableValue(value2);
+
+                    Assert.AreEqual(expectedValue, actualValue);
+                }
+
+                foreach (var value2 in SimpleIntValues)
                 {
                     var expectedValue = value1 > value2;
                     var actualValue = new VariableValue(value1) > new VariableValue(value2);
@@ -365,11 +581,27 @@ namespace TEGS.Test
 
                     Assert.AreEqual(expectedValue, actualValue);
                 }
+
+                foreach (var value2 in SimpleDoubleValues)
+                {
+                    var expectedValue = value1 <= value2;
+                    var actualValue = new VariableValue(value1) <= new VariableValue(value2);
+
+                    Assert.AreEqual(expectedValue, actualValue);
+                }
             }
 
             foreach (var value1 in SimpleDoubleValues)
             {
                 foreach (var value2 in SimpleDoubleValues)
+                {
+                    var expectedValue = value1 <= value2;
+                    var actualValue = new VariableValue(value1) <= new VariableValue(value2);
+
+                    Assert.AreEqual(expectedValue, actualValue);
+                }
+
+                foreach (var value2 in SimpleIntValues)
                 {
                     var expectedValue = value1 <= value2;
                     var actualValue = new VariableValue(value1) <= new VariableValue(value2);
@@ -391,11 +623,27 @@ namespace TEGS.Test
 
                     Assert.AreEqual(expectedValue, actualValue);
                 }
+
+                foreach (var value2 in SimpleDoubleValues)
+                {
+                    var expectedValue = value1 >= value2;
+                    var actualValue = new VariableValue(value1) >= new VariableValue(value2);
+
+                    Assert.AreEqual(expectedValue, actualValue);
+                }
             }
 
             foreach (var value1 in SimpleDoubleValues)
             {
                 foreach (var value2 in SimpleDoubleValues)
+                {
+                    var expectedValue = value1 >= value2;
+                    var actualValue = new VariableValue(value1) >= new VariableValue(value2);
+
+                    Assert.AreEqual(expectedValue, actualValue);
+                }
+
+                foreach (var value2 in SimpleIntValues)
                 {
                     var expectedValue = value1 >= value2;
                     var actualValue = new VariableValue(value1) >= new VariableValue(value2);

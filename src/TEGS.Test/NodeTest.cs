@@ -24,9 +24,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System.Collections.Generic;
-using System.Diagnostics;
-
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using TEGS.Expressions;
@@ -116,6 +113,24 @@ namespace TEGS.Test
         }
 
         [TestMethod]
+        public void Node_AssignTest()
+        {
+            foreach (var value in VariableValueTest.ValidParseValues)
+            {
+                var expectedValue = VariableValue.Parse(value);
+
+                var context = new TestContext();
+
+                var lhs = new NodeVariable("test");
+                var rhs = new NodeValue(expectedValue);
+
+                Evaluate_ValidTest(expectedValue, new NodeAssign(lhs, rhs), context);
+
+                Assert.AreEqual(expectedValue, lhs.Evaluate(context));
+            }
+        }
+
+        [TestMethod]
         public void Node_AddTest()
         {
             foreach (var value1 in VariableValueTest.SimpleIntValues)
@@ -132,11 +147,37 @@ namespace TEGS.Test
 
                     Evaluate_ValidTest(expectedValue, new NodeAddition(lhs, rhs), new TestContext());
                 }
+
+                foreach (var value2 in VariableValueTest.SimpleDoubleValues)
+                {
+                    var variableValue1 = new VariableValue(value1);
+                    var variableValue2 = new VariableValue(value2);
+
+                    var expectedValue = variableValue1 + variableValue2;
+
+                    var lhs = new NodeValue(variableValue1);
+                    var rhs = new NodeValue(variableValue2);
+
+                    Evaluate_ValidTest(expectedValue, new NodeAddition(lhs, rhs), new TestContext());
+                }
             }
 
             foreach (var value1 in VariableValueTest.SimpleDoubleValues)
             {
                 foreach (var value2 in VariableValueTest.SimpleDoubleValues)
+                {
+                    var variableValue1 = new VariableValue(value1);
+                    var variableValue2 = new VariableValue(value2);
+
+                    var expectedValue = variableValue1 + variableValue2;
+
+                    var lhs = new NodeValue(variableValue1);
+                    var rhs = new NodeValue(variableValue2);
+
+                    Evaluate_ValidTest(expectedValue, new NodeAddition(lhs, rhs), new TestContext());
+                }
+
+                foreach (var value2 in VariableValueTest.SimpleIntValues)
                 {
                     var variableValue1 = new VariableValue(value1);
                     var variableValue2 = new VariableValue(value2);
@@ -184,11 +225,37 @@ namespace TEGS.Test
 
                     Evaluate_ValidTest(expectedValue, new NodeSubtraction(lhs, rhs), new TestContext());
                 }
+
+                foreach (var value2 in VariableValueTest.SimpleDoubleValues)
+                {
+                    var variableValue1 = new VariableValue(value1);
+                    var variableValue2 = new VariableValue(value2);
+
+                    var expectedValue = variableValue1 - variableValue2;
+
+                    var lhs = new NodeValue(variableValue1);
+                    var rhs = new NodeValue(variableValue2);
+
+                    Evaluate_ValidTest(expectedValue, new NodeSubtraction(lhs, rhs), new TestContext());
+                }
             }
 
             foreach (var value1 in VariableValueTest.SimpleDoubleValues)
             {
                 foreach (var value2 in VariableValueTest.SimpleDoubleValues)
+                {
+                    var variableValue1 = new VariableValue(value1);
+                    var variableValue2 = new VariableValue(value2);
+
+                    var expectedValue = variableValue1 - variableValue2;
+
+                    var lhs = new NodeValue(variableValue1);
+                    var rhs = new NodeValue(variableValue2);
+
+                    Evaluate_ValidTest(expectedValue, new NodeSubtraction(lhs, rhs), new TestContext());
+                }
+
+                foreach (var value2 in VariableValueTest.SimpleIntValues)
                 {
                     var variableValue1 = new VariableValue(value1);
                     var variableValue2 = new VariableValue(value2);
@@ -220,11 +287,37 @@ namespace TEGS.Test
 
                     Evaluate_ValidTest(expectedValue, new NodeMultiplication(lhs, rhs), new TestContext());
                 }
+
+                foreach (var value2 in VariableValueTest.SimpleDoubleValues)
+                {
+                    var variableValue1 = new VariableValue(value1);
+                    var variableValue2 = new VariableValue(value2);
+
+                    var expectedValue = variableValue1 * variableValue2;
+
+                    var lhs = new NodeValue(variableValue1);
+                    var rhs = new NodeValue(variableValue2);
+
+                    Evaluate_ValidTest(expectedValue, new NodeMultiplication(lhs, rhs), new TestContext());
+                }
             }
 
             foreach (var value1 in VariableValueTest.SimpleDoubleValues)
             {
                 foreach (var value2 in VariableValueTest.SimpleDoubleValues)
+                {
+                    var variableValue1 = new VariableValue(value1);
+                    var variableValue2 = new VariableValue(value2);
+
+                    var expectedValue = variableValue1 * variableValue2;
+
+                    var lhs = new NodeValue(variableValue1);
+                    var rhs = new NodeValue(variableValue2);
+
+                    Evaluate_ValidTest(expectedValue, new NodeMultiplication(lhs, rhs), new TestContext());
+                }
+
+                foreach (var value2 in VariableValueTest.SimpleIntValues)
                 {
                     var variableValue1 = new VariableValue(value1);
                     var variableValue2 = new VariableValue(value2);
@@ -259,6 +352,22 @@ namespace TEGS.Test
                         Evaluate_ValidTest(expectedValue, new NodeDivision(lhs, rhs), new TestContext());
                     }
                 }
+
+                foreach (var value2 in VariableValueTest.SimpleDoubleValues)
+                {
+                    if (value2 != 0.0)
+                    {
+                        var variableValue1 = new VariableValue(value1);
+                        var variableValue2 = new VariableValue(value2);
+
+                        var expectedValue = variableValue1 / variableValue2;
+
+                        var lhs = new NodeValue(variableValue1);
+                        var rhs = new NodeValue(variableValue2);
+
+                        Evaluate_ValidTest(expectedValue, new NodeDivision(lhs, rhs), new TestContext());
+                    }
+                }
             }
 
             foreach (var value1 in VariableValueTest.SimpleDoubleValues)
@@ -277,6 +386,498 @@ namespace TEGS.Test
 
                         Evaluate_ValidTest(expectedValue, new NodeDivision(lhs, rhs), new TestContext());
                     }
+                }
+
+                foreach (var value2 in VariableValueTest.SimpleIntValues)
+                {
+                    if (value2 != 0)
+                    {
+                        var variableValue1 = new VariableValue(value1);
+                        var variableValue2 = new VariableValue(value2);
+
+                        var expectedValue = variableValue1 / variableValue2;
+
+                        var lhs = new NodeValue(variableValue1);
+                        var rhs = new NodeValue(variableValue2);
+
+                        Evaluate_ValidTest(expectedValue, new NodeDivision(lhs, rhs), new TestContext());
+                    }
+                }
+            }
+        }
+
+        [TestMethod]
+        public void Node_LessThanTest()
+        {
+            foreach (var value1 in VariableValueTest.SimpleIntValues)
+            {
+                foreach (var value2 in VariableValueTest.SimpleIntValues)
+                {
+                    var variableValue1 = new VariableValue(value1);
+                    var variableValue2 = new VariableValue(value2);
+
+                    var expectedValue = variableValue1 < variableValue2;
+
+                    var lhs = new NodeValue(variableValue1);
+                    var rhs = new NodeValue(variableValue2);
+
+                    Evaluate_ValidTest(expectedValue, new NodeLessThan(lhs, rhs), new TestContext());
+                }
+
+                foreach (var value2 in VariableValueTest.SimpleDoubleValues)
+                {
+                    var variableValue1 = new VariableValue(value1);
+                    var variableValue2 = new VariableValue(value2);
+
+                    var expectedValue = variableValue1 < variableValue2;
+
+                    var lhs = new NodeValue(variableValue1);
+                    var rhs = new NodeValue(variableValue2);
+
+                    Evaluate_ValidTest(expectedValue, new NodeLessThan(lhs, rhs), new TestContext());
+                }
+            }
+
+            foreach (var value1 in VariableValueTest.SimpleDoubleValues)
+            {
+                foreach (var value2 in VariableValueTest.SimpleDoubleValues)
+                {
+                    var variableValue1 = new VariableValue(value1);
+                    var variableValue2 = new VariableValue(value2);
+
+                    var expectedValue = variableValue1 < variableValue2;
+
+                    var lhs = new NodeValue(variableValue1);
+                    var rhs = new NodeValue(variableValue2);
+
+                    Evaluate_ValidTest(expectedValue, new NodeLessThan(lhs, rhs), new TestContext());
+                }
+
+                foreach (var value2 in VariableValueTest.SimpleIntValues)
+                {
+                    var variableValue1 = new VariableValue(value1);
+                    var variableValue2 = new VariableValue(value2);
+
+                    var expectedValue = variableValue1 < variableValue2;
+
+                    var lhs = new NodeValue(variableValue1);
+                    var rhs = new NodeValue(variableValue2);
+
+                    Evaluate_ValidTest(expectedValue, new NodeLessThan(lhs, rhs), new TestContext());
+                }
+            }
+        }
+
+        [TestMethod]
+        public void Node_GreaterThanTest()
+        {
+            foreach (var value1 in VariableValueTest.SimpleIntValues)
+            {
+                foreach (var value2 in VariableValueTest.SimpleIntValues)
+                {
+                    var variableValue1 = new VariableValue(value1);
+                    var variableValue2 = new VariableValue(value2);
+
+                    var expectedValue = variableValue1 > variableValue2;
+
+                    var lhs = new NodeValue(variableValue1);
+                    var rhs = new NodeValue(variableValue2);
+
+                    Evaluate_ValidTest(expectedValue, new NodeGreaterThan(lhs, rhs), new TestContext());
+                }
+
+                foreach (var value2 in VariableValueTest.SimpleDoubleValues)
+                {
+                    var variableValue1 = new VariableValue(value1);
+                    var variableValue2 = new VariableValue(value2);
+
+                    var expectedValue = variableValue1 > variableValue2;
+
+                    var lhs = new NodeValue(variableValue1);
+                    var rhs = new NodeValue(variableValue2);
+
+                    Evaluate_ValidTest(expectedValue, new NodeGreaterThan(lhs, rhs), new TestContext());
+                }
+            }
+
+            foreach (var value1 in VariableValueTest.SimpleDoubleValues)
+            {
+                foreach (var value2 in VariableValueTest.SimpleDoubleValues)
+                {
+                    var variableValue1 = new VariableValue(value1);
+                    var variableValue2 = new VariableValue(value2);
+
+                    var expectedValue = variableValue1 > variableValue2;
+
+                    var lhs = new NodeValue(variableValue1);
+                    var rhs = new NodeValue(variableValue2);
+
+                    Evaluate_ValidTest(expectedValue, new NodeGreaterThan(lhs, rhs), new TestContext());
+                }
+
+                foreach (var value2 in VariableValueTest.SimpleIntValues)
+                {
+                    var variableValue1 = new VariableValue(value1);
+                    var variableValue2 = new VariableValue(value2);
+
+                    var expectedValue = variableValue1 > variableValue2;
+
+                    var lhs = new NodeValue(variableValue1);
+                    var rhs = new NodeValue(variableValue2);
+
+                    Evaluate_ValidTest(expectedValue, new NodeGreaterThan(lhs, rhs), new TestContext());
+                }
+            }
+        }
+
+        [TestMethod]
+        public void Node_LessThanEqualsTest()
+        {
+            foreach (var value1 in VariableValueTest.SimpleIntValues)
+            {
+                foreach (var value2 in VariableValueTest.SimpleIntValues)
+                {
+                    var variableValue1 = new VariableValue(value1);
+                    var variableValue2 = new VariableValue(value2);
+
+                    var expectedValue = variableValue1 <= variableValue2;
+
+                    var lhs = new NodeValue(variableValue1);
+                    var rhs = new NodeValue(variableValue2);
+
+                    Evaluate_ValidTest(expectedValue, new NodeLessThanEquals(lhs, rhs), new TestContext());
+                }
+
+                foreach (var value2 in VariableValueTest.SimpleDoubleValues)
+                {
+                    var variableValue1 = new VariableValue(value1);
+                    var variableValue2 = new VariableValue(value2);
+
+                    var expectedValue = variableValue1 <= variableValue2;
+
+                    var lhs = new NodeValue(variableValue1);
+                    var rhs = new NodeValue(variableValue2);
+
+                    Evaluate_ValidTest(expectedValue, new NodeLessThanEquals(lhs, rhs), new TestContext());
+                }
+            }
+
+            foreach (var value1 in VariableValueTest.SimpleDoubleValues)
+            {
+                foreach (var value2 in VariableValueTest.SimpleDoubleValues)
+                {
+                    var variableValue1 = new VariableValue(value1);
+                    var variableValue2 = new VariableValue(value2);
+
+                    var expectedValue = variableValue1 <= variableValue2;
+
+                    var lhs = new NodeValue(variableValue1);
+                    var rhs = new NodeValue(variableValue2);
+
+                    Evaluate_ValidTest(expectedValue, new NodeLessThanEquals(lhs, rhs), new TestContext());
+                }
+
+                foreach (var value2 in VariableValueTest.SimpleIntValues)
+                {
+                    var variableValue1 = new VariableValue(value1);
+                    var variableValue2 = new VariableValue(value2);
+
+                    var expectedValue = variableValue1 <= variableValue2;
+
+                    var lhs = new NodeValue(variableValue1);
+                    var rhs = new NodeValue(variableValue2);
+
+                    Evaluate_ValidTest(expectedValue, new NodeLessThanEquals(lhs, rhs), new TestContext());
+                }
+            }
+        }
+
+        [TestMethod]
+        public void Node_GreaterThanEqualsTest()
+        {
+            foreach (var value1 in VariableValueTest.SimpleIntValues)
+            {
+                foreach (var value2 in VariableValueTest.SimpleIntValues)
+                {
+                    var variableValue1 = new VariableValue(value1);
+                    var variableValue2 = new VariableValue(value2);
+
+                    var expectedValue = variableValue1 >= variableValue2;
+
+                    var lhs = new NodeValue(variableValue1);
+                    var rhs = new NodeValue(variableValue2);
+
+                    Evaluate_ValidTest(expectedValue, new NodeGreaterThanEquals(lhs, rhs), new TestContext());
+                }
+
+                foreach (var value2 in VariableValueTest.SimpleDoubleValues)
+                {
+                    var variableValue1 = new VariableValue(value1);
+                    var variableValue2 = new VariableValue(value2);
+
+                    var expectedValue = variableValue1 >= variableValue2;
+
+                    var lhs = new NodeValue(variableValue1);
+                    var rhs = new NodeValue(variableValue2);
+
+                    Evaluate_ValidTest(expectedValue, new NodeGreaterThanEquals(lhs, rhs), new TestContext());
+                }
+            }
+
+            foreach (var value1 in VariableValueTest.SimpleDoubleValues)
+            {
+                foreach (var value2 in VariableValueTest.SimpleDoubleValues)
+                {
+                    var variableValue1 = new VariableValue(value1);
+                    var variableValue2 = new VariableValue(value2);
+
+                    var expectedValue = variableValue1 >= variableValue2;
+
+                    var lhs = new NodeValue(variableValue1);
+                    var rhs = new NodeValue(variableValue2);
+
+                    Evaluate_ValidTest(expectedValue, new NodeGreaterThanEquals(lhs, rhs), new TestContext());
+                }
+
+                foreach (var value2 in VariableValueTest.SimpleIntValues)
+                {
+                    var variableValue1 = new VariableValue(value1);
+                    var variableValue2 = new VariableValue(value2);
+
+                    var expectedValue = variableValue1 >= variableValue2;
+
+                    var lhs = new NodeValue(variableValue1);
+                    var rhs = new NodeValue(variableValue2);
+
+                    Evaluate_ValidTest(expectedValue, new NodeGreaterThanEquals(lhs, rhs), new TestContext());
+                }
+            }
+        }
+
+        [TestMethod]
+        public void Node_EqualsTest()
+        {
+            foreach (var value1 in VariableValueTest.ValidBooleanValues)
+            {
+                foreach (var value2 in VariableValueTest.ValidBooleanValues)
+                {
+                    var variableValue1 = new VariableValue(value1);
+                    var variableValue2 = new VariableValue(value2);
+
+                    var expectedValue = variableValue1 == variableValue2;
+
+                    var lhs = new NodeValue(variableValue1);
+                    var rhs = new NodeValue(variableValue2);
+
+                    Evaluate_ValidTest(expectedValue, new NodeEquals(lhs, rhs), new TestContext());
+                }
+            }
+
+            foreach (var value1 in VariableValueTest.SimpleIntValues)
+            {
+                foreach (var value2 in VariableValueTest.SimpleIntValues)
+                {
+                    var variableValue1 = new VariableValue(value1);
+                    var variableValue2 = new VariableValue(value2);
+
+                    var expectedValue = variableValue1 == variableValue2;
+
+                    var lhs = new NodeValue(variableValue1);
+                    var rhs = new NodeValue(variableValue2);
+
+                    Evaluate_ValidTest(expectedValue, new NodeEquals(lhs, rhs), new TestContext());
+                }
+
+                foreach (var value2 in VariableValueTest.SimpleDoubleValues)
+                {
+                    var variableValue1 = new VariableValue(value1);
+                    var variableValue2 = new VariableValue(value2);
+
+                    var expectedValue = variableValue1 == variableValue2;
+
+                    var lhs = new NodeValue(variableValue1);
+                    var rhs = new NodeValue(variableValue2);
+
+                    Evaluate_ValidTest(expectedValue, new NodeEquals(lhs, rhs), new TestContext());
+                }
+            }
+
+            foreach (var value1 in VariableValueTest.SimpleDoubleValues)
+            {
+                foreach (var value2 in VariableValueTest.SimpleDoubleValues)
+                {
+                    var variableValue1 = new VariableValue(value1);
+                    var variableValue2 = new VariableValue(value2);
+
+                    var expectedValue = variableValue1 == variableValue2;
+
+                    var lhs = new NodeValue(variableValue1);
+                    var rhs = new NodeValue(variableValue2);
+
+                    Evaluate_ValidTest(expectedValue, new NodeEquals(lhs, rhs), new TestContext());
+                }
+
+                foreach (var value2 in VariableValueTest.SimpleIntValues)
+                {
+                    var variableValue1 = new VariableValue(value1);
+                    var variableValue2 = new VariableValue(value2);
+
+                    var expectedValue = variableValue1 == variableValue2;
+
+                    var lhs = new NodeValue(variableValue1);
+                    var rhs = new NodeValue(variableValue2);
+
+                    Evaluate_ValidTest(expectedValue, new NodeEquals(lhs, rhs), new TestContext());
+                }
+            }
+
+            foreach (var value1 in VariableValueTest.ValidStringValues)
+            {
+                foreach (var value2 in VariableValueTest.ValidStringValues)
+                {
+                    var variableValue1 = new VariableValue(value1);
+                    var variableValue2 = new VariableValue(value2);
+
+                    var expectedValue = variableValue1 == variableValue2;
+
+                    var lhs = new NodeValue(variableValue1);
+                    var rhs = new NodeValue(variableValue2);
+
+                    Evaluate_ValidTest(expectedValue, new NodeEquals(lhs, rhs), new TestContext());
+                }
+            }
+        }
+
+        [TestMethod]
+        public void Node_NotEqualsTest()
+        {
+            foreach (var value1 in VariableValueTest.ValidBooleanValues)
+            {
+                foreach (var value2 in VariableValueTest.ValidBooleanValues)
+                {
+                    var variableValue1 = new VariableValue(value1);
+                    var variableValue2 = new VariableValue(value2);
+
+                    var expectedValue = variableValue1 != variableValue2;
+
+                    var lhs = new NodeValue(variableValue1);
+                    var rhs = new NodeValue(variableValue2);
+
+                    Evaluate_ValidTest(expectedValue, new NodeNotEquals(lhs, rhs), new TestContext());
+                }
+            }
+
+            foreach (var value1 in VariableValueTest.SimpleIntValues)
+            {
+                foreach (var value2 in VariableValueTest.SimpleIntValues)
+                {
+                    var variableValue1 = new VariableValue(value1);
+                    var variableValue2 = new VariableValue(value2);
+
+                    var expectedValue = variableValue1 != variableValue2;
+
+                    var lhs = new NodeValue(variableValue1);
+                    var rhs = new NodeValue(variableValue2);
+
+                    Evaluate_ValidTest(expectedValue, new NodeNotEquals(lhs, rhs), new TestContext());
+                }
+
+                foreach (var value2 in VariableValueTest.SimpleDoubleValues)
+                {
+                    var variableValue1 = new VariableValue(value1);
+                    var variableValue2 = new VariableValue(value2);
+
+                    var expectedValue = variableValue1 != variableValue2;
+
+                    var lhs = new NodeValue(variableValue1);
+                    var rhs = new NodeValue(variableValue2);
+
+                    Evaluate_ValidTest(expectedValue, new NodeNotEquals(lhs, rhs), new TestContext());
+                }
+            }
+
+            foreach (var value1 in VariableValueTest.SimpleDoubleValues)
+            {
+                foreach (var value2 in VariableValueTest.SimpleDoubleValues)
+                {
+                    var variableValue1 = new VariableValue(value1);
+                    var variableValue2 = new VariableValue(value2);
+
+                    var expectedValue = variableValue1 != variableValue2;
+
+                    var lhs = new NodeValue(variableValue1);
+                    var rhs = new NodeValue(variableValue2);
+
+                    Evaluate_ValidTest(expectedValue, new NodeNotEquals(lhs, rhs), new TestContext());
+                }
+
+                foreach (var value2 in VariableValueTest.SimpleIntValues)
+                {
+                    var variableValue1 = new VariableValue(value1);
+                    var variableValue2 = new VariableValue(value2);
+
+                    var expectedValue = variableValue1 != variableValue2;
+
+                    var lhs = new NodeValue(variableValue1);
+                    var rhs = new NodeValue(variableValue2);
+
+                    Evaluate_ValidTest(expectedValue, new NodeNotEquals(lhs, rhs), new TestContext());
+                }
+            }
+
+            foreach (var value1 in VariableValueTest.ValidStringValues)
+            {
+                foreach (var value2 in VariableValueTest.ValidStringValues)
+                {
+                    var variableValue1 = new VariableValue(value1);
+                    var variableValue2 = new VariableValue(value2);
+
+                    var expectedValue = variableValue1 != variableValue2;
+
+                    var lhs = new NodeValue(variableValue1);
+                    var rhs = new NodeValue(variableValue2);
+
+                    Evaluate_ValidTest(expectedValue, new NodeNotEquals(lhs, rhs), new TestContext());
+                }
+            }
+        }
+
+        [TestMethod]
+        public void Node_AndTest()
+        {
+            foreach (var value1 in VariableValueTest.ValidBooleanValues)
+            {
+                foreach (var value2 in VariableValueTest.ValidBooleanValues)
+                {
+                    var variableValue1 = new VariableValue(value1);
+                    var variableValue2 = new VariableValue(value2);
+
+                    var expectedValue = variableValue1 & variableValue2;
+
+                    var lhs = new NodeValue(variableValue1);
+                    var rhs = new NodeValue(variableValue2);
+
+                    Evaluate_ValidTest(expectedValue, new NodeAnd(lhs, rhs), new TestContext());
+                }
+            }
+        }
+
+        [TestMethod]
+        public void Node_OrTest()
+        {
+            foreach (var value1 in VariableValueTest.ValidBooleanValues)
+            {
+                foreach (var value2 in VariableValueTest.ValidBooleanValues)
+                {
+                    var variableValue1 = new VariableValue(value1);
+                    var variableValue2 = new VariableValue(value2);
+
+                    var expectedValue = variableValue1 | variableValue2;
+
+                    var lhs = new NodeValue(variableValue1);
+                    var rhs = new NodeValue(variableValue2);
+
+                    Evaluate_ValidTest(expectedValue, new NodeOr(lhs, rhs), new TestContext());
                 }
             }
         }

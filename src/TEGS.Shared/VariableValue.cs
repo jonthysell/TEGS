@@ -184,14 +184,14 @@ namespace TEGS
             }
             else if (Type == VariableValueType.Integer && other.Type == VariableValueType.Double)
             {
-                return other.AsNumber() == other.DoubleValue;
+                return IntegerValue == other.DoubleValue;
             }
             else if (Type == VariableValueType.Double && other.Type == VariableValueType.Integer)
             {
-                return DoubleValue == other.AsNumber();
+                return DoubleValue == other.IntegerValue;
             }
 
-            return false;
+            throw new ArgumentOutOfRangeException(nameof(other));
         }
 
         public static bool operator ==(VariableValue a, VariableValue b)
