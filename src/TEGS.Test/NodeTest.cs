@@ -882,6 +882,52 @@ namespace TEGS.Test
             }
         }
 
+        [TestMethod]
+        public void Node_ConditionalAndTest()
+        {
+            var context = new TestContext();
+            context.Functions.Add("fail", (args) => throw new AssertFailedException());
+
+            foreach (var value1 in VariableValueTest.ValidBooleanValues)
+            {
+                foreach (var value2 in VariableValueTest.ValidBooleanValues)
+                {
+                    var variableValue1 = new VariableValue(value1);
+                    var variableValue2 = new VariableValue(value2);
+
+                    var expectedValue = variableValue1 & variableValue2;
+
+                    var lhs = new NodeValue(variableValue1);
+                    var rhs = value1 ? (Node)new NodeValue(variableValue2) : new NodeFunctionCall("fail", null);
+
+                    Evaluate_ValidTest(expectedValue, new NodeConditionalAnd(lhs, rhs), context);
+                }
+            }
+        }
+
+        [TestMethod]
+        public void Node_ConditionalOrTest()
+        {
+            var context = new TestContext();
+            context.Functions.Add("fail", (args) => throw new AssertFailedException());
+
+            foreach (var value1 in VariableValueTest.ValidBooleanValues)
+            {
+                foreach (var value2 in VariableValueTest.ValidBooleanValues)
+                {
+                    var variableValue1 = new VariableValue(value1);
+                    var variableValue2 = new VariableValue(value2);
+
+                    var expectedValue = variableValue1 | variableValue2;
+
+                    var lhs = new NodeValue(variableValue1);
+                    var rhs = value1 ? (Node)new NodeFunctionCall("fail", null) : new NodeValue(variableValue2);
+
+                    Evaluate_ValidTest(expectedValue, new NodeConditionalOr(lhs, rhs), context);
+                }
+            }
+        }
+
         protected void Evaluate_ValidTest(VariableValue expectedValue, Node node, IContext context)
         {
             var actualValue = node.Evaluate(context);
