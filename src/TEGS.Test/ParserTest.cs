@@ -69,8 +69,8 @@ namespace TEGS.Test
         {
             List<ParseAndEvaluateTestCase> tests = new List<ParseAndEvaluateTestCase>()
             {
-                new ParseAndEvaluateTestCase("0 + 0", 0),
-                new ParseAndEvaluateTestCase("0.0 + 0.0", 0.0),
+                new ParseAndEvaluateTestCase("0 + 0", 0 + 0),
+                new ParseAndEvaluateTestCase("0.0 + 0.0", 0.0 + 0.0),
                 new ParseAndEvaluateTestCase("1 + 1", 1 + 1),
                 new ParseAndEvaluateTestCase("1.0 + 1.0", 1.0 + 1.0),
                 new ParseAndEvaluateTestCase("-1 + -1", -1 + -1),
@@ -89,7 +89,7 @@ namespace TEGS.Test
         {
             List<ParseAndEvaluateTestCase> tests = new List<ParseAndEvaluateTestCase>()
             {
-                new ParseAndEvaluateTestCase("0 - 0", 0),
+                new ParseAndEvaluateTestCase("0 - 0", 0 - 0),
                 new ParseAndEvaluateTestCase("0.0 - 0.0", 0.0 - 0.0),
                 new ParseAndEvaluateTestCase("1 - 1", 1 - 1),
                 new ParseAndEvaluateTestCase("1.0 - 1.0", 1.0 - 1.0),
@@ -107,7 +107,7 @@ namespace TEGS.Test
         {
             List<ParseAndEvaluateTestCase> tests = new List<ParseAndEvaluateTestCase>()
             {
-                new ParseAndEvaluateTestCase("0 * 0", 0),
+                new ParseAndEvaluateTestCase("0 * 0", 0 * 0),
                 new ParseAndEvaluateTestCase("0.0 * 0.0", 0.0 * 0.0),
                 new ParseAndEvaluateTestCase("1 * 1", 1 * 1),
                 new ParseAndEvaluateTestCase("1.0 * 1.0", 1.0 * 1.0),
@@ -131,6 +131,218 @@ namespace TEGS.Test
                 new ParseAndEvaluateTestCase("1.0 / 1.0", 1.0 / 1.0),
                 new ParseAndEvaluateTestCase("-1 / -1", -1 / -1),
                 new ParseAndEvaluateTestCase("-1.0 / -1.0", -1.0 / -1.0)
+            };
+
+            IContext context = new TestContext();
+
+            ParseAndEvaluate_ValidTests(tests, context);
+        }
+
+        [TestMethod]
+        public void Parser_LessThanTest()
+        {
+            List<ParseAndEvaluateTestCase> tests = new List<ParseAndEvaluateTestCase>()
+            {
+                new ParseAndEvaluateTestCase("0 < 0", 0 < 0),
+                new ParseAndEvaluateTestCase("0 < 1", 0 < 1),
+                new ParseAndEvaluateTestCase("1 < 0", 1 < 0),
+                new ParseAndEvaluateTestCase("0 < -1", 0 < -1),
+                new ParseAndEvaluateTestCase("-1 < 0", -1 < 0),
+                new ParseAndEvaluateTestCase("0.0 < 0.0", 0.0 < 0.0),
+                new ParseAndEvaluateTestCase("0.0 < 1.0", 0.0 < 1.0),
+                new ParseAndEvaluateTestCase("1.0 < 0.0", 1.0 < 0.0),
+                new ParseAndEvaluateTestCase("0.0 < -1.0", 0.0 < -1.0),
+                new ParseAndEvaluateTestCase("-1.0 < 0.0", -1.0 < 0.0),
+            };
+
+            IContext context = new TestContext();
+
+            ParseAndEvaluate_ValidTests(tests, context);
+        }
+
+        [TestMethod]
+        public void Parser_GreaterThanTest()
+        {
+            List<ParseAndEvaluateTestCase> tests = new List<ParseAndEvaluateTestCase>()
+            {
+                new ParseAndEvaluateTestCase("0 > 0", 0 > 0),
+                new ParseAndEvaluateTestCase("0 > 1", 0 > 1),
+                new ParseAndEvaluateTestCase("1 > 0", 1 > 0),
+                new ParseAndEvaluateTestCase("0 > -1", 0 > -1),
+                new ParseAndEvaluateTestCase("-1 > 0", -1 > 0),
+                new ParseAndEvaluateTestCase("0.0 > 0.0", 0.0 > 0.0),
+                new ParseAndEvaluateTestCase("0.0 > 1.0", 0.0 > 1.0),
+                new ParseAndEvaluateTestCase("1.0 > 0.0", 1.0 > 0.0),
+                new ParseAndEvaluateTestCase("0.0 > -1.0", 0.0 > -1.0),
+                new ParseAndEvaluateTestCase("-1.0 > 0.0", -1.0 > 0.0),
+            };
+
+            IContext context = new TestContext();
+
+            ParseAndEvaluate_ValidTests(tests, context);
+        }
+
+        [TestMethod]
+        public void Parser_LessThanEqualsTest()
+        {
+            List<ParseAndEvaluateTestCase> tests = new List<ParseAndEvaluateTestCase>()
+            {
+                new ParseAndEvaluateTestCase("0 <= 0", 0 <= 0),
+                new ParseAndEvaluateTestCase("0 <= 1", 0 <= 1),
+                new ParseAndEvaluateTestCase("1 <= 0", 1 <= 0),
+                new ParseAndEvaluateTestCase("0 <= -1", 0 <= -1),
+                new ParseAndEvaluateTestCase("-1 <= 0", -1 <= 0),
+                new ParseAndEvaluateTestCase("0.0 <= 0.0", 0.0 <= 0.0),
+                new ParseAndEvaluateTestCase("0.0 <= 1.0", 0.0 <= 1.0),
+                new ParseAndEvaluateTestCase("1.0 <= 0.0", 1.0 <= 0.0),
+                new ParseAndEvaluateTestCase("0.0 <= -1.0", 0.0 <= -1.0),
+                new ParseAndEvaluateTestCase("-1.0 <= 0.0", -1.0 <= 0.0),
+            };
+
+            IContext context = new TestContext();
+
+            ParseAndEvaluate_ValidTests(tests, context);
+        }
+
+        [TestMethod]
+        public void Parser_GreaterThanEqualsTest()
+        {
+            List<ParseAndEvaluateTestCase> tests = new List<ParseAndEvaluateTestCase>()
+            {
+                new ParseAndEvaluateTestCase("0 >= 0", 0 >= 0),
+                new ParseAndEvaluateTestCase("0 >= 1", 0 >= 1),
+                new ParseAndEvaluateTestCase("1 >= 0", 1 >= 0),
+                new ParseAndEvaluateTestCase("0 >= -1", 0 >= -1),
+                new ParseAndEvaluateTestCase("-1 >= 0", -1 >= 0),
+                new ParseAndEvaluateTestCase("0.0 >= 0.0", 0.0 >= 0.0),
+                new ParseAndEvaluateTestCase("0.0 >= 1.0", 0.0 >= 1.0),
+                new ParseAndEvaluateTestCase("1.0 >= 0.0", 1.0 >= 0.0),
+                new ParseAndEvaluateTestCase("0.0 >= -1.0", 0.0 >= -1.0),
+                new ParseAndEvaluateTestCase("-1.0 >= 0.0", -1.0 >= 0.0),
+            };
+
+            IContext context = new TestContext();
+
+            ParseAndEvaluate_ValidTests(tests, context);
+        }
+
+        [TestMethod]
+        public void Parser_EqualsTest()
+        {
+            List<ParseAndEvaluateTestCase> tests = new List<ParseAndEvaluateTestCase>()
+            {
+                new ParseAndEvaluateTestCase("false == false", false == false),
+                new ParseAndEvaluateTestCase("false == true", false == true),
+                new ParseAndEvaluateTestCase("true == false", true == false),
+                new ParseAndEvaluateTestCase("true == true", true == true),
+                new ParseAndEvaluateTestCase("0 == 0", 0 == 0),
+                new ParseAndEvaluateTestCase("0 == 1", 0 == 1),
+                new ParseAndEvaluateTestCase("1 == 0", 1 == 0),
+                new ParseAndEvaluateTestCase("0 == -1", 0 == -1),
+                new ParseAndEvaluateTestCase("-1 == 0", -1 == 0),
+                new ParseAndEvaluateTestCase("0.0 == 0.0", 0.0 == 0.0),
+                new ParseAndEvaluateTestCase("0.0 == 1.0", 0.0 == 1.0),
+                new ParseAndEvaluateTestCase("1.0 == 0.0", 1.0 == 0.0),
+                new ParseAndEvaluateTestCase("0.0 == -1.0", 0.0 == -1.0),
+                new ParseAndEvaluateTestCase("-1.0 == 0.0", -1.0 == 0.0),
+                new ParseAndEvaluateTestCase("\"\" == \"\"", "" == ""),
+                new ParseAndEvaluateTestCase("\"\" == \"test\"", "" == "test"),
+                new ParseAndEvaluateTestCase("\"test\" == \"\"", "test" == ""),
+                new ParseAndEvaluateTestCase("\"test\" == \"test\"", "test" == "test"),
+            };
+
+            IContext context = new TestContext();
+
+            ParseAndEvaluate_ValidTests(tests, context);
+        }
+
+        [TestMethod]
+        public void Parser_NotEqualsTest()
+        {
+            List<ParseAndEvaluateTestCase> tests = new List<ParseAndEvaluateTestCase>()
+            {
+                new ParseAndEvaluateTestCase("false != false", false != false),
+                new ParseAndEvaluateTestCase("false != true", false != true),
+                new ParseAndEvaluateTestCase("true != false", true != false),
+                new ParseAndEvaluateTestCase("true != true", true != true),
+                new ParseAndEvaluateTestCase("0 != 0", 0 != 0),
+                new ParseAndEvaluateTestCase("0 != 1", 0 != 1),
+                new ParseAndEvaluateTestCase("1 != 0", 1 != 0),
+                new ParseAndEvaluateTestCase("0 != -1", 0 != -1),
+                new ParseAndEvaluateTestCase("-1 != 0", -1 != 0),
+                new ParseAndEvaluateTestCase("0.0 != 0.0", 0.0 != 0.0),
+                new ParseAndEvaluateTestCase("0.0 != 1.0", 0.0 != 1.0),
+                new ParseAndEvaluateTestCase("1.0 != 0.0", 1.0 != 0.0),
+                new ParseAndEvaluateTestCase("0.0 != -1.0", 0.0 != -1.0),
+                new ParseAndEvaluateTestCase("-1.0 != 0.0", -1.0 != 0.0),
+                new ParseAndEvaluateTestCase("\"\" != \"\"", "" != ""),
+                new ParseAndEvaluateTestCase("\"\" != \"test\"", "" != "test"),
+                new ParseAndEvaluateTestCase("\"test\" != \"\"", "test" != ""),
+                new ParseAndEvaluateTestCase("\"test\" != \"test\"", "test" != "test"),
+            };
+
+            IContext context = new TestContext();
+
+            ParseAndEvaluate_ValidTests(tests, context);
+        }
+
+        [TestMethod]
+        public void Parser_AndTest()
+        {
+            List<ParseAndEvaluateTestCase> tests = new List<ParseAndEvaluateTestCase>()
+            {
+                new ParseAndEvaluateTestCase("false & false", false & false),
+                new ParseAndEvaluateTestCase("false & true", false & true),
+                new ParseAndEvaluateTestCase("true & false", true & false),
+                new ParseAndEvaluateTestCase("true & true", true & true),
+            };
+
+            IContext context = new TestContext();
+
+            ParseAndEvaluate_ValidTests(tests, context);
+        }
+
+        [TestMethod]
+        public void Parser_OrTest()
+        {
+            List<ParseAndEvaluateTestCase> tests = new List<ParseAndEvaluateTestCase>()
+            {
+                new ParseAndEvaluateTestCase("false | false", false | false),
+                new ParseAndEvaluateTestCase("false | true", false | true),
+                new ParseAndEvaluateTestCase("true | false", true | false),
+                new ParseAndEvaluateTestCase("true | true", true | true),
+            };
+
+            IContext context = new TestContext();
+
+            ParseAndEvaluate_ValidTests(tests, context);
+        }
+
+        [TestMethod]
+        public void Parser_ConditionalAndTest()
+        {
+            List<ParseAndEvaluateTestCase> tests = new List<ParseAndEvaluateTestCase>()
+            {
+                new ParseAndEvaluateTestCase("false && false", false && false),
+                new ParseAndEvaluateTestCase("false && true", false && true),
+                new ParseAndEvaluateTestCase("true && false", true && false),
+                new ParseAndEvaluateTestCase("true && true", true && true),
+            };
+
+            IContext context = new TestContext();
+
+            ParseAndEvaluate_ValidTests(tests, context);
+        }
+
+        [TestMethod]
+        public void Parser_ConditionalOrTest()
+        {
+            List<ParseAndEvaluateTestCase> tests = new List<ParseAndEvaluateTestCase>()
+            {
+                new ParseAndEvaluateTestCase("false || false", false || false),
+                new ParseAndEvaluateTestCase("false || true", false || true),
+                new ParseAndEvaluateTestCase("true || false", true || false),
+                new ParseAndEvaluateTestCase("true || true", true || true),
             };
 
             IContext context = new TestContext();
