@@ -50,7 +50,7 @@ namespace TEGS
         {
             if (!_parsedNodes.TryGetValue(expression, out Node node))
             {
-                node = Parser.Parse(expression);
+                node = Parser.Parse(expression).Reduce();
                 _parsedNodes[expression] = node;
             }
 

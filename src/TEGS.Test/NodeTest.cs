@@ -932,6 +932,10 @@ namespace TEGS.Test
         {
             var actualValue = node.Evaluate(context);
             Assert.AreEqual(expectedValue, actualValue);
+
+            var reduced = node.Reduce();
+            var reducedValue = reduced.Evaluate(context);
+            Assert.AreEqual(expectedValue, reducedValue);
         }
 
         protected void Evaluate_ValidTest(bool expectedValue, Node node, IContext context)
@@ -939,6 +943,11 @@ namespace TEGS.Test
             var actualValue = node.Evaluate(context);
             Assert.AreEqual(VariableValueType.Boolean, actualValue.Type);
             Assert.AreEqual(expectedValue, actualValue.BooleanValue);
+
+            var reduced = node.Reduce();
+            var reducedValue = reduced.Evaluate(context);
+            Assert.AreEqual(VariableValueType.Boolean, reducedValue.Type);
+            Assert.AreEqual(expectedValue, reducedValue.BooleanValue);
         }
     }
 }

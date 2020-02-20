@@ -33,6 +33,8 @@ namespace TEGS.Expressions
     public abstract class Node
     {
         public abstract VariableValue Evaluate(IContext context);
+
+        public virtual Node Reduce() => this;
     }
 
     public class NodeValue : Node
@@ -83,6 +85,19 @@ namespace TEGS.Expressions
 
             return context.CallFunction(Name, args);
         }
+
+        public override Node Reduce()
+        {
+            if (null != Arguments && Arguments.Length > 0)
+            {
+                for (int i = 0; i < Arguments.Length; i++)
+                {
+                    Arguments[i] = Arguments[i].Reduce();
+                }
+            }
+
+            return this;
+        }
     }
 
     #endregion
@@ -94,6 +109,18 @@ namespace TEGS.Expressions
         public Node RHS { get; private set; }
 
         public NodeUnary(Node rhs) => RHS = rhs ?? throw new ArgumentNullException(nameof(rhs));
+
+        public override Node Reduce()
+        {
+            ReduceRHS();
+
+            return this;
+        }
+
+        protected void ReduceRHS()
+        {
+            RHS = RHS.Reduce();
+        }
     }
 
     public class NodeNegative : NodeUnary
@@ -110,6 +137,25 @@ namespace TEGS.Expressions
             {
                 throw new NodeEvaluateException(this);
             }
+        }
+
+        public override Node Reduce()
+        {
+            ReduceRHS();
+
+            if (RHS is NodeValue rhs)
+            {
+                try
+                {
+                    return new NodeValue(-rhs.Value);
+                }
+                catch (ArithmeticException)
+                {
+                    throw new NodeReduceException(this);
+                }
+            }
+
+            return this;
         }
     }
 
@@ -128,6 +174,25 @@ namespace TEGS.Expressions
                 throw new NodeEvaluateException(this);
             }
         }
+
+        public override Node Reduce()
+        {
+            ReduceRHS();
+
+            if (RHS is NodeValue rhs)
+            {
+                try
+                {
+                    return new NodeValue(new VariableValue(!rhs.Value));
+                }
+                catch (ArithmeticException)
+                {
+                    throw new NodeReduceException(this);
+                }
+            }
+
+            return this;
+        }
     }
 
     public abstract class NodeBinary : NodeUnary
@@ -135,6 +200,19 @@ namespace TEGS.Expressions
         public Node LHS { get; private set; }
 
         public NodeBinary(Node lhs, Node rhs) : base(rhs) => LHS = lhs ?? throw new ArgumentNullException(nameof(lhs));
+
+        public override Node Reduce()
+        {
+            ReduceLHS();
+            ReduceRHS();
+
+            return this;
+        }
+
+        protected void ReduceLHS()
+        {
+            LHS = LHS.Reduce();
+        }
     }
     public class NodeAssign : NodeBinary
     {
@@ -151,6 +229,13 @@ namespace TEGS.Expressions
             {
                 throw new NodeEvaluateException(this);
             }
+        }
+
+        public override Node Reduce()
+        {
+            ReduceRHS();
+
+            return this;
         }
     }
 
@@ -169,6 +254,26 @@ namespace TEGS.Expressions
                 throw new NodeEvaluateException(this);
             }
         }
+
+        public override Node Reduce()
+        {
+            ReduceLHS();
+            ReduceRHS();
+
+            if (LHS is NodeValue lhs && RHS is NodeValue rhs)
+            {
+                try
+                {
+                    return new NodeValue(lhs.Value + rhs.Value);
+                }
+                catch (ArithmeticException)
+                {
+                    throw new NodeReduceException(this);
+                }
+            }
+
+            return this;
+        }
     }
 
     public class NodeSubtraction : NodeBinary
@@ -185,6 +290,26 @@ namespace TEGS.Expressions
             {
                 throw new NodeEvaluateException(this);
             }
+        }
+
+        public override Node Reduce()
+        {
+            ReduceLHS();
+            ReduceRHS();
+
+            if (LHS is NodeValue lhs && RHS is NodeValue rhs)
+            {
+                try
+                {
+                    return new NodeValue(lhs.Value - rhs.Value);
+                }
+                catch (ArithmeticException)
+                {
+                    throw new NodeReduceException(this);
+                }
+            }
+
+            return this;
         }
     }
 
@@ -203,6 +328,26 @@ namespace TEGS.Expressions
                 throw new NodeEvaluateException(this);
             }
         }
+
+        public override Node Reduce()
+        {
+            ReduceLHS();
+            ReduceRHS();
+
+            if (LHS is NodeValue lhs && RHS is NodeValue rhs)
+            {
+                try
+                {
+                    return new NodeValue(lhs.Value * rhs.Value);
+                }
+                catch (ArithmeticException)
+                {
+                    throw new NodeReduceException(this);
+                }
+            }
+
+            return this;
+        }
     }
 
     public class NodeDivision : NodeBinary
@@ -219,6 +364,26 @@ namespace TEGS.Expressions
             {
                 throw new NodeEvaluateException(this);
             }
+        }
+
+        public override Node Reduce()
+        {
+            ReduceLHS();
+            ReduceRHS();
+
+            if (LHS is NodeValue lhs && RHS is NodeValue rhs)
+            {
+                try
+                {
+                    return new NodeValue(lhs.Value / rhs.Value);
+                }
+                catch (ArithmeticException)
+                {
+                    throw new NodeReduceException(this);
+                }
+            }
+
+            return this;
         }
     }
 
@@ -237,6 +402,26 @@ namespace TEGS.Expressions
                 throw new NodeEvaluateException(this);
             }
         }
+
+        public override Node Reduce()
+        {
+            ReduceLHS();
+            ReduceRHS();
+
+            if (LHS is NodeValue lhs && RHS is NodeValue rhs)
+            {
+                try
+                {
+                    return new NodeValue(new VariableValue(lhs.Value < rhs.Value));
+                }
+                catch (ArithmeticException)
+                {
+                    throw new NodeReduceException(this);
+                }
+            }
+
+            return this;
+        }
     }
 
     public class NodeGreaterThan : NodeBinary
@@ -253,6 +438,26 @@ namespace TEGS.Expressions
             {
                 throw new NodeEvaluateException(this);
             }
+        }
+
+        public override Node Reduce()
+        {
+            ReduceLHS();
+            ReduceRHS();
+
+            if (LHS is NodeValue lhs && RHS is NodeValue rhs)
+            {
+                try
+                {
+                    return new NodeValue(new VariableValue(lhs.Value > rhs.Value));
+                }
+                catch (ArithmeticException)
+                {
+                    throw new NodeReduceException(this);
+                }
+            }
+
+            return this;
         }
     }
 
@@ -271,6 +476,26 @@ namespace TEGS.Expressions
                 throw new NodeEvaluateException(this);
             }
         }
+
+        public override Node Reduce()
+        {
+            ReduceLHS();
+            ReduceRHS();
+
+            if (LHS is NodeValue lhs && RHS is NodeValue rhs)
+            {
+                try
+                {
+                    return new NodeValue(new VariableValue(lhs.Value <= rhs.Value));
+                }
+                catch (ArithmeticException)
+                {
+                    throw new NodeReduceException(this);
+                }
+            }
+
+            return this;
+        }
     }
 
     public class NodeGreaterThanEquals : NodeBinary
@@ -287,6 +512,26 @@ namespace TEGS.Expressions
             {
                 throw new NodeEvaluateException(this);
             }
+        }
+
+        public override Node Reduce()
+        {
+            ReduceLHS();
+            ReduceRHS();
+
+            if (LHS is NodeValue lhs && RHS is NodeValue rhs)
+            {
+                try
+                {
+                    return new NodeValue(new VariableValue(lhs.Value >= rhs.Value));
+                }
+                catch (ArithmeticException)
+                {
+                    throw new NodeReduceException(this);
+                }
+            }
+
+            return this;
         }
     }
 
@@ -305,6 +550,26 @@ namespace TEGS.Expressions
                 throw new NodeEvaluateException(this);
             }
         }
+
+        public override Node Reduce()
+        {
+            ReduceLHS();
+            ReduceRHS();
+
+            if (LHS is NodeValue lhs && RHS is NodeValue rhs)
+            {
+                try
+                {
+                    return new NodeValue(new VariableValue(lhs.Value == rhs.Value));
+                }
+                catch (ArithmeticException)
+                {
+                    throw new NodeReduceException(this);
+                }
+            }
+
+            return this;
+        }
     }
 
     public class NodeNotEquals : NodeBinary
@@ -321,6 +586,26 @@ namespace TEGS.Expressions
             {
                 throw new NodeEvaluateException(this);
             }
+        }
+
+        public override Node Reduce()
+        {
+            ReduceLHS();
+            ReduceRHS();
+
+            if (LHS is NodeValue lhs && RHS is NodeValue rhs)
+            {
+                try
+                {
+                    return new NodeValue(new VariableValue(lhs.Value != rhs.Value));
+                }
+                catch (ArithmeticException)
+                {
+                    throw new NodeReduceException(this);
+                }
+            }
+
+            return this;
         }
     }
 
@@ -339,6 +624,26 @@ namespace TEGS.Expressions
                 throw new NodeEvaluateException(this);
             }
         }
+
+        public override Node Reduce()
+        {
+            ReduceLHS();
+            ReduceRHS();
+
+            if (LHS is NodeValue lhs && RHS is NodeValue rhs)
+            {
+                try
+                {
+                    return new NodeValue(new VariableValue(lhs.Value & rhs.Value));
+                }
+                catch (ArithmeticException)
+                {
+                    throw new NodeReduceException(this);
+                }
+            }
+
+            return this;
+        }
     }
 
     public class NodeOr : NodeBinary
@@ -355,6 +660,26 @@ namespace TEGS.Expressions
             {
                 throw new NodeEvaluateException(this);
             }
+        }
+
+        public override Node Reduce()
+        {
+            ReduceLHS();
+            ReduceRHS();
+
+            if (LHS is NodeValue lhs && RHS is NodeValue rhs)
+            {
+                try
+                {
+                    return new NodeValue(new VariableValue(lhs.Value | rhs.Value));
+                }
+                catch (ArithmeticException)
+                {
+                    throw new NodeReduceException(this);
+                }
+            }
+
+            return this;
         }
     }
 
@@ -373,6 +698,26 @@ namespace TEGS.Expressions
                 throw new NodeEvaluateException(this);
             }
         }
+
+        public override Node Reduce()
+        {
+            ReduceLHS();
+            ReduceRHS();
+
+            if (LHS is NodeValue lhs && RHS is NodeValue rhs)
+            {
+                try
+                {
+                    return new NodeValue(lhs.Value ? rhs.Value : VariableValue.False);
+                }
+                catch (ArithmeticException)
+                {
+                    throw new NodeReduceException(this);
+                }
+            }
+
+            return this;
+        }
     }
 
     public class NodeConditionalOr : NodeBinary
@@ -390,6 +735,26 @@ namespace TEGS.Expressions
                 throw new NodeEvaluateException(this);
             }
         }
+
+        public override Node Reduce()
+        {
+            ReduceLHS();
+            ReduceRHS();
+
+            if (LHS is NodeValue lhs && RHS is NodeValue rhs)
+            {
+                try
+                {
+                    return new NodeValue(lhs.Value ? VariableValue.True : rhs.Value);
+                }
+                catch (ArithmeticException)
+                {
+                    throw new NodeReduceException(this);
+                }
+            }
+
+            return this;
+        }
     }
 
     #endregion
@@ -405,6 +770,17 @@ namespace TEGS.Expressions
             Node = node ?? throw new ArgumentNullException(nameof(node));
         }
     }
+
+    public class NodeReduceException : Exception
+    {
+        public Node Node { get; private set; }
+
+        public NodeReduceException(Node node) : base()
+        {
+            Node = node ?? throw new ArgumentNullException(nameof(node));
+        }
+    }
+
 
     #endregion
 }
