@@ -401,6 +401,22 @@ namespace TEGS.Test
                 return false;
             }
 
+            Node reduced = node.Reduce();
+
+            VariableValue reducedValue = reduced.Evaluate(context);
+
+            if (test.ExpectedValue != reducedValue)
+            {
+                Trace.WriteLine($"FAIL, Wrong reduced value: { actualValue }.");
+                return false;
+            }
+
+            if (test.ExpectedValue.Type != reducedValue.Type)
+            {
+                Trace.WriteLine($"FAIL, Wrong reduced type: { actualValue.Type.ToString() }");
+                return false;
+            }
+
             Trace.WriteLine("PASS.");
             return true;
         }
