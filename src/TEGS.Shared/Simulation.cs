@@ -91,7 +91,7 @@ namespace TEGS
 
         public event EdgeFiredEventHandler EdgeFired;
 
-        private Dictionary<Vertex, IReadOnlyList<StateVariable>> _vertexToParameterCache = new Dictionary<Vertex, IReadOnlyList<StateVariable>>();
+        private readonly Dictionary<Vertex, IReadOnlyList<StateVariable>> _vertexToParameterCache = new Dictionary<Vertex, IReadOnlyList<StateVariable>>();
 
         public Simulation(SimulationArgs args)
         {
