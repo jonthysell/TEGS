@@ -63,27 +63,26 @@ namespace TEGS.Expressions
 
         public Node[] Arguments { get; private set; }
 
+        public VariableValue[] EvaluatedArgs { get; private set; }
+
         public NodeFunctionCall(string name, Node[] arguments)
         {
             Name = name;
             Arguments = arguments;
+            EvaluatedArgs = arguments != null ? new VariableValue[arguments.Length] : null;
         }
 
         public override VariableValue Evaluate(IContext context)
         {
-            if (null == Arguments || Arguments.Length == 0)
+            if (null != Arguments)
             {
-                return context.CallFunction(Name, null);
+                for (int i = 0; i < Arguments.Length; i++)
+                {
+                    EvaluatedArgs[i] = Arguments[i].Evaluate(context);
+                }
             }
 
-            VariableValue[] args = new VariableValue[Arguments.Length];
-
-            for (int i = 0; i < Arguments.Length; i++)
-            {
-                args[i] = Arguments[i].Evaluate(context);
-            }
-
-            return context.CallFunction(Name, args);
+            return context.CallFunction(Name, EvaluatedArgs);
         }
 
         public override Node Reduce()
