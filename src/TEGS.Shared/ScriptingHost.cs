@@ -34,8 +34,8 @@ namespace TEGS
 {
     public class ScriptingHost : IContext
     {
-        private readonly Dictionary<StateVariable, VariableValue> _stateVariables = new Dictionary<StateVariable, VariableValue>();
-        private readonly Dictionary<string, VariableValue> _stateVariablesByName = new Dictionary<string, VariableValue>();
+        private readonly Dictionary<string, StateVariable> _stateVariablesByName = new Dictionary<string, StateVariable>();
+        private readonly Dictionary<StateVariable, VariableValue> _stateVariables = new Dictionary<StateVariable, VariableValue>();        
 
         private readonly HashSet<string> _libraryNames = new HashSet<string>();
         private readonly Dictionary<string, VariableValue> _constants = new Dictionary<string, VariableValue>();
@@ -170,22 +170,7 @@ namespace TEGS
             }
 
             _stateVariables[stateVariable] = new VariableValue(stateVariable.Type);
-            _stateVariablesByName[stateVariable.Name] = new VariableValue(stateVariable.Type);
-        }
-
-        public bool TryCreate(StateVariable stateVariable)
-        {
-            try
-            {
-                Create(stateVariable);
-                return true;
-            }
-            catch (Exception ex)
-            {
-                DebugLogger.LogException(ex);
-            }
-
-            return false;
+            _stateVariablesByName[stateVariable.Name] = stateVariable;
         }
 
         public void Assign(StateVariable stateVariable, VariableValue value)
@@ -206,22 +191,6 @@ namespace TEGS
             }
 
             _stateVariables[stateVariable] = value;
-            _stateVariablesByName[stateVariable.Name] = value;
-        }
-
-        public bool TryAssign(StateVariable stateVariable, VariableValue value)
-        {
-            try
-            {
-                Assign(stateVariable, value);
-                return true;
-            }
-            catch (Exception ex)
-            {
-                DebugLogger.LogException(ex);
-            }
-
-            return false;
         }
 
         public void Assign(IReadOnlyList<StateVariable> stateVariables, IReadOnlyList<VariableValue> values)
@@ -260,22 +229,6 @@ namespace TEGS
             }
 
             return _stateVariables[stateVariable];
-        }
-
-        public bool TryGet(StateVariable stateVariable, out VariableValue value)
-        {
-            try
-            {
-                value = Get(stateVariable);
-                return true;
-            }
-            catch (Exception ex)
-            {
-                DebugLogger.LogException(ex);
-            }
-
-            value = default;
-            return false;
         }
 
         #endregion
@@ -361,13 +314,12 @@ namespace TEGS
 
         public VariableValue GetVariable(string name)
         {
-            return _stateVariablesByName[name];
+            return Get(_stateVariablesByName[name]);
         }
 
         public void SetVariable(string name, VariableValue value)
         {
-            StateVariable stateVariable = new StateVariable(name, value.Type);
-            Assign(stateVariable, value);
+            Assign(_stateVariablesByName[name], value);
         }
 
         public VariableValue CallFunction(string name, VariableValue[] arguments)
