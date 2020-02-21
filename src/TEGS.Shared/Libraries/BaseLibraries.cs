@@ -30,11 +30,17 @@ namespace TEGS.Libraries
 {
     public static class BaseLibraries
     {
-        public static ILibrary SystemMath => new SystemLibrary(typeof(Math));
+        public static ILibrary SystemBool => new SystemLibrary(typeof(bool), ReflectionType.StandardConstants);
+
+        public static ILibrary SystemInt => new SystemLibrary(typeof(int), ReflectionType.StandardConstants);
+
+        public static ILibrary SystemDouble => new SystemLibrary(typeof(double), ReflectionType.StandardConstants);
 
         public static ILibrary SystemString => new SystemLibrary(typeof(string), ReflectionType.StandardConstants);
 
         public static ILibrary StringLibrary => new AttributedLibrary(typeof(StringLibrary));
+
+        public static ILibrary SystemMath => new SystemLibrary(typeof(Math));
 
         public static ILibrary RandomVariateLibrary(int? seed = null) => new SystemLibrary(seed.HasValue ? new Random(seed.Value) : new Random(), ReflectionType.ExtensionOnly, typeof(RandomExtensions));
 
@@ -42,9 +48,12 @@ namespace TEGS.Libraries
         {
             ScriptingHost scriptingHost = new ScriptingHost();
 
-            scriptingHost.LoadLibrary(SystemMath);
+            scriptingHost.LoadLibrary(SystemBool);
+            scriptingHost.LoadLibrary(SystemInt);
+            scriptingHost.LoadLibrary(SystemDouble);
             scriptingHost.LoadLibrary(SystemString);
             scriptingHost.LoadLibrary(StringLibrary);
+            scriptingHost.LoadLibrary(SystemMath);
             scriptingHost.LoadLibrary(RandomVariateLibrary(seed));
 
             return scriptingHost;
