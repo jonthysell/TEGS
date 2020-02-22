@@ -26,8 +26,6 @@
 
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Threading;
-using System.Threading.Tasks;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -64,6 +62,7 @@ namespace TEGS.Test
             Assert.AreEqual(SimulationState.None, s.State);
 
             s.Run();
+            s.Wait();
 
             Assert.AreEqual(SimulationState.Complete, s.State);
         }
@@ -81,18 +80,16 @@ namespace TEGS.Test
             Simulation s = new Simulation(args);
             Assert.AreEqual(SimulationState.None, s.State);
 
-            Task t1 = s.RunAsync();
+            s.Run();
             Assert.AreEqual(SimulationState.Running, s.State);
 
             s.Pause();
             Assert.AreEqual(SimulationState.Paused, s.State);
-            t1.Wait();
 
-            Task t2 = s.RunAsync();
-            Thread.Sleep(0);
+            s.Run();
             Assert.AreEqual(SimulationState.Running, s.State);
 
-            t2.Wait();
+            s.Wait();
 
             Assert.AreEqual(SimulationState.Complete, s.State);
         }
@@ -144,6 +141,7 @@ namespace TEGS.Test
             };
 
             s.Run();
+            s.Wait();
 
             Assert.AreEqual(SimulationState.Complete, s.State);
         }
@@ -190,6 +188,7 @@ namespace TEGS.Test
             };
 
             s.Run();
+            s.Wait();
 
             Assert.AreEqual(SimulationState.Complete, s.State);
         }
@@ -208,6 +207,7 @@ namespace TEGS.Test
             Assert.AreEqual(SimulationState.None, s.State);
 
             s.Run();
+            s.Wait();
 
             Assert.AreEqual(SimulationState.Complete, s.State);
         }

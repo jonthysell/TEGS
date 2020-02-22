@@ -70,6 +70,7 @@ namespace TEGS.CLI
                     }
 
                     simulation.Run();
+                    simulation.Wait();
                 }
                 catch (ValidationException ex)
                 {

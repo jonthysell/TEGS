@@ -26,6 +26,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 
 using TEGS.Libraries;
@@ -69,7 +70,7 @@ namespace TEGS
                 }
             }
         }
-        private SimulationState _state = SimulationState.None;
+        private volatile SimulationState _state = SimulationState.None;
 
         public Schedule Schedule { get; private set; }
 
@@ -93,6 +94,9 @@ namespace TEGS
 
         private readonly Dictionary<Vertex, IReadOnlyList<StateVariable>> _vertexToParameterCache = new Dictionary<Vertex, IReadOnlyList<StateVariable>>();
 
+        private Task _currentTask = null;
+        private CancellationTokenSource _currentCTS = null;
+
         public Simulation(SimulationArgs args)
         {
             Args = args ?? throw new ArgumentNullException(nameof(args));
@@ -104,56 +108,67 @@ namespace TEGS
 
         public void Run()
         {
-            Task task = RunAsync();
-            task.Wait();
-        }
-
-        public async Task RunAsync()
-        {
-            if (State == SimulationState.Complete)
+            if (State == SimulationState.Running || State == SimulationState.Complete)
             {
                 throw new InvalidOperationException();
             }
 
             if (State == SimulationState.None)
             {
-                Start();
+                InternalStart();
             }
 
             State = SimulationState.Running;
 
-            while (State == SimulationState.Running)
+            _currentCTS = new CancellationTokenSource();
+
+            var cancelationToken = _currentCTS.Token;
+
+            _currentTask = Task.Factory.StartNew(() =>
             {
-                await Task.Run(() => InternalStep());
-            }
+                while (State == SimulationState.Running)
+                {
+                    if (cancelationToken.IsCancellationRequested)
+                    {
+                        break;
+                    }
+
+                    InternalStep();
+                    Thread.Yield();
+                }
+            });
         }
 
-        public void Pause()
+        public void Wait()
         {
-            Task task = PauseAsync();
-            task.Wait();
-        }
-
-        public async Task PauseAsync()
-        {
-            if (State == SimulationState.None || State == SimulationState.Complete)
+            if (State != SimulationState.Running)
             {
                 throw new InvalidOperationException();
             }
 
-            await Task.Run(() =>
+            _currentTask.Wait();
+
+            _currentCTS = null;
+            _currentTask = null;
+        }
+
+        public void Pause()
+        {
+            if (State != SimulationState.Running)
             {
-                State = SimulationState.Paused;
-            });
+                throw new InvalidOperationException();
+            }
+
+            _currentCTS.Cancel();
+            _currentTask.Wait();
+
+            _currentCTS = null;
+            _currentTask = null;
+
+            State = SimulationState.Paused;
         }
 
         public void Step()
-        {
-            Task task = StepAsync();
-            task.Wait();
-        }
-
-        public async Task StepAsync()
         {
             if (State == SimulationState.Running || State == SimulationState.Complete)
             {
@@ -162,16 +177,16 @@ namespace TEGS
 
             if (State == SimulationState.None)
             {
-                Start();
+                InternalStart();
                 State = SimulationState.Paused;
             }
-            else
+            else if (State == SimulationState.Paused)
             {
-                await Task.Run(() => InternalStep());
+                InternalStep();
             }
         }
 
-        private void Start()
+        private void InternalStart()
         {
             // Get a base scripting host with built in libraries
             ScriptingHost = BaseLibraries.MakeBaseScriptingHost(Args.StartingSeed);
