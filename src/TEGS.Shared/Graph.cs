@@ -65,7 +65,7 @@ namespace TEGS
         private string _description = "";
 
         public IReadOnlyList<StateVariable> StateVariables => _stateVariables;
-        private List<StateVariable> _stateVariables = new List<StateVariable>();
+        private readonly List<StateVariable> _stateVariables = new List<StateVariable>();
 
         public Vertex StartingVertex
         {
@@ -84,10 +84,10 @@ namespace TEGS
         }
 
         public IReadOnlyList<Vertex> Verticies => _verticies;
-        private List<Vertex> _verticies = new List<Vertex>();
+        private readonly List<Vertex> _verticies = new List<Vertex>();
 
         public IReadOnlyList<Edge> Edges => _edges;
-        private List<Edge> _edges = new List<Edge>();
+        private readonly List<Edge> _edges = new List<Edge>();
 
         #endregion
 
@@ -396,95 +396,94 @@ namespace TEGS
                 Encoding = Encoding.UTF8,
                 NewLineHandling = NewLineHandling.Entitize
             };
-            
-            using (XmlWriter xmlWriter = XmlWriter.Create(outputStream, outputSettings))
+
+            using XmlWriter xmlWriter = XmlWriter.Create(outputStream, outputSettings);
+
+            xmlWriter.WriteStartElement("graph");
+            xmlWriter.WriteAttributeString("description", Description);
+
+            xmlWriter.WriteStartElement("variables");
+
+            foreach (StateVariable stateVariable in _stateVariables)
             {
-                xmlWriter.WriteStartElement("graph");
-                xmlWriter.WriteAttributeString("description", Description);
+                xmlWriter.WriteStartElement("variable");
 
-                xmlWriter.WriteStartElement("variables");
+                xmlWriter.WriteAttributeString("name", stateVariable.Name);
+                xmlWriter.WriteAttributeString("type", stateVariable.Type.ToString());
 
-                foreach (StateVariable stateVariable in _stateVariables)
-                {
-                    xmlWriter.WriteStartElement("variable");
-
-                    xmlWriter.WriteAttributeString("name", stateVariable.Name);
-                    xmlWriter.WriteAttributeString("type", stateVariable.Type.ToString());
-
-                    xmlWriter.WriteEndElement();
-                }
-
-                xmlWriter.WriteEndElement(); // variables
-
-                xmlWriter.WriteStartElement("verticies");
-
-                for (int i = 0; i < _verticies.Count; i++)
-                {
-                    xmlWriter.WriteStartElement("vertex");
-
-                    xmlWriter.WriteAttributeString("id", i.ToString());
-                    xmlWriter.WriteAttributeString("name", _verticies[i].Name);
-                    xmlWriter.WriteAttributeString("description", _verticies[i].Description);
-                    xmlWriter.WriteAttributeString("code", _verticies[i].Code);
-
-                    xmlWriter.WriteAttributeString("x", _verticies[i].X.ToString());
-                    xmlWriter.WriteAttributeString("y", _verticies[i].Y.ToString());
-
-                    if (_verticies[i].IsStartingVertex)
-                    {
-                        xmlWriter.WriteAttributeString("starting", _verticies[i].IsStartingVertex.ToString());
-                    }
-
-                    if (_verticies[i].ParameterNames.Count > 0)
-                    {
-                        for (int j = 0; j < _verticies[i].ParameterNames.Count; j++)
-                        {
-                            xmlWriter.WriteStartElement("parameter");
-                            xmlWriter.WriteAttributeString("name", _verticies[i].ParameterNames[j]);
-                            xmlWriter.WriteEndElement();
-                        }
-                    }
-
-                    xmlWriter.WriteEndElement();
-                }
-
-                xmlWriter.WriteEndElement(); // verticies
-
-                xmlWriter.WriteStartElement("edges");
-
-                for (int i = 0; i < _edges.Count; i++)
-                {
-                    xmlWriter.WriteStartElement("edge");
-
-                    xmlWriter.WriteAttributeString("id", i.ToString());
-
-                    xmlWriter.WriteAttributeString("source", _verticies.IndexOf(_edges[i].Source).ToString());
-                    xmlWriter.WriteAttributeString("target", _verticies.IndexOf(_edges[i].Target).ToString());
-
-                    xmlWriter.WriteAttributeString("action", _edges[i].Action.ToString());
-
-                    xmlWriter.WriteAttributeString("description", _edges[i].Description);
-                    xmlWriter.WriteAttributeString("condition", _edges[i].Condition);
-                    xmlWriter.WriteAttributeString("delay", _edges[i].Delay);
-                    xmlWriter.WriteAttributeString("priority", _edges[i].Priority);
-
-                    if (_edges[i].ParameterExpressions.Count > 0)
-                    {
-                        for (int j = 0; j < _edges[i].ParameterExpressions.Count; j++)
-                        {
-                            xmlWriter.WriteStartElement("parameter");
-                            xmlWriter.WriteAttributeString("expression", _edges[i].ParameterExpressions[j]);
-                            xmlWriter.WriteEndElement();
-                        }
-                    }
-
-                    xmlWriter.WriteEndElement();
-                }
-
-                xmlWriter.WriteEndElement(); // edges
-
-                xmlWriter.WriteEndElement(); // graph
+                xmlWriter.WriteEndElement();
             }
+
+            xmlWriter.WriteEndElement(); // variables
+
+            xmlWriter.WriteStartElement("verticies");
+
+            for (int i = 0; i < _verticies.Count; i++)
+            {
+                xmlWriter.WriteStartElement("vertex");
+
+                xmlWriter.WriteAttributeString("id", i.ToString());
+                xmlWriter.WriteAttributeString("name", _verticies[i].Name);
+                xmlWriter.WriteAttributeString("description", _verticies[i].Description);
+                xmlWriter.WriteAttributeString("code", _verticies[i].Code);
+
+                xmlWriter.WriteAttributeString("x", _verticies[i].X.ToString());
+                xmlWriter.WriteAttributeString("y", _verticies[i].Y.ToString());
+
+                if (_verticies[i].IsStartingVertex)
+                {
+                    xmlWriter.WriteAttributeString("starting", _verticies[i].IsStartingVertex.ToString());
+                }
+
+                if (_verticies[i].ParameterNames.Count > 0)
+                {
+                    for (int j = 0; j < _verticies[i].ParameterNames.Count; j++)
+                    {
+                        xmlWriter.WriteStartElement("parameter");
+                        xmlWriter.WriteAttributeString("name", _verticies[i].ParameterNames[j]);
+                        xmlWriter.WriteEndElement();
+                    }
+                }
+
+                xmlWriter.WriteEndElement();
+            }
+
+            xmlWriter.WriteEndElement(); // verticies
+
+            xmlWriter.WriteStartElement("edges");
+
+            for (int i = 0; i < _edges.Count; i++)
+            {
+                xmlWriter.WriteStartElement("edge");
+
+                xmlWriter.WriteAttributeString("id", i.ToString());
+
+                xmlWriter.WriteAttributeString("source", _verticies.IndexOf(_edges[i].Source).ToString());
+                xmlWriter.WriteAttributeString("target", _verticies.IndexOf(_edges[i].Target).ToString());
+
+                xmlWriter.WriteAttributeString("action", _edges[i].Action.ToString());
+
+                xmlWriter.WriteAttributeString("description", _edges[i].Description);
+                xmlWriter.WriteAttributeString("condition", _edges[i].Condition);
+                xmlWriter.WriteAttributeString("delay", _edges[i].Delay);
+                xmlWriter.WriteAttributeString("priority", _edges[i].Priority);
+
+                if (_edges[i].ParameterExpressions.Count > 0)
+                {
+                    for (int j = 0; j < _edges[i].ParameterExpressions.Count; j++)
+                    {
+                        xmlWriter.WriteStartElement("parameter");
+                        xmlWriter.WriteAttributeString("expression", _edges[i].ParameterExpressions[j]);
+                        xmlWriter.WriteEndElement();
+                    }
+                }
+
+                xmlWriter.WriteEndElement();
+            }
+
+            xmlWriter.WriteEndElement(); // edges
+
+            xmlWriter.WriteEndElement(); // graph
         }
 
         #endregion

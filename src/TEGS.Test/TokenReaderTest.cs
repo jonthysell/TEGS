@@ -45,10 +45,7 @@ namespace TEGS.Test
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentNullException))]
-        public void TokenReader_NullInvalidTest()
-        {
-            TokenReader tr = new TokenReader(null);
-        }
+        public void TokenReader_NullInvalidTest() => new TokenReader(null);
 
         [TestMethod]
         public void TokenReader_SpecialValidTest()

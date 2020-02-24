@@ -38,7 +38,7 @@ namespace TEGS
         public Graph Graph { get; private set; }
 
         public IEnumerable<ScheduledEvent> Events => _events;
-        private List<ScheduledEvent> _events = new List<ScheduledEvent>();
+        private readonly List<ScheduledEvent> _events = new List<ScheduledEvent>();
 
         public int EventCount => _events.Count;
 

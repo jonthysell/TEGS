@@ -122,6 +122,8 @@ namespace TEGS.Expressions
                     return _value.IntegerValue;
                 case VariableValueType.Double:
                     return _value.DoubleValue;
+                default:
+                    break;
             }
 
             throw new ValueIsNotANumberException(this);
@@ -137,6 +139,7 @@ namespace TEGS.Expressions
                     return _value.IntegerValue.ToString();
                 case VariableValueType.Double:
                     return _value.DoubleValue.ToString();
+                case VariableValueType.String:
                 default:
                     return _objectValue?.ToString();
             }
@@ -212,6 +215,8 @@ namespace TEGS.Expressions
                     return new VariableValue(-a.IntegerValue);
                 case VariableValueType.Double:
                     return new VariableValue(-a.DoubleValue);
+                default:
+                    break;
             }
 
             throw new ValueIsNotANumberException(a);
