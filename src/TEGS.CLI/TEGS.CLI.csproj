@@ -4,6 +4,7 @@
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <StartupObject>TEGS.CLI.Program</StartupObject>
+    <AssemblyName>tegs</AssemblyName>
   </PropertyGroup>
 
   <Import Project="..\TEGS.Shared\TEGS.Shared.projitems" Label="Shared" />

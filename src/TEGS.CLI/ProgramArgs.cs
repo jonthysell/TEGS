@@ -24,21 +24,39 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System;
 using System.IO;
 
 namespace TEGS.CLI
 {
-    class ProgramArgs
+    public abstract class ProgramArgs
     {
-        public SimulationArgs SimulationArgs { get; private set; }
-
-        public bool ShowOutput { get; set; } = false;
-
-        public StreamWriter OutputWriter { get; set; } = null;
+        public readonly Graph Graph;
 
         public ProgramArgs(Graph graph)
         {
+            Graph = graph ?? throw new ArgumentNullException(nameof(graph));
+        }
+    }
+
+    public class RunCommandArgs : ProgramArgs
+    {
+        public readonly SimulationArgs SimulationArgs;
+
+        public bool ShowOutput { get; set; } = false;
+
+        public bool ValidateGraph { get; set; } = true;
+
+        public StreamWriter OutputWriter { get; set; } = null;
+
+        public RunCommandArgs(Graph graph) : base(graph)
+        {
             SimulationArgs = new SimulationArgs(graph);
         }
+    }
+
+    public class ValidateCommandArgs : ProgramArgs
+    {
+        public ValidateCommandArgs(Graph graph) : base(graph) { }
     }
 }

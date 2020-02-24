@@ -32,73 +32,284 @@ using System.Text;
 
 namespace TEGS.CLI
 {
-    class Program
+    public class Program
     {
-        static ProgramArgs ProgramArgs { get; set; }
+        #region Main Statics
 
-        static void Main(string[] args)
+        public static void Main(string[] args)
         {
+            AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
+
             Console.OutputEncoding = Encoding.UTF8;
 
-            if (args.Length == 0)
+            var p = new Program(args);
+            p.Run();
+        }
+
+        private static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
+        {
+            if (e.ExceptionObject is AggregateException ex)
             {
-                ShowHelp();
+                PrintException(ex, true);
+                foreach (Exception innerEx in ex.InnerExceptions)
+                {
+                    PrintException(innerEx);
+                }
             }
             else
             {
-                try
+                PrintException(e.ExceptionObject as Exception, true);
+            }
+        }
+
+        private static void PrintException(Exception ex, bool isUnhandled = false)
+        {
+            var oldColor = StartConsoleError();
+
+            if (isUnhandled)
+            {
+                Console.Error.WriteLine();
+                Console.Error.WriteLine("An unhandled exception has occured.");
+            }
+
+            if (!(ex is null))
+            {
+                Console.Error.WriteLine();
+                Console.Error.WriteLine($"Exception: { ex.Message }");
+
+#if DEBUG
+                Console.Error.WriteLine(ex.StackTrace);
+#endif
+
+                EndConsoleError(oldColor);
+
+                if (null != ex.InnerException)
                 {
-                    ProgramArgs = ParseArgs(args);
-
-                    Simulation simulation = new Simulation(ProgramArgs.SimulationArgs);
-
-                    int numTraceExpressions = ProgramArgs.SimulationArgs.TraceExpressions.Count;
-
-                    if (ProgramArgs.ShowOutput)
-                    {
-                        Console.WriteLine("TEGS.CLI v{0}", Assembly.GetEntryAssembly().GetName().Version.ToString());
-                        Console.WriteLine();
-
-                        int? columnWidth = (Console.WindowWidth / (numTraceExpressions + 2)) - 1; // 
-
-                        simulation.VertexFired += MakeOutputEventHandler(Console.Write, " ", columnWidth);
-                    }
-
-                    if (null != ProgramArgs.OutputWriter)
-                    {
-                        simulation.VertexFired += MakeOutputEventHandler(ProgramArgs.OutputWriter.Write);
-                    }
-
-                    simulation.Run();
-                    simulation.Wait();
-                }
-                catch (ValidationException ex)
-                {
-                    Console.Error.WriteLine($"Graph has {ex.ValidationErrors.Count} errors:");
-
-                    foreach (var error in ex.ValidationErrors)
-                    {
-                        Console.Error.WriteLine($"  {error.Message}");
-                    }
-                }
-                catch (AggregateException ex)
-                {
-                    PrintException(ex);
-                    foreach (Exception innerEx in ex.InnerExceptions)
-                    {
-                        PrintException(innerEx);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    PrintException(ex);
-                }
-                finally
-                {
-                    ProgramArgs?.OutputWriter?.Flush();
-                    ProgramArgs?.OutputWriter?.Close();
+                    PrintException(ex.InnerException);
                 }
             }
+        }
+
+        private static ConsoleColor StartConsoleError()
+        {
+            ConsoleColor oldColor = Console.ForegroundColor;
+            Console.ForegroundColor = ConsoleColor.Red;
+            return oldColor;
+        }
+
+        private static void EndConsoleError(ConsoleColor oldColor)
+        {
+            Console.ForegroundColor = oldColor;
+        }
+
+        #endregion
+
+        #region Properties
+
+        public readonly string[] Arguments;
+
+        public ProgramArgs ProgramArgs { get; private set; }
+
+        #endregion
+
+        public Program(string[] args)
+        {
+            Arguments = args;
+        }
+
+        public void Run()
+        {
+            if (Arguments is null || Arguments.Length == 0)
+            {
+                ShowHelp();
+                return;
+            }
+
+            var command = Arguments[0].ToLower();
+
+            try
+            {
+                switch (command)
+                {
+                    case "run":
+                        ParseRunArgs();
+                        ExecuteRunCommand();
+                        break;
+                    case "validate":
+                        ParseValidateArgs();
+                        ExecuteValidateCommand();
+                        break;
+                    case "version":
+                    case "--version":
+                        ShowVersion();
+                        return;
+                    case "help":
+                    case "--help":
+                    default:
+                        ShowHelp(Arguments.Length > 1 ? Arguments[1]?.ToLower() : null);
+                        return;
+                }
+            }
+            catch (ValidationException ex)
+            {
+                var oldColor = StartConsoleError();
+
+                Console.Error.WriteLine($"Graph has {ex.ValidationErrors.Count} validation errors:");
+
+                foreach (var error in ex.ValidationErrors)
+                {
+                    Console.Error.WriteLine($"  {error.Message}");
+                }
+
+                EndConsoleError(oldColor);
+            }
+            catch (ParseArgumentsException ex)
+            {
+                PrintException(ex);
+
+                Console.WriteLine();
+
+                ShowHelp(command);
+            }
+        }
+
+        #region Run Command
+
+        private static void ShowRunHelp()
+        {
+            Console.WriteLine("Usage: tegs run [<options>] graph.xml");
+            Console.WriteLine();
+
+            Console.WriteLine("Options:");
+            Console.WriteLine("-o, --output-file [file]           Write the output to the given file");
+            Console.WriteLine("--seed [int]                       Set the starting seed for the simulation (default: random)");
+            Console.WriteLine("--show-output                      Show simulation output to the console (default: False)");
+            Console.WriteLine("--start-parameter [expression]     Set a simulation start parameter");
+            Console.WriteLine("--stop-condition [expression]      Stop the simulation if the given condition is met");
+            Console.WriteLine("--stop-event-count [name] [count]  Stop the simulation if the named event occurs count times");
+            Console.WriteLine("--stop-time [time]                 Stop the simulation if the clock passes the given time");
+            Console.WriteLine("--trace-variable [name]            Add a trace variable by name");
+            Console.WriteLine("--validate-graph [bool]            Validating the graph before running (default: True)");
+            Console.WriteLine();
+        }
+
+        private void ParseRunArgs()
+        {
+            Graph graph = null;
+
+            try
+            {
+                string graphFile = Arguments[^1];
+
+                using FileStream fs = new FileStream(graphFile, FileMode.Open);
+                graph = Graph.LoadXml(fs);
+            }
+            catch (Exception ex)
+            {
+                throw new ParseArgumentsException("Unable to load graph.", ex);
+            }
+
+            string outputFile = null;
+            bool showOutput = false;
+            int? startingSeed = null;
+            List<string> startParameters = new List<string>();
+            StopCondition stopCondition = null;
+            bool validateGraph = true;
+
+            List<TraceExpression> traceExpressions = new List<TraceExpression>();
+
+            try
+            {
+                for (int i = 1; i < Arguments.Length - 1; i++)
+                {
+                    switch (Arguments[i].ToLower())
+                    {
+                        case "-o":
+                        case "--output-file":
+                            outputFile = Arguments[++i];
+                            break;
+                        case "--seed":
+                            startingSeed = int.Parse(Arguments[++i]);
+                            break;
+                        case "--show-output":
+                            showOutput = true;
+                            break;
+                        case "--start-parameter":
+                            startParameters.Add(Arguments[++i]);
+                            break;
+                        case "--stop-condition":
+                            stopCondition = StopCondition.StopOnCondition(Arguments[++i]);
+                            break;
+                        case "--stop-event-count":
+                            stopCondition = StopCondition.StopAfterMaxEventCount(Arguments[++i], int.Parse(Arguments[++i]));
+                            break;
+                        case "--stop-time":
+                            stopCondition = StopCondition.StopAfterMaxTime(int.Parse(Arguments[++i]));
+                            break;
+                        case "--trace-variable":
+                            string name = Arguments[++i];
+                            traceExpressions.Add(new StateVariableTraceExpression(graph.GetStateVariable(name)));
+                            break;
+                        case "--validate-graph":
+                            validateGraph = bool.Parse(Arguments[++i]);
+                            break;
+                        default:
+                            throw new Exception($"Did not recognize option \"{Arguments[i]}\"");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new ParseArgumentsException("Unable to parse options.", ex);
+            }
+
+            var runCommandArgs = new RunCommandArgs(graph)
+            {
+                ShowOutput = showOutput,
+                ValidateGraph = validateGraph,
+            };
+
+            if (!string.IsNullOrWhiteSpace(outputFile))
+            {
+                runCommandArgs.OutputWriter = new StreamWriter(new FileStream(outputFile, FileMode.Create), Encoding.UTF8);
+            }
+
+            runCommandArgs.SimulationArgs.StartingSeed = startingSeed;
+            runCommandArgs.SimulationArgs.StartParameterExpressions = startParameters;
+            runCommandArgs.SimulationArgs.StopCondition = stopCondition;
+
+            runCommandArgs.SimulationArgs.TraceExpressions.AddRange(traceExpressions);
+
+            ProgramArgs = runCommandArgs;
+        }
+
+        private void ExecuteRunCommand()
+        {
+            var args = ProgramArgs as RunCommandArgs;
+
+            if (args.ValidateGraph)
+            {
+                ValidateLoadedGraph();
+            }
+
+            Simulation simulation = new Simulation(args.SimulationArgs);
+
+            int numTraceExpressions = args.SimulationArgs.TraceExpressions.Count;
+
+            if (args.ShowOutput)
+            {
+                int? columnWidth = (Console.WindowWidth / (numTraceExpressions + 2)) - 1;
+
+                simulation.VertexFired += MakeOutputEventHandler(Console.Write, " ", columnWidth);
+            }
+
+            if (null != args.OutputWriter)
+            {
+                simulation.VertexFired += MakeOutputEventHandler(args.OutputWriter.Write);
+            }
+
+            simulation.Run();
+            simulation.Wait();
         }
 
         private static VertexFiredEventHandler MakeOutputEventHandler(Action<string> writer, string seperator = "\t", int? columnWidth = null)
@@ -156,153 +367,102 @@ namespace TEGS.CLI
             return s;
         }
 
-        static void ShowHelp()
+        #endregion
+
+        #region Validate Command
+
+        private static void ShowValidateHelp()
         {
-            Console.WriteLine("TEGS.CLI v{0}", Assembly.GetEntryAssembly().GetName().Version.ToString());
-            Console.WriteLine();
-
-            Console.WriteLine("Usage:");
-            Console.WriteLine("TEGS.CLI.exe [command] [options] graph.xml");
-            Console.WriteLine();
-
-            Console.WriteLine("Commands:");
-            Console.WriteLine("run                                Run the simulation with the given graph.");
-            Console.WriteLine();
-
-            Console.WriteLine("Options:");
-            Console.WriteLine("-o, --output-file [file]           Write the output to the given file.");
-            Console.WriteLine("--seed [int]                       Set the starting seed for the simulation.");
-            Console.WriteLine("--show-output                      Show simulation output to the console.");
-            Console.WriteLine("--start-parameter [expression]     Add a simulation start parameter.");
-            Console.WriteLine("--stop-condition [expression]      Stop the simulation if the given condition is met.");
-            Console.WriteLine("--stop-event-count [name] [count]  Stop the simulation if the named event occurs count times.");
-            Console.WriteLine("--stop-time [time]                 Stop the simulation if the clock passes the given time.");
-            Console.WriteLine("--trace-variable [name]            Add a trace variable by name.");
+            Console.WriteLine("Usage: tegs validate graph.xml");
             Console.WriteLine();
         }
 
-        static void PrintException(Exception ex)
-        {
-            ConsoleColor oldColor = Console.ForegroundColor;
-            Console.ForegroundColor = ConsoleColor.Red;
-
-            Console.WriteLine();
-            Console.Error.WriteLine("Error: {0}", ex.Message);
-            Console.Error.WriteLine(ex.StackTrace);
-
-            Console.ForegroundColor = oldColor;
-
-            if (null != ex.InnerException)
-            {
-                PrintException(ex.InnerException);
-            }
-        }
-
-        static ProgramArgs ParseArgs(string[] args)
+        private void ParseValidateArgs()
         {
             Graph graph = null;
 
             try
             {
-                string graphFile = args[^1];
+                string graphFile = Arguments[^1];
 
                 using FileStream fs = new FileStream(graphFile, FileMode.Open);
                 graph = Graph.LoadXml(fs);
             }
             catch (Exception ex)
             {
-                throw new Exception("Unable to load graph.", ex);
+                throw new ParseArgumentsException("Unable to load graph.", ex);
             }
 
-            IReadOnlyList<ValidationError> validationErrors = Validator.Validate(graph);
+            ProgramArgs = new ValidateCommandArgs(graph);
+        }
+
+        private void ExecuteValidateCommand()
+        {
+            ValidateLoadedGraph();
+
+            Console.WriteLine($"Graph is valid.");
+        }
+
+        private void ValidateLoadedGraph()
+        {
+            IReadOnlyList<ValidationError> validationErrors = Validator.Validate(ProgramArgs.Graph);
 
             if (validationErrors.Count > 0)
             {
                 throw new ValidationException(validationErrors);
             }
-
-            try
-            {
-                switch (args[0].ToLower())
-                {
-                    case "run":
-                        break;
-                    default:
-                        throw new Exception($"Did not recognize command \"{args[0]}\"");
-                }
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("Unable to parse command.", ex);
-            }
-
-            string outputFile = null;
-            bool showOutput = false;
-            int? startingSeed = null;
-            List<string> startParameters = new List<string>();
-            StopCondition stopCondition = null;
-
-            List<TraceExpression> traceExpressions = new List<TraceExpression>();
-
-            try
-            {
-                for (int i = 1; i < args.Length - 1; i++)
-                {
-                    switch (args[i].ToLower())
-                    {
-                        case "-o":
-                        case "--output-file":
-                            outputFile = args[++i];
-                            break;
-                        case "--seed":
-                            startingSeed = int.Parse(args[++i]);
-                            break;
-                        case "--show-output":
-                            showOutput = true;
-                            break;
-                        case "--start-parameter":
-                            startParameters.Add(args[++i]);
-                            break;
-                        case "--stop-condition":
-                            stopCondition = StopCondition.StopOnCondition(args[++i]);
-                            break;
-                        case "--stop-event-count":
-                            stopCondition = StopCondition.StopAfterMaxEventCount(args[++i], int.Parse(args[++i]));
-                            break;
-                        case "--stop-time":
-                            stopCondition = StopCondition.StopAfterMaxTime(int.Parse(args[++i]));
-                            break;
-                        case "--trace-variable":
-                            string name = args[++i];
-                            traceExpressions.Add(new StateVariableTraceExpression(graph.GetStateVariable(name)));
-                            break;
-                        default:
-                            throw new Exception($"Did not recognize option \"{args[i]}\"");
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("Unable to parse options.", ex);
-            }
-
-            ProgramArgs programArgs = new ProgramArgs(graph)
-            {
-                ShowOutput = showOutput
-            };
-
-            if (!string.IsNullOrWhiteSpace(outputFile))
-            {
-                programArgs.OutputWriter = new StreamWriter(new FileStream(outputFile, FileMode.Create), Encoding.UTF8);
-            }
-
-            programArgs.SimulationArgs.StartingSeed = startingSeed;
-            programArgs.SimulationArgs.StartParameterExpressions = startParameters;
-            programArgs.SimulationArgs.StopCondition = stopCondition;
-
-            programArgs.SimulationArgs.TraceExpressions.AddRange(traceExpressions);
-
-            return programArgs;
         }
+
+        #endregion
+
+        #region Version
+
+        private void ShowVersion()
+        {
+            Console.WriteLine($"tegs v{ Assembly.GetEntryAssembly().GetName().Version }");
+            Console.WriteLine();
+        }
+
+        #endregion
+
+        #region Help
+
+        private void ShowHelp(string command = null)
+        {
+            if (command == "run")
+            {
+                ShowRunHelp();
+            }
+            else if (command == "validate")
+            {
+                ShowValidateHelp();
+            }
+            else
+            {
+                Console.WriteLine("Usage: tegs [--version] [--help]");
+                Console.WriteLine("            <command> [<args>]");
+                Console.WriteLine();
+
+                Console.WriteLine("Commands:");
+                Console.WriteLine("run       Run a simulation with a given graph");
+                Console.WriteLine("validate  Validate a given graph");
+                Console.WriteLine();
+
+                Console.WriteLine("See 'tegs help <command>' to see the arguments for that command.");
+            }
+        }
+
+        #endregion
     }
+
+    #region Exceptions
+
+    public class ParseArgumentsException : Exception
+    {
+        public ParseArgumentsException(string message) : base(message) { }
+
+        public ParseArgumentsException(string message, Exception innerException) : base(message, innerException) { }
+    }
+
+    #endregion
 }
