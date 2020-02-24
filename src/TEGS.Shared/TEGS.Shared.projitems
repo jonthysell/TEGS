@@ -31,7 +31,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)TraceExpression.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ValidationErrors.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Validator.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)VariableValue.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Expressions\VariableValue.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)StateVariable.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)StopCondition.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Vertex.cs" />

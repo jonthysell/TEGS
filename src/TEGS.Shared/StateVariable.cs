@@ -26,6 +26,8 @@
 
 using System;
 
+using TEGS.Expressions;
+
 namespace TEGS
 {
     public class StateVariable : IComparable<StateVariable>

@@ -26,6 +26,8 @@
 
 using System.IO;
 
+using TEGS.Expressions;
+
 namespace TEGS.Test
 {
     public class TestGraph

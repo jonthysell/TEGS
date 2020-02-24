@@ -27,6 +27,8 @@
 using System;
 using System.Reflection;
 
+using TEGS.Expressions;
+
 namespace TEGS.Libraries
 {
     [AttributeUsage(AttributeTargets.Class)]

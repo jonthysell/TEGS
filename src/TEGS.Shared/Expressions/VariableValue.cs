@@ -27,7 +27,7 @@
 using System;
 using System.Runtime.InteropServices;
 
-namespace TEGS
+namespace TEGS.Expressions
 {
     public delegate VariableValue CustomFunction(VariableValue[] args);
 

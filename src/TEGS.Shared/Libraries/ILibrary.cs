@@ -26,6 +26,8 @@
 
 using System.Collections.Generic;
 
+using TEGS.Expressions;
+
 namespace TEGS.Libraries
 {
     public interface ILibrary

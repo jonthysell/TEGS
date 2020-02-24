@@ -28,6 +28,8 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 
+using TEGS.Expressions;
+
 namespace TEGS.Libraries
 {
     public abstract class ReflectionLibraryBase : ILibrary

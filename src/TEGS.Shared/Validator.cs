@@ -27,6 +27,7 @@
 using System;
 using System.Collections.Generic;
 
+using TEGS.Expressions;
 using TEGS.Libraries;
 
 namespace TEGS
