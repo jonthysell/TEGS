@@ -86,6 +86,10 @@ namespace TEGS.Expressions
                 CurrentValue = default;
                 CurrentSymbol = symbol;
             }
+            else
+            {
+                throw new UnexpectedTokenException(this);
+            }
         }
 
         private void SkipWhiteSpace()
@@ -328,7 +332,11 @@ namespace TEGS.Expressions
 
     public class UnexpectedTokenException : Exception
     {
-        public UnexpectedTokenException() : base() { }
+        public readonly TokenReader TokenReader;
+        public UnexpectedTokenException(TokenReader tokenReader) : base()
+        {
+            TokenReader = tokenReader ?? throw new ArgumentNullException(nameof(tokenReader));
+        }
     }
 
     #endregion

@@ -367,7 +367,7 @@ namespace TEGS.Test
         {
             bool allPass = true;
 
-            foreach (ParseAndEvaluateTestCase test in tests)
+            foreach (var test in tests)
             {
                 allPass = allPass && TryParseAndEvaluate_ValidTest(test, context);
             }
