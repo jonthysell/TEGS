@@ -48,6 +48,10 @@ namespace TEGS.Libraries
 
         protected Dictionary<string, CustomFunction> Functions { get; private set; } = new Dictionary<string, CustomFunction>();
 
+        protected static readonly Dictionary<TypeInfo, IEnumerable<FieldInfo>> _fieldInfoCache = new Dictionary<TypeInfo, IEnumerable<FieldInfo>>();
+        protected static readonly Dictionary<TypeInfo, IEnumerable<PropertyInfo>> _propertyInfoCache = new Dictionary<TypeInfo, IEnumerable<PropertyInfo>>();
+        protected static readonly Dictionary<TypeInfo, IEnumerable<MethodInfo>> _methodInfoCache = new Dictionary<TypeInfo, IEnumerable<MethodInfo>>();
+
         #endregion
 
         #region Constructors
@@ -120,7 +124,7 @@ namespace TEGS.Libraries
 
         protected virtual void LoadConstants(TypeInfo typeInfo)
         {
-            foreach (var fieldInfo in typeInfo.DeclaredFields)
+            foreach (var fieldInfo in GetFields(typeInfo))
             {
                 if (fieldInfo.IsPublic && TryGetConstant(fieldInfo, out VariableValue constantValue))
                 {
@@ -128,7 +132,7 @@ namespace TEGS.Libraries
                 }
             }
 
-            foreach (var propertyInfo in typeInfo.DeclaredProperties)
+            foreach (var propertyInfo in GetProperties(typeInfo))
             {
                 if (null != propertyInfo.GetGetMethod() && TryGetConstant(propertyInfo, out VariableValue constantValue))
                 {
@@ -137,15 +141,48 @@ namespace TEGS.Libraries
             }
         }
 
+        protected static IEnumerable<FieldInfo> GetFields(TypeInfo typeInfo)
+        {
+            if (!_fieldInfoCache.TryGetValue(typeInfo, out IEnumerable<FieldInfo> value))
+            {
+                value = typeInfo.DeclaredFields;
+                _fieldInfoCache[typeInfo] = value;
+            }
+
+            return value;
+        }
+
+        protected static IEnumerable<PropertyInfo> GetProperties(TypeInfo typeInfo)
+        {
+            if (!_propertyInfoCache.TryGetValue(typeInfo, out IEnumerable<PropertyInfo> value))
+            {
+                value = typeInfo.DeclaredProperties;
+                _propertyInfoCache[typeInfo] = value;
+            }
+
+            return value;
+        }
+
         protected virtual void LoadMethods(TypeInfo typeInfo)
         {
-            foreach (var methodInfo in typeInfo.DeclaredMethods)
+            foreach (var methodInfo in GetMethods(typeInfo))
             {
                 if (methodInfo.IsPublic && TryGetCustomFunction(methodInfo, out CustomFunction customFunction))
                 {
                     Functions.Add(methodInfo.Name, customFunction);
                 }
             }
+        }
+
+        protected static IEnumerable<MethodInfo> GetMethods(TypeInfo typeInfo)
+        {
+            if (!_methodInfoCache.TryGetValue(typeInfo, out IEnumerable<MethodInfo> value))
+            {
+                value = typeInfo.DeclaredMethods;
+                _methodInfoCache[typeInfo] = value;
+            }
+
+            return value;
         }
 
         protected bool TryGetConstant(FieldInfo fieldInfo, out VariableValue result)
@@ -183,7 +220,7 @@ namespace TEGS.Libraries
             try
             {
                 result = GetCustomFunction(methodInfo);
-                return true;
+                return (null != result);
             }
             catch (Exception) { }
 
@@ -204,7 +241,7 @@ namespace TEGS.Libraries
                 return MakeDelegate<CustomFunction>(methodInfo);
             }
 
-            throw new ArgumentOutOfRangeException(nameof(methodInfo));
+            return null;
         }
 
         protected TDelegate MakeDelegate<TDelegate>(MethodInfo methodInfo) where TDelegate: Delegate

@@ -52,119 +52,122 @@ namespace TEGS.Libraries
             if (!Functions.ContainsKey(methodInfo.Name))
             {
                 var returnType = methodInfo.ReturnType;
-                var parameterInfos = methodInfo.GetParameters();
 
-                if (returnType == typeof(bool) && CheckParams(parameterInfos))
+                if (returnType == typeof(bool) || returnType == typeof(int) || returnType == typeof(double) || returnType == typeof(string))
                 {
-                    // void => bool
-                    var boolFunc = MakeDelegate<Func<bool>>(methodInfo);
-                    return MakeFunction(boolFunc);
-                }
-                else if (returnType == typeof(bool) && CheckParams<bool>(parameterInfos))
-                {
-                    // bool => bool
-                    var boolFunc = MakeDelegate<Func<bool, bool>>(methodInfo);
-                    return MakeFunction(boolFunc);
-                }
-                else if (returnType == typeof(int) && CheckParams(parameterInfos))
-                {
-                    // void => int
-                    var intFunc = MakeDelegate<Func<int>>(methodInfo);
-                    return MakeFunction(intFunc);
-                }
-                else if (returnType == typeof(int) && CheckParams<int>(parameterInfos))
-                {
-                    // int => int
-                    var intFunc = MakeDelegate<Func<int, int>>(methodInfo);
-
-                    if (TryFindRelatedMethod<double, double>(methodInfo, out MethodInfo relatedMethodInfo))
+                    var parameterInfos = methodInfo.GetParameters();
+                    if (returnType == typeof(bool) && CheckParams(parameterInfos))
                     {
-                        // int => int + double => double
-                        var doubleFunc = MakeDelegate<Func<double, double>>(relatedMethodInfo);
-                        return MakeFunction(intFunc, doubleFunc);
+                        // void => bool
+                        var boolFunc = MakeDelegate<Func<bool>>(methodInfo);
+                        return MakeFunction(boolFunc);
                     }
-                    else
+                    else if (returnType == typeof(bool) && CheckParams<bool>(parameterInfos))
+                    {
+                        // bool => bool
+                        var boolFunc = MakeDelegate<Func<bool, bool>>(methodInfo);
+                        return MakeFunction(boolFunc);
+                    }
+                    else if (returnType == typeof(int) && CheckParams(parameterInfos))
+                    {
+                        // void => int
+                        var intFunc = MakeDelegate<Func<int>>(methodInfo);
+                        return MakeFunction(intFunc);
+                    }
+                    else if (returnType == typeof(int) && CheckParams<int>(parameterInfos))
                     {
                         // int => int
-                        return MakeFunction(intFunc);
-                    }
-                }
-                else if (returnType == typeof(int) && CheckParams<int, int>(parameterInfos))
-                {
-                    // int, int => int
-                    var intFunc = MakeDelegate<Func<int, int, int>>(methodInfo);
+                        var intFunc = MakeDelegate<Func<int, int>>(methodInfo);
 
-                    if (TryFindRelatedMethod<double, double, double>(methodInfo, out MethodInfo relatedMethodInfo))
-                    {
-                        // int, int => int + double, double => double
-                        var doubleFunc = MakeDelegate<Func<double, double, double>>(relatedMethodInfo);
-                        return MakeFunction(intFunc, doubleFunc);
+                        if (TryFindRelatedMethod<double, double>(methodInfo, out MethodInfo relatedMethodInfo))
+                        {
+                            // int => int + double => double
+                            var doubleFunc = MakeDelegate<Func<double, double>>(relatedMethodInfo);
+                            return MakeFunction(intFunc, doubleFunc);
+                        }
+                        else
+                        {
+                            // int => int
+                            return MakeFunction(intFunc);
+                        }
                     }
-                    else
+                    else if (returnType == typeof(int) && CheckParams<int, int>(parameterInfos))
                     {
                         // int, int => int
-                        return MakeFunction(intFunc);
-                    }
-                }
-                else if (returnType == typeof(double) && CheckParams(parameterInfos))
-                {
-                    // void => double
-                    var doubleFunc = MakeDelegate<Func<double>>(methodInfo);
-                    return MakeFunction(doubleFunc);
-                }
-                else if (returnType == typeof(double) && CheckParams<double>(parameterInfos))
-                {
-                    // double => double
-                    var doubleFunc = MakeDelegate<Func<double, double>>(methodInfo);
+                        var intFunc = MakeDelegate<Func<int, int, int>>(methodInfo);
 
-                    if (TryFindRelatedMethod<int, int>(methodInfo, out MethodInfo relatedMethodInfo))
-                    {
-                        // double => double + int => int
-                        var intFunc = MakeDelegate<Func<int, int>>(relatedMethodInfo);
-                        return MakeFunction(intFunc, doubleFunc);
+                        if (TryFindRelatedMethod<double, double, double>(methodInfo, out MethodInfo relatedMethodInfo))
+                        {
+                            // int, int => int + double, double => double
+                            var doubleFunc = MakeDelegate<Func<double, double, double>>(relatedMethodInfo);
+                            return MakeFunction(intFunc, doubleFunc);
+                        }
+                        else
+                        {
+                            // int, int => int
+                            return MakeFunction(intFunc);
+                        }
                     }
-                    else
+                    else if (returnType == typeof(double) && CheckParams(parameterInfos))
+                    {
+                        // void => double
+                        var doubleFunc = MakeDelegate<Func<double>>(methodInfo);
+                        return MakeFunction(doubleFunc);
+                    }
+                    else if (returnType == typeof(double) && CheckParams<double>(parameterInfos))
                     {
                         // double => double
-                        return MakeFunction(doubleFunc);
-                    }
-                }
-                else if (returnType == typeof(double) && CheckParams<double, double>(parameterInfos))
-                {
-                    // double, double => double
-                    var doubleFunc = MakeDelegate<Func<double, double, double>>(methodInfo);
+                        var doubleFunc = MakeDelegate<Func<double, double>>(methodInfo);
 
-                    if (TryFindRelatedMethod<int, int, int>(methodInfo, out MethodInfo relatedMethodInfo))
-                    {
-                        // double, double => double + int, int => int
-                        var intFunc = MakeDelegate<Func<int, int, int>>(relatedMethodInfo);
-                        return MakeFunction(intFunc, doubleFunc);
+                        if (TryFindRelatedMethod<int, int>(methodInfo, out MethodInfo relatedMethodInfo))
+                        {
+                            // double => double + int => int
+                            var intFunc = MakeDelegate<Func<int, int>>(relatedMethodInfo);
+                            return MakeFunction(intFunc, doubleFunc);
+                        }
+                        else
+                        {
+                            // double => double
+                            return MakeFunction(doubleFunc);
+                        }
                     }
-                    else
+                    else if (returnType == typeof(double) && CheckParams<double, double>(parameterInfos))
                     {
                         // double, double => double
-                        return MakeFunction(doubleFunc);
+                        var doubleFunc = MakeDelegate<Func<double, double, double>>(methodInfo);
+
+                        if (TryFindRelatedMethod<int, int, int>(methodInfo, out MethodInfo relatedMethodInfo))
+                        {
+                            // double, double => double + int, int => int
+                            var intFunc = MakeDelegate<Func<int, int, int>>(relatedMethodInfo);
+                            return MakeFunction(intFunc, doubleFunc);
+                        }
+                        else
+                        {
+                            // double, double => double
+                            return MakeFunction(doubleFunc);
+                        }
                     }
-                }
-                else if (returnType == typeof(string) && CheckParams(parameterInfos))
-                {
-                    // void => string
-                    var strFunc = MakeDelegate<Func<string>>(methodInfo);
-                    return MakeFunction(strFunc);
-                }
-                else if (returnType == typeof(string) && CheckParams<string>(parameterInfos))
-                {
-                    var strFunc = MakeDelegate<Func<string, string>>(methodInfo);
-                    return MakeFunction(strFunc);
-                }
-                else if (returnType == typeof(string) && CheckParams<string, string>(parameterInfos))
-                {
-                    var strFunc = MakeDelegate<Func<string, string, string>>(methodInfo);
-                    return MakeFunction(strFunc);
+                    else if (returnType == typeof(string) && CheckParams(parameterInfos))
+                    {
+                        // void => string
+                        var strFunc = MakeDelegate<Func<string>>(methodInfo);
+                        return MakeFunction(strFunc);
+                    }
+                    else if (returnType == typeof(string) && CheckParams<string>(parameterInfos))
+                    {
+                        var strFunc = MakeDelegate<Func<string, string>>(methodInfo);
+                        return MakeFunction(strFunc);
+                    }
+                    else if (returnType == typeof(string) && CheckParams<string, string>(parameterInfos))
+                    {
+                        var strFunc = MakeDelegate<Func<string, string, string>>(methodInfo);
+                        return MakeFunction(strFunc);
+                    }
                 }
             }
 
-            throw new ArgumentOutOfRangeException(nameof(methodInfo));
+            return null;
         }
 
         #endregion
@@ -173,17 +176,20 @@ namespace TEGS.Libraries
 
         private bool TryFindRelatedMethod<TArg, TResult>(MethodInfo baseMethodInfo, out MethodInfo result)
         {
-            foreach (MethodInfo methodInfo in TypeInfo.DeclaredMethods)
+            foreach (MethodInfo methodInfo in GetMethods(TypeInfo))
             {
                 if (methodInfo != baseMethodInfo && methodInfo.Name == baseMethodInfo.Name)
                 {
                     var returnType = methodInfo.ReturnType;
-                    var parameterInfo = methodInfo.GetParameters();
 
-                    if (returnType == typeof(TResult) && CheckParams<TArg>(parameterInfo))
+                    if (returnType == typeof(TResult))
                     {
-                        result = methodInfo;
-                        return true;
+                        var parameterInfo = methodInfo.GetParameters();
+                        if (CheckParams<TArg>(parameterInfo))
+                        {
+                            result = methodInfo;
+                            return true;
+                        }
                     }
                 }
             }
@@ -194,17 +200,20 @@ namespace TEGS.Libraries
 
         private bool TryFindRelatedMethod<TArg0, TArg1, TResult>(MethodInfo baseMethodInfo, out MethodInfo result)
         {
-            foreach (MethodInfo methodInfo in TypeInfo.DeclaredMethods)
+            foreach (MethodInfo methodInfo in GetMethods(TypeInfo))
             {
                 if (methodInfo != baseMethodInfo && methodInfo.Name == baseMethodInfo.Name)
                 {
                     var returnType = methodInfo.ReturnType;
-                    var parameterInfo = methodInfo.GetParameters();
 
-                    if (returnType == typeof(TResult) && CheckParams<TArg0, TArg1>(parameterInfo))
+                    if (returnType == typeof(TResult))
                     {
-                        result = methodInfo;
-                        return true;
+                        var parameterInfo = methodInfo.GetParameters();
+                        if (CheckParams<TArg0, TArg1>(parameterInfo))
+                        {
+                            result = methodInfo;
+                            return true;
+                        }
                     }
                 }
             }

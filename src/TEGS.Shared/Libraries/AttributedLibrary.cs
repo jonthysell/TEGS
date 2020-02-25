@@ -78,7 +78,7 @@ namespace TEGS.Libraries
 
         protected override void LoadConstants(TypeInfo typeInfo)
         {
-            foreach (var fieldInfo in typeInfo.DeclaredFields)
+            foreach (var fieldInfo in GetFields(typeInfo))
             {
                 var constantAttribute = fieldInfo.GetCustomAttribute<LibraryConstantAttribute>();
                 if (null != constantAttribute && fieldInfo.IsPublic && TryGetConstant(fieldInfo, out VariableValue constantValue))
@@ -87,7 +87,7 @@ namespace TEGS.Libraries
                 }
             }
 
-            foreach (var propertyInfo in typeInfo.DeclaredProperties)
+            foreach (var propertyInfo in GetProperties(typeInfo))
             {
                 var constantAttribute = propertyInfo.GetCustomAttribute<LibraryConstantAttribute>();
                 if (null != constantAttribute && null != propertyInfo.GetGetMethod() && TryGetConstant(propertyInfo, out VariableValue constantValue))
@@ -99,7 +99,7 @@ namespace TEGS.Libraries
 
         protected override void LoadMethods(TypeInfo typeInfo)
         {
-            foreach (var methodInfo in typeInfo.DeclaredMethods)
+            foreach (var methodInfo in GetMethods(typeInfo))
             {
                 var functionAttribute = methodInfo.GetCustomAttribute<LibraryFunctionAttribute>();
                 if (null != functionAttribute && methodInfo.IsPublic && TryGetCustomFunction(methodInfo, out CustomFunction customFunction))

@@ -3,9 +3,9 @@
     "TEGS.CLI": {
       "commandName": "Project"
     },
-    "Run Carwash (No Output)": {
+    "Run Carwash (Perf)": {
       "commandName": "Project",
-      "commandLineArgs": "run --seed 12345 --start-parameter 5 --start-parameter 3 --stop-time 10000 $(ProjectDir)\\..\\..\\examples\\carwash.xml"
+      "commandLineArgs": "run --seed 12345 --start-parameter 5 --start-parameter 3 --stop-time 10000 --validate-graph false $(ProjectDir)\\..\\..\\examples\\carwash.xml"
     },
     "Run Carwash (Console Out)": {
       "commandName": "Project",

@@ -40,7 +40,7 @@ namespace TEGS.Libraries
 
         public static ILibrary StringLibrary => new AttributedLibrary(typeof(StringLibrary));
 
-        public static ILibrary SystemMath => new SystemLibrary(typeof(Math));
+        public static ILibrary SystemMath => new SystemLibrary(typeof(Math), ReflectionType.StandardOnly);
 
         public static ILibrary RandomVariateLibrary(int? seed = null) => new SystemLibrary(seed.HasValue ? new Random(seed.Value) : new Random(), ReflectionType.ExtensionOnly, typeof(RandomExtensions));
 
