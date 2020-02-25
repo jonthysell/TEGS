@@ -236,32 +236,37 @@ namespace TEGS
             OnVertexFired(nextEvent.Target);
 
             // Evaluate edges
-            foreach (Edge edge in nextEvent.Target.Edges)
+            for (int i = 0; i < Graph.Edges.Count; i++)
             {
-                // Check condition
-                if (ScriptingHost.Evaluate(edge.Condition, VariableValue.True).AsBoolean())
+                if (Graph.Edges[i].Source == nextEvent.Target)
                 {
-                    OnEdgeFiring(edge);
+                    Edge edge = Graph.Edges[i];
 
-                    // Evaluate parameters
-                    IReadOnlyList<VariableValue> parameterValues = EvaluateParameters(edge.ParameterExpressions);
-
-                    switch (edge.Action)
+                    // Check condition
+                    if (ScriptingHost.Evaluate(edge.Condition, VariableValue.True).AsBoolean())
                     {
-                        case EdgeAction.Schedule:
-                            double time = Clock + ScriptingHost.Evaluate(edge.Delay, new VariableValue(Schedule.DefaultDelay)).AsNumber();
-                            double priority = ScriptingHost.Evaluate(edge.Priority, new VariableValue(Schedule.DefaultPriority)).AsNumber();
-                            Schedule.Insert(edge.Target, time, priority, parameterValues);
-                            break;
-                        case EdgeAction.CancelNext:
-                            Schedule.CancelNext(edge.Target, parameterValues);
-                            break;
-                        case EdgeAction.CancelAll:
-                            Schedule.CancelAll(edge.Target, parameterValues);
-                            break;
-                    }
+                        OnEdgeFiring(edge);
 
-                    OnEdgeFired(edge);
+                        // Evaluate parameters
+                        IReadOnlyList<VariableValue> parameterValues = EvaluateParameters(edge.ParameterExpressions);
+
+                        switch (edge.Action)
+                        {
+                            case EdgeAction.Schedule:
+                                double time = Clock + ScriptingHost.Evaluate(edge.Delay, new VariableValue(Schedule.DefaultDelay)).AsNumber();
+                                double priority = ScriptingHost.Evaluate(edge.Priority, new VariableValue(Schedule.DefaultPriority)).AsNumber();
+                                Schedule.Insert(edge.Target, time, priority, parameterValues);
+                                break;
+                            case EdgeAction.CancelNext:
+                                Schedule.CancelNext(edge.Target, parameterValues);
+                                break;
+                            case EdgeAction.CancelAll:
+                                Schedule.CancelAll(edge.Target, parameterValues);
+                                break;
+                        }
+
+                        OnEdgeFired(edge);
+                    }
                 }
             }
 

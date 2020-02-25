@@ -108,20 +108,6 @@ namespace TEGS
 
         public int Y { get; set; } = 0;
 
-        public IEnumerable<Edge> Edges
-        {
-            get
-            {
-                for (int i = 0; i < Graph.Edges.Count; i++)
-                {
-                    if (Graph.Edges[i].Source == this)
-                    {
-                        yield return Graph.Edges[i];
-                    }
-                }
-            }
-        }
-
         public Vertex(Graph graph, string name, bool isStartingVertex = false)
         {
             Graph = graph ?? throw new ArgumentNullException(nameof(graph));
