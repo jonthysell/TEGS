@@ -179,29 +179,6 @@ namespace TEGS
             _stateVariables[stateVariable] = value;
         }
 
-        public void Assign(IReadOnlyList<StateVariable> stateVariables, IReadOnlyList<VariableValue> values)
-        {
-            if (null == stateVariables)
-            {
-                throw new ArgumentNullException(nameof(stateVariables));
-            }
-
-            if (null == values)
-            {
-                throw new ArgumentNullException(nameof(values));
-            }
-
-            if (stateVariables.Count != values.Count)
-            {
-                throw new ArgumentOutOfRangeException(nameof(values));
-            }
-
-            for (int i = 0; i < stateVariables.Count; i++)
-            {
-                Assign(stateVariables[i], values[i]);
-            }
-        }
-
         public VariableValue Get(StateVariable stateVariable)
         {
             if (null == stateVariable)

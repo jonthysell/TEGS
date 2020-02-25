@@ -93,8 +93,6 @@ namespace TEGS
 
         public event EdgeFiredEventHandler EdgeFired;
 
-        private readonly Dictionary<Vertex, IReadOnlyList<StateVariable>> _vertexToParameterCache = new Dictionary<Vertex, IReadOnlyList<StateVariable>>();
-
         private Task _currentTask = null;
         private CancellationTokenSource _currentCTS = null;
 
@@ -212,7 +210,7 @@ namespace TEGS
             CurrentEdge = null;
 
             // Insert starting event
-            Schedule.Insert(Graph.StartingVertex, Schedule.DefaultDelay, Schedule.DefaultPriority, EvaluateParameters(Graph.StartingVertex, Args.StartParameterExpressions));
+            Schedule.Insert(Graph.StartingVertex, Schedule.DefaultDelay, Schedule.DefaultPriority, EvaluateParameters(Args.StartParameterExpressions));
         }
 
         private void InternalStep()
@@ -246,7 +244,7 @@ namespace TEGS
                     OnEdgeFiring(edge);
 
                     // Evaluate parameters
-                    IReadOnlyList<VariableValue> parameterValues = EvaluateParameters(edge.Target, edge.ParameterExpressions);
+                    IReadOnlyList<VariableValue> parameterValues = EvaluateParameters(edge.ParameterExpressions);
 
                     switch (edge.Action)
                     {
@@ -286,60 +284,31 @@ namespace TEGS
             }
         }
 
-        private IReadOnlyList<StateVariable> GetStateVariables(Vertex target)
-        {
-            if (!_vertexToParameterCache.TryGetValue(target, out IReadOnlyList<StateVariable> stateVariables))
-            {
-                if (target.ParameterNames.Count == 0)
-                {
-                    stateVariables = null;
-                }
-                else
-                {
-                    List<StateVariable> parameters = new List<StateVariable>();
-                    foreach (string parameterName in target.ParameterNames)
-                    {
-                        parameters.Add(Graph.GetStateVariable(parameterName));
-                    }
-                    stateVariables = parameters;
-                }
-
-                _vertexToParameterCache[target] = stateVariables;
-            }
-
-            return stateVariables;
-        }
-
         private void AssignParameters(Vertex target, IReadOnlyList<VariableValue> parameterValues)
         {
-            if (null != parameterValues)
+            if (null != parameterValues && parameterValues.Count > 0)
             {
-                IReadOnlyList<StateVariable> stateVariables = GetStateVariables(target);
+                var parameterNames = target.ParameterNames;
 
-                if (null != stateVariables)
+                for (int i = 0; i < parameterValues.Count; i++)
                 {
-                    ScriptingHost.Assign(stateVariables, parameterValues);
+                    ScriptingHost.SetVariable(parameterNames[i], parameterValues[i]);
                 }
             }
         }
 
-        private IReadOnlyList<VariableValue> EvaluateParameters(Vertex target, IReadOnlyList<string> parameterExpressions)
+        private IReadOnlyList<VariableValue> EvaluateParameters(IReadOnlyList<string> parameterExpressions)
         {
-            if (null != parameterExpressions)
+            if (null != parameterExpressions && parameterExpressions.Count > 0)
             {
-                IReadOnlyList<StateVariable> stateVariables = GetStateVariables(target);
+                List<VariableValue> values = new List<VariableValue>(parameterExpressions.Count);
 
-                if (null != stateVariables)
+                for (int i = 0; i < parameterExpressions.Count; i++)
                 {
-                    List<VariableValue> values = new List<VariableValue>();
-
-                    for (int i = 0; i < stateVariables.Count; i++)
-                    {
-                        values.Add(ScriptingHost.Evaluate(parameterExpressions[i]));
-                    }
-
-                    return values;
+                    values.Add(ScriptingHost.Evaluate(parameterExpressions[i]));
                 }
+
+                return values;
             }
 
             return null;
