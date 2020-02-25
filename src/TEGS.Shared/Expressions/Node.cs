@@ -32,9 +32,41 @@ namespace TEGS.Expressions
 {
     public abstract class Node
     {
-        public abstract VariableValue Evaluate(IContext context);
+        public VariableValue Evaluate(IContext context)
+        {
+            try
+            {
+                return EvaluateInternal(context);
+            }
+            catch (NodeException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                throw new NodeException(this, ex);
+            }
+        }
 
-        public virtual Node Reduce() => this;
+        protected abstract VariableValue EvaluateInternal(IContext context);
+
+        public Node Reduce()
+        {
+            try
+            {
+                return ReduceInternal();
+            }
+            catch (NodeException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                throw new NodeException(this, ex);
+            }
+        }
+
+        protected virtual Node ReduceInternal() => this;
     }
 
     public class NodeValue : Node
@@ -43,7 +75,7 @@ namespace TEGS.Expressions
 
         public NodeValue(VariableValue value) => Value = value;
 
-        public override VariableValue Evaluate(IContext context) => Value;
+        protected override VariableValue EvaluateInternal(IContext context) => Value;
     }
 
     #region Context Symbol Resolution
@@ -54,7 +86,7 @@ namespace TEGS.Expressions
 
         public NodeVariable(string name) => Name = name;
 
-        public override VariableValue Evaluate(IContext context) => context.GetVariable(Name);
+        protected override VariableValue EvaluateInternal(IContext context) => context.GetVariable(Name);
     }
 
     public class NodeFunctionCall : Node
@@ -72,7 +104,7 @@ namespace TEGS.Expressions
             EvaluatedArgs = arguments != null ? new VariableValue[arguments.Length] : null;
         }
 
-        public override VariableValue Evaluate(IContext context)
+        protected override VariableValue EvaluateInternal(IContext context)
         {
             if (null != Arguments)
             {
@@ -85,7 +117,7 @@ namespace TEGS.Expressions
             return context.CallFunction(Name, EvaluatedArgs);
         }
 
-        public override Node Reduce()
+        protected override Node ReduceInternal()
         {
             if (null != Arguments && Arguments.Length > 0)
             {
@@ -109,7 +141,7 @@ namespace TEGS.Expressions
 
         public NodeUnary(Node rhs) => RHS = rhs ?? throw new ArgumentNullException(nameof(rhs));
 
-        public override Node Reduce()
+        protected override Node ReduceInternal()
         {
             ReduceRHS();
 
@@ -126,32 +158,18 @@ namespace TEGS.Expressions
     {
         public NodeNegative(Node rhs) : base(rhs) { }
 
-        public override VariableValue Evaluate(IContext context)
+        protected override VariableValue EvaluateInternal(IContext context)
         {
-            try
-            {
-                return - RHS.Evaluate(context);
-            }
-            catch (ArithmeticException)
-            {
-                throw new NodeEvaluateException(this);
-            }
+            return -RHS.Evaluate(context);
         }
 
-        public override Node Reduce()
+        protected override Node ReduceInternal()
         {
             ReduceRHS();
 
             if (RHS is NodeValue rhs)
             {
-                try
-                {
-                    return new NodeValue(-rhs.Value);
-                }
-                catch (ArithmeticException)
-                {
-                    throw new NodeReduceException(this);
-                }
+                return new NodeValue(-rhs.Value);
             }
 
             return this;
@@ -162,32 +180,18 @@ namespace TEGS.Expressions
     {
         public NodeNot(Node rhs) : base(rhs) { }
 
-        public override VariableValue Evaluate(IContext context)
+        protected override VariableValue EvaluateInternal(IContext context)
         {
-            try
-            {
-                return new VariableValue(! RHS.Evaluate(context));
-            }
-            catch (ArithmeticException)
-            {
-                throw new NodeEvaluateException(this);
-            }
+            return new VariableValue(!RHS.Evaluate(context));
         }
 
-        public override Node Reduce()
+        protected override Node ReduceInternal()
         {
             ReduceRHS();
 
             if (RHS is NodeValue rhs)
             {
-                try
-                {
-                    return new NodeValue(new VariableValue(!rhs.Value));
-                }
-                catch (ArithmeticException)
-                {
-                    throw new NodeReduceException(this);
-                }
+                return new NodeValue(new VariableValue(!rhs.Value));
             }
 
             return this;
@@ -200,7 +204,7 @@ namespace TEGS.Expressions
 
         public NodeBinary(Node lhs, Node rhs) : base(rhs) => LHS = lhs ?? throw new ArgumentNullException(nameof(lhs));
 
-        public override Node Reduce()
+        protected override Node ReduceInternal()
         {
             ReduceLHS();
             ReduceRHS();
@@ -217,20 +221,14 @@ namespace TEGS.Expressions
     {
         public NodeAssign(Node lhs, Node rhs) : base(lhs, rhs) { }
 
-        public override VariableValue Evaluate(IContext context)
+        protected override VariableValue EvaluateInternal(IContext context)
         {
-            try
-            {
-                context.SetVariable((LHS as NodeVariable).Name, RHS.Evaluate(context));
-                return LHS.Evaluate(context);
-            }
-            catch (ArithmeticException)
-            {
-                throw new NodeEvaluateException(this);
-            }
+            context.SetVariable((LHS as NodeVariable).Name, RHS.Evaluate(context));
+
+            return LHS.Evaluate(context);
         }
 
-        public override Node Reduce()
+        protected override Node ReduceInternal()
         {
             ReduceRHS();
 
@@ -242,33 +240,19 @@ namespace TEGS.Expressions
     {
         public NodeAddition(Node lhs, Node rhs) : base(lhs, rhs) { }
 
-        public override VariableValue Evaluate(IContext context)
+        protected override VariableValue EvaluateInternal(IContext context)
         {
-            try
-            {
-                return LHS.Evaluate(context) + RHS.Evaluate(context);
-            }
-            catch (ArithmeticException)
-            {
-                throw new NodeEvaluateException(this);
-            }
+            return LHS.Evaluate(context) + RHS.Evaluate(context);
         }
 
-        public override Node Reduce()
+        protected override Node ReduceInternal()
         {
             ReduceLHS();
             ReduceRHS();
 
             if (LHS is NodeValue lhs && RHS is NodeValue rhs)
             {
-                try
-                {
-                    return new NodeValue(lhs.Value + rhs.Value);
-                }
-                catch (ArithmeticException)
-                {
-                    throw new NodeReduceException(this);
-                }
+                return new NodeValue(lhs.Value + rhs.Value);
             }
 
             return this;
@@ -279,33 +263,19 @@ namespace TEGS.Expressions
     {
         public NodeSubtraction(Node lhs, Node rhs) : base(lhs, rhs) { }
 
-        public override VariableValue Evaluate(IContext context)
+        protected override VariableValue EvaluateInternal(IContext context)
         {
-            try
-            {
-                return LHS.Evaluate(context) - RHS.Evaluate(context);
-            }
-            catch (ArithmeticException)
-            {
-                throw new NodeEvaluateException(this);
-            }
+            return LHS.Evaluate(context) - RHS.Evaluate(context);
         }
 
-        public override Node Reduce()
+        protected override Node ReduceInternal()
         {
             ReduceLHS();
             ReduceRHS();
 
             if (LHS is NodeValue lhs && RHS is NodeValue rhs)
             {
-                try
-                {
-                    return new NodeValue(lhs.Value - rhs.Value);
-                }
-                catch (ArithmeticException)
-                {
-                    throw new NodeReduceException(this);
-                }
+                return new NodeValue(lhs.Value - rhs.Value);
             }
 
             return this;
@@ -316,33 +286,19 @@ namespace TEGS.Expressions
     {
         public NodeMultiplication(Node lhs, Node rhs) : base(lhs, rhs) { }
 
-        public override VariableValue Evaluate(IContext context)
+        protected override VariableValue EvaluateInternal(IContext context)
         {
-            try
-            {
-                return LHS.Evaluate(context) * RHS.Evaluate(context);
-            }
-            catch (ArithmeticException)
-            {
-                throw new NodeEvaluateException(this);
-            }
+            return LHS.Evaluate(context) * RHS.Evaluate(context);
         }
 
-        public override Node Reduce()
+        protected override Node ReduceInternal()
         {
             ReduceLHS();
             ReduceRHS();
 
             if (LHS is NodeValue lhs && RHS is NodeValue rhs)
             {
-                try
-                {
-                    return new NodeValue(lhs.Value * rhs.Value);
-                }
-                catch (ArithmeticException)
-                {
-                    throw new NodeReduceException(this);
-                }
+                return new NodeValue(lhs.Value * rhs.Value);
             }
 
             return this;
@@ -353,33 +309,19 @@ namespace TEGS.Expressions
     {
         public NodeDivision(Node lhs, Node rhs) : base(lhs, rhs) { }
 
-        public override VariableValue Evaluate(IContext context)
+        protected override VariableValue EvaluateInternal(IContext context)
         {
-            try
-            {
-                return LHS.Evaluate(context) / RHS.Evaluate(context);
-            }
-            catch (ArithmeticException)
-            {
-                throw new NodeEvaluateException(this);
-            }
+            return LHS.Evaluate(context) / RHS.Evaluate(context);
         }
 
-        public override Node Reduce()
+        protected override Node ReduceInternal()
         {
             ReduceLHS();
             ReduceRHS();
 
             if (LHS is NodeValue lhs && RHS is NodeValue rhs)
             {
-                try
-                {
-                    return new NodeValue(lhs.Value / rhs.Value);
-                }
-                catch (ArithmeticException)
-                {
-                    throw new NodeReduceException(this);
-                }
+                return new NodeValue(lhs.Value / rhs.Value);
             }
 
             return this;
@@ -390,33 +332,19 @@ namespace TEGS.Expressions
     {
         public NodeLessThan(Node lhs, Node rhs) : base(lhs, rhs) { }
 
-        public override VariableValue Evaluate(IContext context)
+        protected override VariableValue EvaluateInternal(IContext context)
         {
-            try
-            {
-                return new VariableValue(LHS.Evaluate(context) < RHS.Evaluate(context));
-            }
-            catch (ArithmeticException)
-            {
-                throw new NodeEvaluateException(this);
-            }
+            return new VariableValue(LHS.Evaluate(context) < RHS.Evaluate(context));
         }
 
-        public override Node Reduce()
+        protected override Node ReduceInternal()
         {
             ReduceLHS();
             ReduceRHS();
 
             if (LHS is NodeValue lhs && RHS is NodeValue rhs)
             {
-                try
-                {
-                    return new NodeValue(new VariableValue(lhs.Value < rhs.Value));
-                }
-                catch (ArithmeticException)
-                {
-                    throw new NodeReduceException(this);
-                }
+                return new NodeValue(new VariableValue(lhs.Value < rhs.Value));
             }
 
             return this;
@@ -427,33 +355,19 @@ namespace TEGS.Expressions
     {
         public NodeGreaterThan(Node lhs, Node rhs) : base(lhs, rhs) { }
 
-        public override VariableValue Evaluate(IContext context)
+        protected override VariableValue EvaluateInternal(IContext context)
         {
-            try
-            {
-                return new VariableValue(LHS.Evaluate(context) > RHS.Evaluate(context));
-            }
-            catch (ArithmeticException)
-            {
-                throw new NodeEvaluateException(this);
-            }
+            return new VariableValue(LHS.Evaluate(context) > RHS.Evaluate(context));
         }
 
-        public override Node Reduce()
+        protected override Node ReduceInternal()
         {
             ReduceLHS();
             ReduceRHS();
 
             if (LHS is NodeValue lhs && RHS is NodeValue rhs)
             {
-                try
-                {
-                    return new NodeValue(new VariableValue(lhs.Value > rhs.Value));
-                }
-                catch (ArithmeticException)
-                {
-                    throw new NodeReduceException(this);
-                }
+                return new NodeValue(new VariableValue(lhs.Value > rhs.Value));
             }
 
             return this;
@@ -464,33 +378,19 @@ namespace TEGS.Expressions
     {
         public NodeLessThanEquals(Node lhs, Node rhs) : base(lhs, rhs) { }
 
-        public override VariableValue Evaluate(IContext context)
+        protected override VariableValue EvaluateInternal(IContext context)
         {
-            try
-            {
-                return new VariableValue(LHS.Evaluate(context) <= RHS.Evaluate(context));
-            }
-            catch (ArithmeticException)
-            {
-                throw new NodeEvaluateException(this);
-            }
+            return new VariableValue(LHS.Evaluate(context) <= RHS.Evaluate(context));
         }
 
-        public override Node Reduce()
+        protected override Node ReduceInternal()
         {
             ReduceLHS();
             ReduceRHS();
 
             if (LHS is NodeValue lhs && RHS is NodeValue rhs)
             {
-                try
-                {
-                    return new NodeValue(new VariableValue(lhs.Value <= rhs.Value));
-                }
-                catch (ArithmeticException)
-                {
-                    throw new NodeReduceException(this);
-                }
+                return new NodeValue(new VariableValue(lhs.Value <= rhs.Value));
             }
 
             return this;
@@ -501,33 +401,19 @@ namespace TEGS.Expressions
     {
         public NodeGreaterThanEquals(Node lhs, Node rhs) : base(lhs, rhs) { }
 
-        public override VariableValue Evaluate(IContext context)
+        protected override VariableValue EvaluateInternal(IContext context)
         {
-            try
-            {
-                return new VariableValue(LHS.Evaluate(context) >= RHS.Evaluate(context));
-            }
-            catch (ArithmeticException)
-            {
-                throw new NodeEvaluateException(this);
-            }
+            return new VariableValue(LHS.Evaluate(context) >= RHS.Evaluate(context));
         }
 
-        public override Node Reduce()
+        protected override Node ReduceInternal()
         {
             ReduceLHS();
             ReduceRHS();
 
             if (LHS is NodeValue lhs && RHS is NodeValue rhs)
             {
-                try
-                {
-                    return new NodeValue(new VariableValue(lhs.Value >= rhs.Value));
-                }
-                catch (ArithmeticException)
-                {
-                    throw new NodeReduceException(this);
-                }
+                return new NodeValue(new VariableValue(lhs.Value >= rhs.Value));
             }
 
             return this;
@@ -538,33 +424,19 @@ namespace TEGS.Expressions
     {
         public NodeEquals(Node lhs, Node rhs) : base(lhs, rhs) { }
 
-        public override VariableValue Evaluate(IContext context)
+        protected override VariableValue EvaluateInternal(IContext context)
         {
-            try
-            {
-                return new VariableValue(LHS.Evaluate(context) == RHS.Evaluate(context));
-            }
-            catch (ArithmeticException)
-            {
-                throw new NodeEvaluateException(this);
-            }
+            return new VariableValue(LHS.Evaluate(context) == RHS.Evaluate(context));
         }
 
-        public override Node Reduce()
+        protected override Node ReduceInternal()
         {
             ReduceLHS();
             ReduceRHS();
 
             if (LHS is NodeValue lhs && RHS is NodeValue rhs)
             {
-                try
-                {
-                    return new NodeValue(new VariableValue(lhs.Value == rhs.Value));
-                }
-                catch (ArithmeticException)
-                {
-                    throw new NodeReduceException(this);
-                }
+                return new NodeValue(new VariableValue(lhs.Value == rhs.Value));
             }
 
             return this;
@@ -575,33 +447,19 @@ namespace TEGS.Expressions
     {
         public NodeNotEquals(Node lhs, Node rhs) : base(lhs, rhs) { }
 
-        public override VariableValue Evaluate(IContext context)
+        protected override VariableValue EvaluateInternal(IContext context)
         {
-            try
-            {
-                return new VariableValue(LHS.Evaluate(context) != RHS.Evaluate(context));
-            }
-            catch (ArithmeticException)
-            {
-                throw new NodeEvaluateException(this);
-            }
+            return new VariableValue(LHS.Evaluate(context) != RHS.Evaluate(context));
         }
 
-        public override Node Reduce()
+        protected override Node ReduceInternal()
         {
             ReduceLHS();
             ReduceRHS();
 
             if (LHS is NodeValue lhs && RHS is NodeValue rhs)
             {
-                try
-                {
-                    return new NodeValue(new VariableValue(lhs.Value != rhs.Value));
-                }
-                catch (ArithmeticException)
-                {
-                    throw new NodeReduceException(this);
-                }
+                return new NodeValue(new VariableValue(lhs.Value != rhs.Value));
             }
 
             return this;
@@ -612,33 +470,19 @@ namespace TEGS.Expressions
     {
         public NodeAnd(Node lhs, Node rhs) : base(lhs, rhs) { }
 
-        public override VariableValue Evaluate(IContext context)
+        protected override VariableValue EvaluateInternal(IContext context)
         {
-            try
-            {
-                return new VariableValue(LHS.Evaluate(context) & RHS.Evaluate(context));
-            }
-            catch (ArithmeticException)
-            {
-                throw new NodeEvaluateException(this);
-            }
+            return new VariableValue(LHS.Evaluate(context) & RHS.Evaluate(context));
         }
 
-        public override Node Reduce()
+        protected override Node ReduceInternal()
         {
             ReduceLHS();
             ReduceRHS();
 
             if (LHS is NodeValue lhs && RHS is NodeValue rhs)
             {
-                try
-                {
-                    return new NodeValue(new VariableValue(lhs.Value & rhs.Value));
-                }
-                catch (ArithmeticException)
-                {
-                    throw new NodeReduceException(this);
-                }
+                return new NodeValue(new VariableValue(lhs.Value & rhs.Value));
             }
 
             return this;
@@ -649,33 +493,19 @@ namespace TEGS.Expressions
     {
         public NodeOr(Node lhs, Node rhs) : base(lhs, rhs) { }
 
-        public override VariableValue Evaluate(IContext context)
+        protected override VariableValue EvaluateInternal(IContext context)
         {
-            try
-            {
-                return new VariableValue(LHS.Evaluate(context) | RHS.Evaluate(context));
-            }
-            catch (ArithmeticException)
-            {
-                throw new NodeEvaluateException(this);
-            }
+            return new VariableValue(LHS.Evaluate(context) | RHS.Evaluate(context));
         }
 
-        public override Node Reduce()
+        protected override Node ReduceInternal()
         {
             ReduceLHS();
             ReduceRHS();
 
             if (LHS is NodeValue lhs && RHS is NodeValue rhs)
             {
-                try
-                {
-                    return new NodeValue(new VariableValue(lhs.Value | rhs.Value));
-                }
-                catch (ArithmeticException)
-                {
-                    throw new NodeReduceException(this);
-                }
+                return new NodeValue(new VariableValue(lhs.Value | rhs.Value));
             }
 
             return this;
@@ -686,33 +516,19 @@ namespace TEGS.Expressions
     {
         public NodeConditionalAnd(Node lhs, Node rhs) : base(lhs, rhs) { }
 
-        public override VariableValue Evaluate(IContext context)
+        protected override VariableValue EvaluateInternal(IContext context)
         {
-            try
-            {
-                return LHS.Evaluate(context) ? RHS.Evaluate(context) : VariableValue.False;
-            }
-            catch (ArithmeticException)
-            {
-                throw new NodeEvaluateException(this);
-            }
+            return LHS.Evaluate(context) ? RHS.Evaluate(context) : VariableValue.False;
         }
 
-        public override Node Reduce()
+        protected override Node ReduceInternal()
         {
             ReduceLHS();
             ReduceRHS();
 
             if (LHS is NodeValue lhs && RHS is NodeValue rhs)
             {
-                try
-                {
-                    return new NodeValue(lhs.Value ? rhs.Value : VariableValue.False);
-                }
-                catch (ArithmeticException)
-                {
-                    throw new NodeReduceException(this);
-                }
+                return new NodeValue(lhs.Value ? rhs.Value : VariableValue.False);
             }
 
             return this;
@@ -723,33 +539,19 @@ namespace TEGS.Expressions
     {
         public NodeConditionalOr(Node lhs, Node rhs) : base(lhs, rhs) { }
 
-        public override VariableValue Evaluate(IContext context)
+        protected override VariableValue EvaluateInternal(IContext context)
         {
-            try
-            {
-                return LHS.Evaluate(context) ? VariableValue.True : RHS.Evaluate(context);
-            }
-            catch (ArithmeticException)
-            {
-                throw new NodeEvaluateException(this);
-            }
+            return LHS.Evaluate(context) ? VariableValue.True : RHS.Evaluate(context);
         }
 
-        public override Node Reduce()
+        protected override Node ReduceInternal()
         {
             ReduceLHS();
             ReduceRHS();
 
             if (LHS is NodeValue lhs && RHS is NodeValue rhs)
             {
-                try
-                {
-                    return new NodeValue(lhs.Value ? VariableValue.True : rhs.Value);
-                }
-                catch (ArithmeticException)
-                {
-                    throw new NodeReduceException(this);
-                }
+                return new NodeValue(lhs.Value ? VariableValue.True : rhs.Value);
             }
 
             return this;
@@ -760,26 +562,15 @@ namespace TEGS.Expressions
 
     #region Exceptions
 
-    public class NodeEvaluateException : Exception
+    public class NodeException : Exception
     {
         public Node Node { get; private set; }
 
-        public NodeEvaluateException(Node node) : base()
+        public NodeException(Node node, Exception innerException) : base("", innerException)
         {
             Node = node ?? throw new ArgumentNullException(nameof(node));
         }
     }
-
-    public class NodeReduceException : Exception
-    {
-        public Node Node { get; private set; }
-
-        public NodeReduceException(Node node) : base()
-        {
-            Node = node ?? throw new ArgumentNullException(nameof(node));
-        }
-    }
-
 
     #endregion
 }
