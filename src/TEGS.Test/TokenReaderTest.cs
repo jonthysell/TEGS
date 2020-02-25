@@ -38,10 +38,10 @@ namespace TEGS.Test
     public class TokenReaderTest
     {
         [TestMethod]
-        public void TokenReader_EmptyValidTest() => TokenReader_ValidTest("", new [] { TokenType.End });
+        public void TokenReader_EmptyValidTest() => TokenReader_ValidTest("", new[] { TokenType.End });
 
         [TestMethod]
-        public void TokenReader_WhiteSpaceValidTest() => TokenReader_ValidTest(" ", new [] { TokenType.End });
+        public void TokenReader_WhiteSpaceValidTest() => TokenReader_ValidTest(" ", new[] { TokenType.End });
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentNullException))]
@@ -52,25 +52,25 @@ namespace TEGS.Test
         {
             List<TokenizeTestCase> tests = new List<TokenizeTestCase>()
             {
-                new TokenizeTestCase("+", new [] { TokenType.Add, TokenType.End }),
-                new TokenizeTestCase("-", new [] { TokenType.Subtract, TokenType.End }),
-                new TokenizeTestCase("*", new [] { TokenType.Multiply, TokenType.End }),
-                new TokenizeTestCase("/", new [] { TokenType.Divide, TokenType.End }),
-                new TokenizeTestCase("(", new [] { TokenType.OpenParens, TokenType.End }),
-                new TokenizeTestCase(")", new [] { TokenType.CloseParens, TokenType.End }),
-                new TokenizeTestCase(",", new [] { TokenType.Comma, TokenType.End }),
-                new TokenizeTestCase("=", new [] { TokenType.Assign, TokenType.End }),
-                new TokenizeTestCase("<", new [] { TokenType.LessThan, TokenType.End }),
-                new TokenizeTestCase(">", new [] { TokenType.GreaterThan, TokenType.End }),
-                new TokenizeTestCase("<=", new [] { TokenType.LessThanEquals, TokenType.End }),
-                new TokenizeTestCase(">=", new [] { TokenType.GreaterThanEquals, TokenType.End }),
-                new TokenizeTestCase("!", new [] { TokenType.Not, TokenType.End }),
-                new TokenizeTestCase("==", new [] { TokenType.Equals, TokenType.End }),
-                new TokenizeTestCase("!=", new [] { TokenType.NotEquals, TokenType.End }),
-                new TokenizeTestCase("&", new [] { TokenType.And, TokenType.End }),
-                new TokenizeTestCase("|", new [] { TokenType.Or, TokenType.End }),
-                new TokenizeTestCase("&&", new [] { TokenType.ConditionalAnd, TokenType.End }),
-                new TokenizeTestCase("||", new [] { TokenType.ConditionalOr, TokenType.End }),
+                new TokenizeTestCase("+", new[] { TokenType.Add, TokenType.End }),
+                new TokenizeTestCase("-", new[] { TokenType.Subtract, TokenType.End }),
+                new TokenizeTestCase("*", new[] { TokenType.Multiply, TokenType.End }),
+                new TokenizeTestCase("/", new[] { TokenType.Divide, TokenType.End }),
+                new TokenizeTestCase("(", new[] { TokenType.OpenParens, TokenType.End }),
+                new TokenizeTestCase(")", new[] { TokenType.CloseParens, TokenType.End }),
+                new TokenizeTestCase(",", new[] { TokenType.Comma, TokenType.End }),
+                new TokenizeTestCase("=", new[] { TokenType.Assign, TokenType.End }),
+                new TokenizeTestCase("<", new[] { TokenType.LessThan, TokenType.End }),
+                new TokenizeTestCase(">", new[] { TokenType.GreaterThan, TokenType.End }),
+                new TokenizeTestCase("<=", new[] { TokenType.LessThanEquals, TokenType.End }),
+                new TokenizeTestCase(">=", new[] { TokenType.GreaterThanEquals, TokenType.End }),
+                new TokenizeTestCase("!", new[] { TokenType.Not, TokenType.End }),
+                new TokenizeTestCase("==", new[] { TokenType.Equals, TokenType.End }),
+                new TokenizeTestCase("!=", new[] { TokenType.NotEquals, TokenType.End }),
+                new TokenizeTestCase("&", new[] { TokenType.And, TokenType.End }),
+                new TokenizeTestCase("|", new[] { TokenType.Or, TokenType.End }),
+                new TokenizeTestCase("&&", new[] { TokenType.ConditionalAnd, TokenType.End }),
+                new TokenizeTestCase("||", new[] { TokenType.ConditionalOr, TokenType.End }),
             };
 
             TokenReader_ValidTest(tests);
@@ -81,21 +81,21 @@ namespace TEGS.Test
         {
             List<TokenizeTestCase> tests = new List<TokenizeTestCase>()
             {
-                new TokenizeTestCase("false", new [] { TokenType.Value, TokenType.End }),
-                new TokenizeTestCase("true", new [] { TokenType.Value, TokenType.End }),
-                new TokenizeTestCase("0", new [] { TokenType.Value, TokenType.End }),
-                new TokenizeTestCase("1", new [] { TokenType.Value, TokenType.End }),
-                new TokenizeTestCase("0.0", new [] { TokenType.Value, TokenType.End }),
-                new TokenizeTestCase("1.0", new [] { TokenType.Value, TokenType.End }),
-                new TokenizeTestCase(".0", new [] { TokenType.Value, TokenType.End }),
-                new TokenizeTestCase(@"""""", new [] { TokenType.Value, TokenType.End }),
-                new TokenizeTestCase(@""" """, new [] { TokenType.Value, TokenType.End }),
-                new TokenizeTestCase(@"""test""", new [] { TokenType.Value, TokenType.End }),
-                new TokenizeTestCase(@"""\""""", new [] { TokenType.Value, TokenType.End }),
-                new TokenizeTestCase(@"""\r""", new [] { TokenType.Value, TokenType.End }),
-                new TokenizeTestCase(@"""\n""", new [] { TokenType.Value, TokenType.End }),
-                new TokenizeTestCase(@"""\t""", new [] { TokenType.Value, TokenType.End }),
-                new TokenizeTestCase(@"""\r\n""", new [] { TokenType.Value, TokenType.End }),
+                new TokenizeTestCase("false", new[] { TokenType.Value, TokenType.End }),
+                new TokenizeTestCase("true", new[] { TokenType.Value, TokenType.End }),
+                new TokenizeTestCase("0", new[] { TokenType.Value, TokenType.End }),
+                new TokenizeTestCase("1", new[] { TokenType.Value, TokenType.End }),
+                new TokenizeTestCase("0.0", new[] { TokenType.Value, TokenType.End }),
+                new TokenizeTestCase("1.0", new[] { TokenType.Value, TokenType.End }),
+                new TokenizeTestCase(".0", new[] { TokenType.Value, TokenType.End }),
+                new TokenizeTestCase(@"""""", new[] { TokenType.Value, TokenType.End }),
+                new TokenizeTestCase(@""" """, new[] { TokenType.Value, TokenType.End }),
+                new TokenizeTestCase(@"""test""", new[] { TokenType.Value, TokenType.End }),
+                new TokenizeTestCase(@"""\""""", new[] { TokenType.Value, TokenType.End }),
+                new TokenizeTestCase(@"""\r""", new[] { TokenType.Value, TokenType.End }),
+                new TokenizeTestCase(@"""\n""", new[] { TokenType.Value, TokenType.End }),
+                new TokenizeTestCase(@"""\t""", new[] { TokenType.Value, TokenType.End }),
+                new TokenizeTestCase(@"""\r\n""", new[] { TokenType.Value, TokenType.End }),
             };
 
             TokenReader_ValidTest(tests);
@@ -106,14 +106,14 @@ namespace TEGS.Test
         {
             List<TokenizeTestCase> tests = new List<TokenizeTestCase>()
             {
-                new TokenizeTestCase("test", new [] { TokenType.Symbol, TokenType.End }),
-                new TokenizeTestCase("test1", new [] { TokenType.Symbol, TokenType.End }),
-                new TokenizeTestCase("_test", new [] { TokenType.Symbol, TokenType.End }),
-                new TokenizeTestCase("_test1", new [] { TokenType.Symbol, TokenType.End }),
-                new TokenizeTestCase("test.test", new [] { TokenType.Symbol, TokenType.End }),
-                new TokenizeTestCase("test1.test1", new [] { TokenType.Symbol, TokenType.End }),
-                new TokenizeTestCase("_test._test", new [] { TokenType.Symbol, TokenType.End }),
-                new TokenizeTestCase("_test1._test1", new [] { TokenType.Symbol, TokenType.End }),
+                new TokenizeTestCase("test", new[] { TokenType.Symbol, TokenType.End }),
+                new TokenizeTestCase("test1", new[] { TokenType.Symbol, TokenType.End }),
+                new TokenizeTestCase("_test", new[] { TokenType.Symbol, TokenType.End }),
+                new TokenizeTestCase("_test1", new[] { TokenType.Symbol, TokenType.End }),
+                new TokenizeTestCase("test.test", new[] { TokenType.Symbol, TokenType.End }),
+                new TokenizeTestCase("test1.test1", new[] { TokenType.Symbol, TokenType.End }),
+                new TokenizeTestCase("_test._test", new[] { TokenType.Symbol, TokenType.End }),
+                new TokenizeTestCase("_test1._test1", new[] { TokenType.Symbol, TokenType.End }),
             };
 
             TokenReader_ValidTest(tests);
@@ -121,7 +121,7 @@ namespace TEGS.Test
 
         private void TokenReader_ValidTest(string expression, IEnumerable<TokenType> expectedTokens)
         {
-            TokenReader_ValidTest(new [] { new TokenizeTestCase(expression, expectedTokens) });
+            TokenReader_ValidTest(new[] { new TokenizeTestCase(expression, expectedTokens) });
         }
 
         private void TokenReader_ValidTest(IEnumerable<TokenizeTestCase> tests)

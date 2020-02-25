@@ -42,7 +42,7 @@ namespace TEGS
         private readonly Dictionary<string, CustomFunction> _customFunctions = new Dictionary<string, CustomFunction>();
 
         private readonly Dictionary<string, Node> _parsedNodes = new Dictionary<string, Node>();
-        private readonly Dictionary<string, List<Node>> _parsedCode = new Dictionary<string, List<Node>>();
+        private readonly Dictionary<string[], Node[]> _parsedCode = new Dictionary<string[], Node[]>();
 
         public ScriptingHost() { }
 
@@ -66,51 +66,42 @@ namespace TEGS
 
         public void Execute(string code)
         {
-            if (!string.IsNullOrWhiteSpace(code))
+            if (string.IsNullOrWhiteSpace(code))
             {
-                if (!_parsedCode.TryGetValue(code, out List<Node> nodes))
-                {
-                    string[] lines = code.Split(LineSeparators, StringSplitOptions.RemoveEmptyEntries);
+                throw new ArgumentNullException(nameof(code));
+            }
 
-                    nodes = new List<Node>(lines.Length);
-                    for (int i = 0; i < lines.Length; i++)
+            ParseAndEvaluate(code);
+        }
+
+        public void Execute(string[] code)
+        {
+            if (null != code)
+            {
+                if (!_parsedCode.TryGetValue(code, out Node[] nodes))
+                {
+                    nodes = new Node[code.Length];
+                    for (int i = 0; i < code.Length; i++)
                     {
-                        nodes.Add(GetCachedNode(lines[i]));
+                        nodes[i] = GetCachedNode(code[i]);
                     }
                     _parsedCode[code] = nodes;
                 }
-                
-                for (int i = 0; i < nodes.Count; i++)
+
+                for (int i = 0; i < nodes.Length; i++)
                 {
                     nodes[i].Evaluate(this);
                 }
             }
         }
 
-        public bool TryExecute(string code)
-        {
-            try
-            {
-                Execute(code);
-                return true;
-            }
-            catch (Exception ex)
-            {
-                DebugLogger.LogException(ex);
-            }
-
-            return false;
-        }
-
-        private readonly char[] LineSeparators = new char[] { '\r', '\n', ';' };
-
         #endregion
 
         #region Evaluators
 
-        public VariableValue Evaluate(string code, VariableValueType returnType)
+        public VariableValue Evaluate(string code)
         {
-            if (null == code)
+            if (string.IsNullOrEmpty(code))
             {
                 throw new ArgumentNullException(nameof(code));
             }
@@ -120,19 +111,14 @@ namespace TEGS
 
         public VariableValue Evaluate(string code, VariableValue defaultValue)
         {
-            if (!string.IsNullOrEmpty(code) && TryEvaluate(code, defaultValue.Type, out VariableValue value))
-            {
-                return value;
-            }
-
-            return defaultValue;
+            return string.IsNullOrEmpty(code) ? defaultValue : Evaluate(code);
         }
 
-        public bool TryEvaluate(string code, VariableValueType returnType, out VariableValue value)
+        public bool TryEvaluate(string code, out VariableValue value)
         {
             try
             {
-                value = Evaluate(code, returnType);
+                value = Evaluate(code);
                 return true;
             }
             catch (Exception ex)

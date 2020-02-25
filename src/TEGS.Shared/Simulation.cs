@@ -241,7 +241,7 @@ namespace TEGS
             foreach (Edge edge in nextEvent.Target.Edges)
             {
                 // Check condition
-                if (ScriptingHost.Evaluate(edge.Condition, VariableValue.True).BooleanValue)
+                if (ScriptingHost.Evaluate(edge.Condition, VariableValue.True).AsBoolean())
                 {
                     OnEdgeFiring(edge);
 
@@ -251,8 +251,8 @@ namespace TEGS
                     switch (edge.Action)
                     {
                         case EdgeAction.Schedule:
-                            double time = Clock + ScriptingHost.Evaluate(edge.Delay, new VariableValue(Schedule.DefaultDelay)).DoubleValue;
-                            double priority = ScriptingHost.Evaluate(edge.Priority, new VariableValue(Schedule.DefaultPriority)).DoubleValue;
+                            double time = Clock + ScriptingHost.Evaluate(edge.Delay, new VariableValue(Schedule.DefaultDelay)).AsNumber();
+                            double priority = ScriptingHost.Evaluate(edge.Priority, new VariableValue(Schedule.DefaultPriority)).AsNumber();
                             Schedule.Insert(edge.Target, time, priority, parameterValues);
                             break;
                         case EdgeAction.CancelNext:
@@ -335,7 +335,7 @@ namespace TEGS
 
                     for (int i = 0; i < stateVariables.Count; i++)
                     {
-                        values.Add(ScriptingHost.Evaluate(parameterExpressions[i], stateVariables[i].Type));
+                        values.Add(ScriptingHost.Evaluate(parameterExpressions[i]));
                     }
 
                     return values;

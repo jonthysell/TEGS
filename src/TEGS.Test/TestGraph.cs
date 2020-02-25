@@ -54,15 +54,15 @@ namespace TEGS.Test
 
                     Vertex enter = g.AddVertex("ENTER");
                     enter.Description = "Cars enter the line";
-                    enter.Code = "QUEUE = QUEUE + 1";
+                    enter.Code = new[] { "QUEUE = QUEUE + 1" };
 
                     Vertex start = g.AddVertex("START");
                     start.Description = "Service starts";
-                    start.Code = "SERVERS = SERVERS - 1\r\nQUEUE = QUEUE - 1";
+                    start.Code = new[] { "SERVERS = SERVERS - 1", "QUEUE = QUEUE - 1" };
 
                     Vertex leave = g.AddVertex("LEAVE");
                     leave.Description = "Cars leave";
-                    leave.Code = "SERVERS = SERVERS + 1";
+                    leave.Code = new[] { "SERVERS = SERVERS + 1" };
 
                     Edge run_enter = g.AddEdge(run, enter);
                     run_enter.Description = "The car will enter the line";
@@ -114,27 +114,27 @@ namespace TEGS.Test
                     Vertex run = g.AddVertex("RUN", true);
                     run.Description = "The simulation has started";
                     run.AddParameter("QUEUE");
-                    run.Code = "SERVER = 1";
+                    run.Code = new[] { "SERVER = 1" };
 
                     Vertex enter = g.AddVertex("ENTER");
                     enter.Description = "Arrival of a job";
-                    enter.Code = "QUEUE = QUEUE + 1";
+                    enter.Code = new[] { "QUEUE = QUEUE + 1" };
 
                     Vertex start = g.AddVertex("START");
                     start.Description = "Start of Service";
-                    start.Code = "SERVER = 0\r\nQUEUE = QUEUE - 1";
+                    start.Code = new[] { "SERVER = 0", "QUEUE = QUEUE - 1" };
 
                     Vertex leave = g.AddVertex("LEAVE");
                     leave.Description = "End of Service";
-                    leave.Code = "SERVER = 1";
+                    leave.Code = new[] { "SERVER = 1" };
 
                     Vertex fix = g.AddVertex("FIX");
                     fix.Description = "Completion of repair on the machine";
-                    fix.Code = "SERVER = 1";
+                    fix.Code = new[] { "SERVER = 1" };
 
                     Vertex fail = g.AddVertex("FAIL");
                     fail.Description = "The occurrence of a service failure";
-                    fail.Code = "SERVER = -1";
+                    fail.Code = new[] { "SERVER = -1" };
 
                     Edge run_enter = g.AddEdge(run, enter);
                     run_enter.Description = "Initiate the first job arrival";

@@ -75,7 +75,7 @@ namespace TEGS
         }
         private string _description = "";
 
-        public string Code
+        public string[] Code
         {
             get
             {
@@ -83,10 +83,21 @@ namespace TEGS
             }
             set
             {
-                _code = value?.Trim() ?? "";
+                if (null == value)
+                {
+                    _code = null;
+                }
+                else
+                {
+                    _code = new string[value.Length];
+                    for (int i = 0; i < _code.Length; i++)
+                    {
+                        _code[i] = value[i].Trim();
+                    }
+                }
             }
         }
-        private string _code = "";
+        private string[] _code = null;
 
         public IReadOnlyList<string> ParameterNames => _parameterNames;
         private readonly List<string> _parameterNames = new List<string>();
@@ -139,9 +150,21 @@ namespace TEGS
             _parameterNames.RemoveAt(index);
         }
 
+        public string GetCode()
+        {
+            return null != Code ? string.Join(Environment.NewLine, Code) : null;
+        }
+
+        public void SetCode(string code)
+        {
+            Code = code?.Split(LineSeparators, StringSplitOptions.RemoveEmptyEntries);
+        }
+
         public override string ToString()
         {
             return Name;
         }
+
+        private readonly char[] LineSeparators = new char[] { '\r', '\n', ';' };
     }
 }

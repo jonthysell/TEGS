@@ -315,8 +315,9 @@ namespace TEGS
                             Vertex vertex = new Vertex(graph, name, isStartingVertex)
                             {
                                 Description = xmlReader.GetAttribute("description"),
-                                Code = xmlReader.GetAttribute("code")
                             };
+
+                            vertex.SetCode(xmlReader.GetAttribute("code"));
 
                             if (int.TryParse(xmlReader.GetAttribute("x"), out int x))
                             {
@@ -425,7 +426,7 @@ namespace TEGS
                 xmlWriter.WriteAttributeString("id", i.ToString());
                 xmlWriter.WriteAttributeString("name", _verticies[i].Name);
                 xmlWriter.WriteAttributeString("description", _verticies[i].Description);
-                xmlWriter.WriteAttributeString("code", _verticies[i].Code);
+                xmlWriter.WriteAttributeString("code", _verticies[i].GetCode());
 
                 xmlWriter.WriteAttributeString("x", _verticies[i].X.ToString());
                 xmlWriter.WriteAttributeString("y", _verticies[i].Y.ToString());

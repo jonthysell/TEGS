@@ -141,6 +141,23 @@ namespace TEGS
                         }
                     }
                 }
+
+                // Verify code
+                string[] code = v.Code;
+                if (null != code && code.Length > 0)
+                {
+                    for (int i = 0; i < code.Length; i++)
+                    {
+                        try
+                        {
+                            scriptingHost.Execute(code[i]);
+                        }
+                        catch (Exception ex)
+                        {
+                            errors.Add(new InvalidCodeVertexValidationError(v, code[i], ex.Message));
+                        }
+                    }
+                }
             }
 
             if (startingVerticies.Count == 0)
@@ -165,17 +182,66 @@ namespace TEGS
             {
                 if (e.Action == EdgeAction.Schedule)
                 {
-                    if (e.Target.ParameterNames.Count > 0)
+                    var parameterNames = e.Target.ParameterNames;
+                    var parameterExpressions = e.ParameterExpressions;
+
+                    if (parameterNames.Count > 0)
                     {
-                        if (e.ParameterExpressions.Count == 0)
+                        if (parameterExpressions.Count == 0)
                         {
                             errors.Add(new ParametersRequiredEdgeValidationError(e));
                         }
-                        else if (e.ParameterExpressions.Count != e.Target.ParameterNames.Count)
+                        else if (parameterExpressions.Count != e.Target.ParameterNames.Count)
                         {
                             errors.Add(new InvalidParametersEdgeValidationError(e));
                         }
                     }
+
+                    if (parameterExpressions.Count > 0)
+                    {
+                        for (int i = 0; i < parameterExpressions.Count; i++)
+                        {
+                            try
+                            {
+                                var result = scriptingHost.Evaluate(parameterExpressions[i]);
+                                scriptingHost.SetVariable(parameterNames[i], result);
+                            }
+                            catch (Exception ex)
+                            {
+                                errors.Add(new InvalidParameterEdgeValidationError(e, parameterExpressions[i], ex.Message));
+                            }
+                        }
+                    }
+                }
+
+                // Verify condition
+                try
+                {
+                    scriptingHost.Evaluate(e.Condition, VariableValue.True).AsBoolean();
+                }
+                catch (Exception ex)
+                {
+                    errors.Add(new InvalidConditionEdgeValidationError(e, ex.Message));
+                }
+
+                // Verify delay
+                try
+                {
+                    scriptingHost.Evaluate(e.Delay, new VariableValue(Schedule.DefaultDelay)).AsNumber();
+                }
+                catch (Exception ex)
+                {
+                    errors.Add(new InvalidDelayEdgeValidationError(e, ex.Message));
+                }
+
+                // Verify priority
+                try
+                {
+                    scriptingHost.Evaluate(e.Priority, new VariableValue(Schedule.DefaultPriority)).AsNumber();
+                }
+                catch (Exception ex)
+                {
+                    errors.Add(new InvalidPriorityEdgeValidationError(e, ex.Message));
                 }
             }
 

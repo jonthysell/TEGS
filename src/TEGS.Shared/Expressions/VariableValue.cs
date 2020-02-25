@@ -114,6 +114,19 @@ namespace TEGS.Expressions
             return false;
         }
 
+        public bool AsBoolean()
+        {
+            switch (Type)
+            {
+                case VariableValueType.Boolean:
+                    return _value.BooleanValue;
+                default:
+                    break;
+            }
+
+            throw new ValueIsNotABooleanException(this);
+        }
+
         public double AsNumber()
         {
             switch (Type)

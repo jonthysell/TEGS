@@ -146,6 +146,21 @@ namespace TEGS
         }
     }
 
+    public class InvalidCodeVertexValidationError : VertexValidationError
+    {
+        public override string Message => $"Vertex #{Vertex.Id} has invalid code \"{Code}\": {Error}";
+
+        public readonly string Code;
+
+        public readonly string Error;
+
+        public InvalidCodeVertexValidationError(Vertex vertex, string code, string error) : base(vertex)
+        {
+            Code = code;
+            Error = error;
+        }
+    }
+
     #endregion
 
     #region Verticies Validation Errors
@@ -228,6 +243,57 @@ namespace TEGS
         public override string Message => $"Edge #{Edge.Id} from \"{Edge.Source.Name}\" to \"{Edge.Target.Name}\" has invalid parameters.";
 
         public InvalidParametersEdgeValidationError(Edge edge) : base(edge) { }
+    }
+
+    public class InvalidParameterEdgeValidationError : EdgeValidationError
+    {
+        public override string Message => $"Edge #{Edge.Id} from \"{Edge.Source.Name}\" to \"{Edge.Target.Name}\" has invalid parameter  \"{Parameter}\": {Error}";
+
+        public readonly string Parameter;
+
+        public readonly string Error;
+
+        public InvalidParameterEdgeValidationError(Edge edge, string parameter, string error) : base(edge)
+        {
+            Parameter = parameter;
+            Error = error;
+        }
+    }
+
+    public class InvalidConditionEdgeValidationError : EdgeValidationError
+    {
+        public override string Message => $"Edge #{Edge.Id} from \"{Edge.Source.Name}\" to \"{Edge.Target.Name}\" has invalid condition \"{Edge.Condition}\": {Error}";
+
+        public readonly string Error;
+
+        public InvalidConditionEdgeValidationError(Edge edge, string error) : base(edge)
+        {
+            Error = error;
+        }
+    }
+
+    public class InvalidDelayEdgeValidationError : EdgeValidationError
+    {
+        public override string Message => $"Edge #{Edge.Id} from \"{Edge.Source.Name}\" to \"{Edge.Target.Name}\" has invalid delay \"{Edge.Delay}\": {Error}";
+
+        public readonly string Error;
+
+        public InvalidDelayEdgeValidationError(Edge edge, string error) : base(edge)
+        {
+            Error = error;
+        }
+    }
+
+    public class InvalidPriorityEdgeValidationError : EdgeValidationError
+    {
+        public override string Message => $"Edge #{Edge.Id} from \"{Edge.Source.Name}\" to \"{Edge.Target.Name}\" has invalid priority \"{Edge.Priority}\": {Error}";
+
+        public readonly string Error;
+
+        public InvalidPriorityEdgeValidationError(Edge edge, string error) : base(edge)
+        {
+            Error = error;
+        }
     }
 
     #endregion
