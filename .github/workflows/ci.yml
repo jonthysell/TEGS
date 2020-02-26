@@ -1,9 +1,10 @@
 name: TEGS CI
 
-on: [push]
+on: [push, pull_request]
 
 jobs:
   build_and_test:
+    name: Build and Test
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
