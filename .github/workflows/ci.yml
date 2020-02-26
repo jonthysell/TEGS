@@ -4,7 +4,7 @@ on: [push]
 
 jobs:
   build_and_test:
-    runs-on: {{ matrix.os }}
+    runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         configuration: [Debug, Release]
@@ -15,8 +15,8 @@ jobs:
       with:
         dotnet-version: 3.1.101
     - name: Checkout TEGS
-      uses: actions/checkout@v2  
+      uses: actions/checkout@v2
     - name: Build TEGS.sln
-      run: dotnet build --configuration {{ matrix.configuration }} ./src/TEGS.sln
+      run: dotnet build --configuration ${{ matrix.configuration }} ./src/TEGS.sln
     - name: Test TEGS.sln
-      run: dotnet test --configuration {{ matrix.configuration }} --no-build ./src/TEGS.sln
+      run: dotnet test --configuration ${{ matrix.configuration }} --no-build ./src/TEGS.sln
