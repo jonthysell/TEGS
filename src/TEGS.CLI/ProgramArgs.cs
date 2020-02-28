@@ -39,6 +39,13 @@ namespace TEGS.CLI
         }
     }
 
+    public class BuildCommandArgs : ProgramArgs
+    {
+        public StreamWriter OutputWriter { get; set; } = null;
+
+        public BuildCommandArgs(Graph graph) : base(graph) { }
+    }
+
     public class RunCommandArgs : ProgramArgs
     {
         public readonly SimulationArgs SimulationArgs;

@@ -131,6 +131,10 @@ namespace TEGS.CLI
             {
                 switch (command)
                 {
+                    case "build":
+                        ParseBuildArgs();
+                        ExecuteBuildCommand();
+                        break;
                     case "run":
                         ParseRunArgs();
                         ExecuteRunCommand();
@@ -172,6 +176,40 @@ namespace TEGS.CLI
                 ShowHelp(command);
             }
         }
+
+        #region Build Command
+
+        private static void ShowBuildHelp()
+        {
+            Console.WriteLine("Usage: tegs build graph.xml");
+            Console.WriteLine();
+        }
+
+        private void ParseBuildArgs()
+        {
+            Graph graph = null;
+
+            try
+            {
+                string graphFile = Arguments[^1];
+
+                using FileStream fs = new FileStream(graphFile, FileMode.Open);
+                graph = Graph.LoadXml(fs);
+            }
+            catch (Exception ex)
+            {
+                throw new ParseArgumentsException("Unable to load graph.", ex);
+            }
+
+            ProgramArgs = new BuildCommandArgs(graph);
+        }
+
+        private void ExecuteBuildCommand()
+        {
+
+        }
+
+        #endregion
 
         #region Run Command
 
@@ -429,26 +467,29 @@ namespace TEGS.CLI
 
         private void ShowHelp(string command = null)
         {
-            if (command == "run")
+            switch (command)
             {
-                ShowRunHelp();
-            }
-            else if (command == "validate")
-            {
-                ShowValidateHelp();
-            }
-            else
-            {
-                Console.WriteLine("Usage: tegs [--version] [--help]");
-                Console.WriteLine("            <command> [<args>]");
-                Console.WriteLine();
+                case "build":
+                    ShowBuildHelp();
+                    break;
+                case "run":
+                    ShowRunHelp();
+                    break;
+                case "validate":
+                    ShowValidateHelp();
+                    break;
+                default:
+                    Console.WriteLine("Usage: tegs [--version] [--help]");
+                    Console.WriteLine("            <command> [<args>]");
+                    Console.WriteLine();
 
-                Console.WriteLine("Commands:");
-                Console.WriteLine("run       Run a simulation with a given graph");
-                Console.WriteLine("validate  Validate a given graph");
-                Console.WriteLine();
+                    Console.WriteLine("Commands:");
+                    Console.WriteLine("run       Run a simulation with a given graph");
+                    Console.WriteLine("validate  Validate a given graph");
+                    Console.WriteLine();
 
-                Console.WriteLine("See 'tegs help <command>' to see the arguments for that command.");
+                    Console.WriteLine("See 'tegs help <command>' to see the arguments for that command.");
+                    break;
             }
         }
 
