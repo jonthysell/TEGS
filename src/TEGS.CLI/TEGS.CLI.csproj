@@ -7,6 +7,6 @@
     <AssemblyName>tegs</AssemblyName>
   </PropertyGroup>
 
-  <Import Project="..\TEGS.Shared\TEGS.Shared.projitems" Label="Shared" />
+  <Import Project="..\TEGS\TEGS.projitems" Label="Shared" />
 
 </Project>

@@ -29,7 +29,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace TEGS.Expressions
+namespace TEGS
 {
     public class Parser
     {

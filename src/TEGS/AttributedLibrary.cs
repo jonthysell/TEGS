@@ -27,9 +27,7 @@
 using System;
 using System.Reflection;
 
-using TEGS.Expressions;
-
-namespace TEGS.Libraries
+namespace TEGS
 {
     [AttributeUsage(AttributeTargets.Class)]
     public class LibraryAttribute : Attribute

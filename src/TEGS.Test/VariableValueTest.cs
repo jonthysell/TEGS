@@ -26,8 +26,6 @@
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-using TEGS.Expressions;
-
 namespace TEGS.Test
 {
     [TestClass]

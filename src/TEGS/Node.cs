@@ -28,7 +28,7 @@
 
 using System;
 
-namespace TEGS.Expressions
+namespace TEGS
 {
     public abstract class Node
     {

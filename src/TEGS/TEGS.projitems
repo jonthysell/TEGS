@@ -9,29 +9,29 @@
     <Import_RootNamespace>TEGS</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="$(MSBuildThisFileDirectory)Libraries\ReflectionLibraryBase.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Libraries\BaseLibraries.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Libraries\SystemLibrary.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Libraries\StringLibrary.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Libraries\AttributedLibrary.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ReflectionLibraryBase.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)BaseLibraries.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SystemLibrary.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)StringLibrary.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)AttributedLibrary.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)DebugLogger.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Edge.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Expressions\IContext.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)IContext.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Graph.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Libraries\ILibrary.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ILibrary.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)RandomExtensions.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Expressions\Node.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Node.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Schedule.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ScheduledEvent.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ScriptingHost.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Expressions\Parser.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Expressions\TokenReader.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Parser.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)TokenReader.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Simulation.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SimulationArgs.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)TraceExpression.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ValidationErrors.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Validator.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Expressions\VariableValue.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)VariableValue.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)StateVariable.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)StopCondition.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Vertex.cs" />

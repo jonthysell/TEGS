@@ -27,9 +27,7 @@
 using System;
 using System.Reflection;
 
-using TEGS.Expressions;
-
-namespace TEGS.Libraries
+namespace TEGS
 {
     public class SystemLibrary : ReflectionLibraryBase
     {

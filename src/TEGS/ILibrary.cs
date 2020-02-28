@@ -1,5 +1,5 @@
 ﻿// 
-// StringLibrary.cs
+// ILibrary.cs
 //  
 // Author:
 //       Jon Thysell <thysell@gmail.com>
@@ -24,24 +24,14 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
+using System.Collections.Generic;
 
-using TEGS.Expressions;
-
-namespace TEGS.Libraries
+namespace TEGS
 {
-    [Library(Name = "String")]
-    public static class StringLibrary
+    public interface ILibrary
     {
-        [LibraryFunction]
-        public static VariableValue Length(VariableValue[] args)
-        {
-            if (args != null && args.Length == 1 && args[0].Type == VariableValueType.String)
-            {
-                return new VariableValue(args[0].StringValue.Length);
-            }
-
-            throw new ArgumentOutOfRangeException(nameof(args));
-        }
+        string Name { get; }
+        IEnumerable<KeyValuePair<string, VariableValue>> GetConstants();
+        IEnumerable<KeyValuePair<string, CustomFunction>> GetCustomFunctions();
     }
 }

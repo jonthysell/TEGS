@@ -13,7 +13,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "NativeExamples", "NativeExa
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TEGS.CLI", "TEGS.CLI\TEGS.CLI.csproj", "{5897F2C0-9F57-4E15-9EEA-6D0444A1965F}"
 EndProject
-Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "TEGS.Shared", "TEGS.Shared\TEGS.Shared.shproj", "{CE581CF7-25A3-461F-B5B3-691086B847CA}"
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "TEGS", "TEGS\TEGS.shproj", "{CE581CF7-25A3-461F-B5B3-691086B847CA}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TEGS.Test", "TEGS.Test\TEGS.Test.csproj", "{0C3B897B-DD3E-437E-94E9-ADF113FDA360}"
 EndProject
@@ -28,7 +28,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
-		TEGS.Shared\TEGS.Shared.projitems*{ce581cf7-25a3-461f-b5b3-691086b847ca}*SharedItemsImports = 13
+		TEGS\TEGS.projitems*{ce581cf7-25a3-461f-b5b3-691086b847ca}*SharedItemsImports = 13
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

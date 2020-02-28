@@ -1,10 +1,10 @@
 ﻿// 
-// ILibrary.cs
+// TraceExpression.cs
 //  
 // Author:
 //       Jon Thysell <thysell@gmail.com>
 // 
-// Copyright (c) 2020 Jon Thysell <http://jonthysell.com>
+// Copyright (c) 2019, 2020 Jon Thysell <http://jonthysell.com>
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,16 +24,42 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System.Collections.Generic;
+using System;
 
-using TEGS.Expressions;
-
-namespace TEGS.Libraries
+namespace TEGS
 {
-    public interface ILibrary
+    public abstract class TraceExpression
     {
-        string Name { get; }
-        IEnumerable<KeyValuePair<string, VariableValue>> GetConstants();
-        IEnumerable<KeyValuePair<string, CustomFunction>> GetCustomFunctions();
+        public readonly string Label;
+
+        public VariableValue Value;
+
+        public TraceExpression(string label, VariableValueType type)
+        {
+            if (string.IsNullOrWhiteSpace(label))
+            {
+                throw new ArgumentNullException(nameof(label));
+            }
+
+            Label = label.Trim();
+            Value = new VariableValue(type);
+        }
+
+        public abstract void Evaluate(ScriptingHost scriptingHost);
+    }
+
+    public class StateVariableTraceExpression : TraceExpression
+    {
+        public readonly StateVariable StateVariable;
+
+        public StateVariableTraceExpression(StateVariable stateVariable) : base(stateVariable.Name, stateVariable.Type)
+        {
+            StateVariable = stateVariable ?? throw new ArgumentNullException(nameof(stateVariable));
+        }
+
+        public override void Evaluate(ScriptingHost scriptingHost)
+        {
+            Value = scriptingHost.Get(StateVariable);
+        }
     }
 }

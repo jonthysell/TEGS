@@ -1,10 +1,10 @@
 ﻿// 
-// TraceExpression.cs
+// IContext.cs
 //  
 // Author:
 //       Jon Thysell <thysell@gmail.com>
 // 
-// Copyright (c) 2019, 2020 Jon Thysell <http://jonthysell.com>
+// Copyright (c) 2020 Jon Thysell <http://jonthysell.com>
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,44 +24,16 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
-
-using TEGS.Expressions;
+// Adapted from https://medium.com/@toptensoftware/writing-a-simple-math-expression-engine-in-c-d414de18d4ce
 
 namespace TEGS
 {
-    public abstract class TraceExpression
+    public interface IContext
     {
-        public readonly string Label;
+        VariableValue GetVariable(string name);
 
-        public VariableValue Value;
+        void SetVariable(string name, VariableValue value);
 
-        public TraceExpression(string label, VariableValueType type)
-        {
-            if (string.IsNullOrWhiteSpace(label))
-            {
-                throw new ArgumentNullException(nameof(label));
-            }
-
-            Label = label.Trim();
-            Value = new VariableValue(type);
-        }
-
-        public abstract void Evaluate(ScriptingHost scriptingHost);
-    }
-
-    public class StateVariableTraceExpression : TraceExpression
-    {
-        public readonly StateVariable StateVariable;
-
-        public StateVariableTraceExpression(StateVariable stateVariable) : base(stateVariable.Name, stateVariable.Type)
-        {
-            StateVariable = stateVariable ?? throw new ArgumentNullException(nameof(stateVariable));
-        }
-
-        public override void Evaluate(ScriptingHost scriptingHost)
-        {
-            Value = scriptingHost.Get(StateVariable);
-        }
+        VariableValue CallFunction(string name, VariableValue[] arguments);
     }
 }

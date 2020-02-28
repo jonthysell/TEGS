@@ -30,8 +30,6 @@ using System.Collections.Generic;
 using System.Text;
 using System.Xml;
 
-using TEGS.Expressions;
-
 namespace TEGS
 {
     public class Graph

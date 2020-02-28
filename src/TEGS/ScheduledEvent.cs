@@ -27,8 +27,6 @@
 using System;
 using System.Collections.Generic;
 
-using TEGS.Expressions;
-
 namespace TEGS
 {
     public struct ScheduledEvent : IComparable<ScheduledEvent>

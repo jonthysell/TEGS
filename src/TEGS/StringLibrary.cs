@@ -1,5 +1,5 @@
 ﻿// 
-// IContext.cs
+// StringLibrary.cs
 //  
 // Author:
 //       Jon Thysell <thysell@gmail.com>
@@ -24,16 +24,22 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-// Adapted from https://medium.com/@toptensoftware/writing-a-simple-math-expression-engine-in-c-d414de18d4ce
+using System;
 
-namespace TEGS.Expressions
+namespace TEGS
 {
-    public interface IContext
+    [Library(Name = "String")]
+    public static class StringLibrary
     {
-        VariableValue GetVariable(string name);
+        [LibraryFunction]
+        public static VariableValue Length(VariableValue[] args)
+        {
+            if (args != null && args.Length == 1 && args[0].Type == VariableValueType.String)
+            {
+                return new VariableValue(args[0].StringValue.Length);
+            }
 
-        void SetVariable(string name, VariableValue value);
-
-        VariableValue CallFunction(string name, VariableValue[] arguments);
+            throw new ArgumentOutOfRangeException(nameof(args));
+        }
     }
 }

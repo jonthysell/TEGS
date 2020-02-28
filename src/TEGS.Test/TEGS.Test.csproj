@@ -22,6 +22,6 @@
     <PackageReference Include="coverlet.collector" Version="1.0.1" />
   </ItemGroup>
 
-  <Import Project="..\TEGS.Shared\TEGS.Shared.projitems" Label="Shared" />
+  <Import Project="..\TEGS\TEGS.projitems" Label="Shared" />
 
 </Project>

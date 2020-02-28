@@ -26,7 +26,7 @@
 
 using System;
 
-namespace TEGS.Libraries
+namespace TEGS
 {
     public static class BaseLibraries
     {

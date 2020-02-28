@@ -27,8 +27,6 @@
 using System;
 using System.Collections.Generic;
 
-using TEGS.Expressions;
-
 namespace TEGS
 {
     public delegate void ScheduleChangedEventHandler(object sender, ScheduleChangedEventArgs e);
