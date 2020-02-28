@@ -45,7 +45,7 @@ namespace TEGS.Test
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentNullException))]
-        public void Validator_NullInvalidTest() => CodeGenerator.Generate(null);
+        public void CodeGenerator_NullInvalidTest() => CodeGenerator.Generate(null);
 
         private static void CodeGenerator_ValidTest(Graph graph)
         {

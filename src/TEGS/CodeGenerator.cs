@@ -43,19 +43,24 @@ namespace TEGS
             int indent = 0;
 
             // Header
-
             AddHeader(sb, graph);
-            sb.AppendLine();
 
             // Usings
-            AddUsings(sb);
             sb.AppendLine();
+            AddUsings(sb);
 
             // Namespace
+            sb.AppendLine();
             StartBlock(sb, "namespace TEGS", ref indent);
 
             // Program
             AddProgramClass(sb, ref indent);
+
+            sb.AppendLine();
+            AddScheduleEntryStruct(sb, ref indent);
+
+            sb.AppendLine();
+            AddSimulationArgsStruct(sb, ref indent);
 
             EndBlock(sb, ref indent); // namespace
 
@@ -141,7 +146,63 @@ class Program
 
         return simArgs;
     }
-}";
+}
+";
+
+        #endregion
+
+        #region ScheduleEntry
+
+        private static void AddScheduleEntryStruct(StringBuilder sb, ref int indent)
+        {
+            WriteCode(sb, ScheduleEntryStruct, ref indent);
+        }
+
+        private const string ScheduleEntryStruct = @"
+struct ScheduleEntry : IComparable<ScheduleEntry>
+{
+    public double Time;
+    public double Priority;
+    public EventType EventType;
+    public int[] ParameterValues;
+
+    public int CompareTo(ScheduleEntry other)
+    {
+        int timeCompare = Time.CompareTo(other.Time);
+
+        if (timeCompare != 0)
+        {
+            return timeCompare;
+        }
+
+        return Priority.CompareTo(other.Priority);
+    }
+
+    public override string ToString()
+    {
+        return $""{ EventType.ToString() } @ { Time:f3 }"";
+    }
+}
+";
+
+        #endregion
+
+        #region SimulationArgs
+
+        private static void AddSimulationArgsStruct(StringBuilder sb, ref int indent)
+        {
+            WriteCode(sb, SimulationArgsStruct, ref indent);
+        }
+
+        private const string SimulationArgsStruct = @"
+struct SimulationArgs
+{
+    public int Seed;
+    public int[] ParameterValues;
+    public StopCondition StopCondition;
+}
+";
+
         #endregion
 
         #region Helpers
