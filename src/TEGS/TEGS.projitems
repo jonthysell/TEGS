@@ -9,6 +9,8 @@
     <Import_RootNamespace>TEGS</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)AppInfo.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)CodeGenerator.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ReflectionLibraryBase.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)BaseLibraries.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SystemLibrary.cs" />

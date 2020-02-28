@@ -27,7 +27,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Reflection;
 using System.Text;
 
 namespace TEGS.CLI
@@ -457,7 +456,7 @@ namespace TEGS.CLI
 
         private void ShowVersion()
         {
-            Console.WriteLine($"tegs v{ Assembly.GetEntryAssembly().GetName().Version }");
+            Console.WriteLine($"{ AppInfo.Name } v{ AppInfo.Version }");
             Console.WriteLine();
         }
 
