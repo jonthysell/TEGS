@@ -102,39 +102,58 @@ namespace TEGS
         {
             StartBlock(sb, "class Simulation : SimulationBase", ref indent);
 
-            WriteCode(sb, $"protected override int StartingEventId => { graph.StartingVertex.Id };", ref indent);
+            Vertex startingVertex = graph.StartingVertex;
 
-            WriteCode(sb, "// State Variables", ref indent);
+            WriteCode(sb, $"protected override int StartingEventId => { startingVertex.Id };", ref indent);
 
-            for (int i = 0; i < graph.StateVariables.Count; i++)
+            if (graph.StateVariables.Count > 0)
             {
-                StateVariable stateVariable = graph.StateVariables[i];
+                sb.AppendLine();
+                WriteCode(sb, "// State Variables", ref indent);
 
-                string type = null;
-                switch (stateVariable.Type)
+                for (int i = 0; i < graph.StateVariables.Count; i++)
                 {
-                    case VariableValueType.Boolean:
-                        type = "bool";
-                        break;
-                    case VariableValueType.Integer:
-                        type = "int";
-                        break;
-                    case VariableValueType.Double:
-                        type = "double";
-                        break;
-                    case VariableValueType.String:
-                        type = "string";
-                        break;
+                    StateVariable stateVariable = graph.StateVariables[i];
+                    WriteCode(sb, $"{ GetStateVariableType(stateVariable) } { stateVariable.Name } = default;", ref indent);
                 }
-
-                WriteCode(sb, $"{ type } { stateVariable.Name } = default;", ref indent);
             }
 
             sb.AppendLine();
             WriteCode(sb, "public Simulation() { }", ref indent);
 
+            if (startingVertex.ParameterNames.Count > 0)
+            {
+                sb.AppendLine();
+
+                StringBuilder tupleValuesSB = new StringBuilder();
+
+                for (int i = 0; i < startingVertex.ParameterNames.Count; i++)
+                {
+                    if (i > 0)
+                    {
+                        tupleValuesSB.Append(", ");
+                    }
+
+                    string type = GetStateVariableType(graph.GetStateVariable(startingVertex.ParameterNames[i]));
+
+                    switch (type)
+                    {
+                        case "bool":
+                        case "int":
+                        case "double":
+                            tupleValuesSB.Append($"{ type }.Parse(startParameters[{ i }])");
+                            break;
+                        default:
+                            tupleValuesSB.Append($"startParameters[{ i }]");
+                            break;
+                    }
+                }
+
+                WriteCode(sb, $"protected override dynamic ParseStartParameters(string[] startParameters) => Tuple.Create({ tupleValuesSB.ToString() });", ref indent);
+            }
+
             sb.AppendLine();
-            StartBlock(sb, "protected override void ProcessEvent(int eventId, int[] parameterValues)", ref indent);
+            StartBlock(sb, "protected override void ProcessEvent(int eventId, dynamic parameterValues)", ref indent);
 
             StartBlock(sb, "switch (eventId)", ref indent);
 
@@ -142,7 +161,7 @@ namespace TEGS
             {
                 Vertex vertex = graph.Verticies[i];
 
-                StartBlock(sb, $"case { i }: // Event { vertex.Name }", ref indent, false);
+                StartBlock(sb, $"case { i }:", ref indent, false);
 
                 WriteCode(sb, $"Event{ i }({ (vertex.ParameterNames.Count > 0 ? "parameterValues" : "") });", ref indent);
 
@@ -165,7 +184,7 @@ namespace TEGS
 
                 int paramCount = vertex.ParameterNames.Count;
 
-                StartBlock(sb, $"private void Event{ i }({ (paramCount > 0 ? "int[] parameterValues" : "") })", ref indent);
+                StartBlock(sb, $"private void Event{ i }({ (paramCount > 0 ? "dynamic parameterValues" : "") })", ref indent);
 
                 bool addSpacing = false;
 
@@ -174,7 +193,7 @@ namespace TEGS
                     WriteCode(sb, "// Parameters", ref indent);
                     for (int j = 0; j < paramCount; j++)
                     {
-                        WriteCode(sb, $"{ vertex.ParameterNames[j] } = parameterValues[{ j }];", ref indent);
+                        WriteCode(sb, $"{ vertex.ParameterNames[j] } = parameterValues.Item{ j + 1 };", ref indent);
                     }
 
                     addSpacing = true;
@@ -218,8 +237,8 @@ namespace TEGS
 
                         if (edge.Action == EdgeAction.Schedule)
                         {
-                            string parameterValues = edge.ParameterExpressions.Count == 0 ? "null" : $"new int[] {{ { string.Join(", ", edge.ParameterExpressions ) } }}";
-                            WriteCode(sb, $"ScheduleEvent({ edge.Target.Id }, delay: ({ edge.Delay }), priority: ({ edge.Priority }), parameterValues: { parameterValues });", ref indent);
+                            string parameterValues = edge.ParameterExpressions.Count == 0 ? "null" : $"Tuple.Create({ string.Join(", ", edge.ParameterExpressions) })";
+                            WriteCode(sb, $"ScheduleEvent({ edge.Target.Id }, { edge.Delay }, { edge.Priority }, { parameterValues });", ref indent);
                         }
 
                         if (hasCondition)
@@ -233,6 +252,23 @@ namespace TEGS
             }
 
             EndBlock(sb, ref indent); // class Simulation
+        }
+
+        private static string GetStateVariableType(StateVariable stateVariable)
+        {
+            switch (stateVariable.Type)
+            {
+                case VariableValueType.Boolean:
+                    return "bool";
+                case VariableValueType.Integer:
+                    return "int";
+                case VariableValueType.Double:
+                    return "double";
+                case VariableValueType.String:
+                    return "string";
+                default:
+                    return "object";
+            }
         }
 
         #endregion
@@ -260,7 +296,7 @@ class Program
     static SimulationArgs ParseArgs(string[] args)
     {
         var simArgs = new SimulationArgs();
-        var startValues = new List<int>()
+        var startValues = new List<string>()
 
         for (int i = 0; i < args.Length - 1; i++)
         {
@@ -270,7 +306,7 @@ class Program
                     simArgs.Seed = int.Parse(args[++i]);
                     break;
                 case ""--start-parameter"":
-                    startValues.Add(int.Parse(args[++i]));
+                    startValues.Add(args[++i]);
                     break;
                 case ""--stop-time"":
                     simArgs.StopCondition.MaxTime = double.Parse(args[++i]);
@@ -280,7 +316,10 @@ class Program
             }
         }
 
-        simArgs.ParameterValues = startValues.ToArray();
+        if (startValues.Count > 0)
+        {
+            simArgs.StartParameterValues = startValues.ToArray();
+        }
 
         return simArgs;
     }
@@ -291,7 +330,7 @@ struct ScheduleEntry : IComparable<ScheduleEntry>
     public double Time;
     public double Priority;
     public int EventId;
-    public int[] ParameterValues;
+    public dynamic ParameterValues;
 
     public int CompareTo(ScheduleEntry other)
     {
@@ -319,7 +358,7 @@ struct StopCondition
 struct SimulationArgs
 {
     public int Seed;
-    public int[] ParameterValues;
+    public string[] StartParameterValues;
     public StopCondition StopCondition;
 }
 
@@ -337,7 +376,7 @@ abstract class SimulationBase
     {
         Random = new Random(args.Seed);
 
-        ScheduleEvent(StartingEvent, delay: 0, priority: 0, parameterValues: args.ParameterValues);
+        ScheduleEvent(StartingEvent, 0, 0, ParseStartParameters(args.StartParameterValues));
 
         while (_schedule.Count > 0 && _clock < args.StopCondition.MaxTime)
         {
@@ -350,9 +389,11 @@ abstract class SimulationBase
         }
     }
 
-    protected abstract void ProcessEvent(int eventId, int[] parameterValues);
+    protected virtual dynamic ParseStartParameters(string[] startParameters) => null;
 
-    protected void ScheduleEvent(int eventId, double delay = 0.0, double priority = 0.0, int[] parameterValues = null)
+    protected abstract void ProcessEvent(int eventId, dynamic parameterValues);
+
+    protected void ScheduleEvent(int eventId, double delay, double priority, dynamic parameterValues)
     {
         var entry = new ScheduleEntry()
         {

@@ -205,7 +205,9 @@ namespace TEGS.CLI
 
         private void ExecuteBuildCommand()
         {
+            var args = ProgramArgs as BuildCommandArgs;
 
+            ValidateLoadedGraph();
         }
 
         #endregion
