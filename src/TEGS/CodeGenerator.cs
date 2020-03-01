@@ -25,7 +25,6 @@
 // THE SOFTWARE.
 
 using System;
-using System.Collections.Generic;
 using System.Text;
 
 namespace TEGS
@@ -53,14 +52,12 @@ namespace TEGS
             sb.AppendLine();
             StartBlock(sb, "namespace TEGS", ref indent);
 
-            // Program
-            AddProgramClass(sb, ref indent);
+            // Graph Code
+            WriteGraphCode(sb, graph, ref indent);
 
+            // Common Code
             sb.AppendLine();
-            AddScheduleEntryStruct(sb, ref indent);
-
-            sb.AppendLine();
-            AddSimulationArgsStruct(sb, ref indent);
+            WriteCommonCode(sb, ref indent);
 
             EndBlock(sb, ref indent); // namespace
 
@@ -72,10 +69,10 @@ namespace TEGS
         private static void AddHeader(StringBuilder sb, Graph graph)
         {
             sb.AppendLine($"// Generated with { AppInfo.Name } v{ AppInfo.Version }");
-            sb.AppendLine($"//");
+            sb.AppendLine("//");
             sb.AppendLine($"// Name: { graph.Name }");
             sb.AppendLine($"// Description: { graph.Description }");
-            sb.AppendLine($"//");
+            sb.AppendLine("//");
         }
 
         #endregion
@@ -99,14 +96,155 @@ namespace TEGS
 
         #endregion
 
-        #region Program Class
+        #region Graph Code
 
-        private static void AddProgramClass(StringBuilder sb, ref int indent)
+        private static void WriteGraphCode(StringBuilder sb, Graph graph, ref int indent)
         {
-            WriteCode(sb, ProgramClass, ref indent);
+            StartBlock(sb, "class Simulation : SimulationBase", ref indent);
+
+            WriteCode(sb, $"protected override int StartingEventId => { graph.StartingVertex.Id };", ref indent);
+
+            WriteCode(sb, "// State Variables", ref indent);
+
+            for (int i = 0; i < graph.StateVariables.Count; i++)
+            {
+                StateVariable stateVariable = graph.StateVariables[i];
+
+                string type = null;
+                switch (stateVariable.Type)
+                {
+                    case VariableValueType.Boolean:
+                        type = "bool";
+                        break;
+                    case VariableValueType.Integer:
+                        type = "int";
+                        break;
+                    case VariableValueType.Double:
+                        type = "double";
+                        break;
+                    case VariableValueType.String:
+                        type = "string";
+                        break;
+                }
+
+                WriteCode(sb, $"{ type } { stateVariable.Name } = default;", ref indent);
+            }
+
+            sb.AppendLine();
+            WriteCode(sb, "public Simulation() { }", ref indent);
+
+            sb.AppendLine();
+            StartBlock(sb, "protected override void ProcessEvent(int eventId, int[] parameterValues)", ref indent);
+
+            StartBlock(sb, "switch (eventId)", ref indent);
+
+            for (int i = 0; i < graph.Verticies.Count; i++)
+            {
+                Vertex vertex = graph.Verticies[i];
+
+                StartBlock(sb, $"case { i }: // Event { vertex.Name }", ref indent, false);
+
+                WriteCode(sb, $"Event{ i }({ (vertex.ParameterNames.Count > 0 ? "parameterValues" : "") });", ref indent);
+
+                WriteCode(sb, "break;", ref indent);
+
+                EndBlock(sb, ref indent, false); // case
+            }
+
+            EndBlock(sb, ref indent); // switch
+
+            EndBlock(sb, ref indent); // protected override void ProcessEvent
+
+            for (int i = 0; i < graph.Verticies.Count; i++)
+            {
+                Vertex vertex = graph.Verticies[i];
+
+                sb.AppendLine();
+
+                WriteCode(sb, $"// Event { vertex.Name }", ref indent);
+
+                int paramCount = vertex.ParameterNames.Count;
+
+                StartBlock(sb, $"private void Event{ i }({ (paramCount > 0 ? "int[] parameterValues" : "") })", ref indent);
+
+                bool addSpacing = false;
+
+                if (paramCount > 0)
+                {
+                    WriteCode(sb, "// Parameters", ref indent);
+                    for (int j = 0; j < paramCount; j++)
+                    {
+                        WriteCode(sb, $"{ vertex.ParameterNames[j] } = parameterValues[{ j }];", ref indent);
+                    }
+
+                    addSpacing = true;
+                }
+
+                string[] code = vertex.Code;
+                if (null != code && code.Length > 0)
+                {
+                    if (addSpacing)
+                    {
+                        sb.AppendLine();
+                    }
+
+                    WriteCode(sb, "// Event Code", ref indent);
+                    for (int j = 0; j < code.Length; j++)
+                    {
+                        WriteCode(sb, $"{ code[j] };", ref indent);
+                    }
+
+                    addSpacing = true;
+                }
+
+                for (int j = 0; j < graph.Edges.Count; j++)
+                {
+                    Edge edge = graph.Edges[j];
+
+                    if (vertex == edge.Source)
+                    {
+                        if (addSpacing)
+                        {
+                            sb.AppendLine();
+
+                            WriteCode(sb, $"// Edge { j } to { edge.Target.Name }", ref indent);
+                        }
+
+                        bool hasCondition = !string.IsNullOrEmpty(edge.Condition);
+                        if (hasCondition)
+                        {
+                            StartBlock(sb, $"if ({ edge.Condition })", ref indent);
+                        }
+
+                        if (edge.Action == EdgeAction.Schedule)
+                        {
+                            string parameterValues = edge.ParameterExpressions.Count == 0 ? "null" : $"new int[] {{ { string.Join(", ", edge.ParameterExpressions ) } }}";
+                            WriteCode(sb, $"ScheduleEvent({ edge.Target.Id }, delay: ({ edge.Delay }), priority: ({ edge.Priority }), parameterValues: { parameterValues });", ref indent);
+                        }
+
+                        if (hasCondition)
+                        {
+                            EndBlock(sb, ref indent); // if condition
+                        }
+                    }
+                }
+
+                EndBlock(sb, ref indent); // private void Event
+            }
+
+            EndBlock(sb, ref indent); // class Simulation
         }
 
-        private const string ProgramClass = @"
+        #endregion
+
+        #region Common Code
+
+        private static void WriteCommonCode(StringBuilder sb, ref int indent)
+        {
+            WriteCode(sb, CommonCode, ref indent);
+        }
+
+        private const string CommonCode = @"
 class Program
 {
     static void Main(string[] args)
@@ -147,23 +285,12 @@ class Program
         return simArgs;
     }
 }
-";
 
-        #endregion
-
-        #region ScheduleEntry
-
-        private static void AddScheduleEntryStruct(StringBuilder sb, ref int indent)
-        {
-            WriteCode(sb, ScheduleEntryStruct, ref indent);
-        }
-
-        private const string ScheduleEntryStruct = @"
 struct ScheduleEntry : IComparable<ScheduleEntry>
 {
     public double Time;
     public double Priority;
-    public EventType EventType;
+    public int EventId;
     public int[] ParameterValues;
 
     public int CompareTo(ScheduleEntry other)
@@ -180,26 +307,87 @@ struct ScheduleEntry : IComparable<ScheduleEntry>
 
     public override string ToString()
     {
-        return $""{ EventType.ToString() } @ { Time:f3 }"";
+        return $""Event { EventId } @ { Time:f3 }"";
     }
 }
-";
 
-        #endregion
+struct StopCondition
+{
+    public double MaxTime;
+}
 
-        #region SimulationArgs
-
-        private static void AddSimulationArgsStruct(StringBuilder sb, ref int indent)
-        {
-            WriteCode(sb, SimulationArgsStruct, ref indent);
-        }
-
-        private const string SimulationArgsStruct = @"
 struct SimulationArgs
 {
     public int Seed;
     public int[] ParameterValues;
     public StopCondition StopCondition;
+}
+
+abstract class SimulationBase
+{
+    private double _clock = 0.0;
+
+    private List<ScheduleEntry> _schedule = new List<ScheduleEntry>();
+
+    protected Random Random;
+
+    protected abstract int StartingEventId { get; }
+
+    public void Run(SimulationArgs args)
+    {
+        Random = new Random(args.Seed);
+
+        ScheduleEvent(StartingEvent, delay: 0, priority: 0, parameterValues: args.ParameterValues);
+
+        while (_schedule.Count > 0 && _clock < args.StopCondition.MaxTime)
+        {
+            var entry = _schedule[0];
+            _schedule.RemoveAt(0);
+
+            _clock = entry.Time;
+
+            ProcessEvent(entry.EventId, entry.ParameterValues);
+        }
+    }
+
+    protected abstract void ProcessEvent(int eventId, int[] parameterValues);
+
+    protected void ScheduleEvent(int eventId, double delay = 0.0, double priority = 0.0, int[] parameterValues = null)
+    {
+        var entry = new ScheduleEntry()
+        {
+            Time = _clock + delay,
+            Priority = priority,
+            EventId = eventId,
+            ParameterValues = parameterValues
+        };
+
+        int index = _schedule.BinarySearch(entry);
+
+        if (index < 0)
+        {
+            index = ~index;
+        }
+
+        if (index == _schedule.Count)
+        {
+            _schedule.Add(entry);
+        }
+        else
+        {
+            _schedule.Insert(index, entry);
+        }
+    }
+
+    protected double Clock() => _clock;
+}
+
+public static class RandomExtensions
+{
+    public static double UniformVariate(this Random random, double alpha, double beta)
+    {
+        return alpha + (beta - alpha) * random.NextDouble();
+    }
 }
 ";
 
@@ -234,26 +422,32 @@ struct SimulationArgs
 
         private const int SpacesPerIndent = 4;
 
-        private static void StartBlock(StringBuilder sb, string code, ref int indent)
+        private static void StartBlock(StringBuilder sb, string code, ref int indent, bool addBrace = true)
         {
             string padding = GetIndentPadding(indent);
 
             sb.Append(padding);
             sb.AppendLine(code);
-            sb.Append(padding);
-            sb.AppendLine("{");
+
+            if (addBrace)
+            {
+                sb.Append(padding);
+                sb.AppendLine("{");
+            }
 
             indent++;
         }
 
-        private static void EndBlock(StringBuilder sb, ref int indent)
+        private static void EndBlock(StringBuilder sb, ref int indent, bool addBrace = true)
         {
             indent--;
 
-            string padding = GetIndentPadding(indent);
-
-            sb.Append(padding);
-            sb.AppendLine("}");
+            if (addBrace)
+            {
+                string padding = GetIndentPadding(indent);
+                sb.Append(padding);
+                sb.AppendLine("}");
+            }
         }
 
         #endregion
