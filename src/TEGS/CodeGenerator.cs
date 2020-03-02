@@ -50,7 +50,7 @@ namespace TEGS
 
             // Namespace
             sb.AppendLine();
-            StartBlock(sb, "namespace TEGS", ref indent);
+            StartBlock(sb, "namespace GeneratedApp", ref indent);
 
             // Graph Code
             WriteGraphCode(sb, graph, ref indent);
@@ -238,7 +238,7 @@ namespace TEGS
                         if (edge.Action == EdgeAction.Schedule)
                         {
                             string parameterValues = edge.ParameterExpressions.Count == 0 ? "null" : $"Tuple.Create({ string.Join(", ", edge.ParameterExpressions) })";
-                            WriteCode(sb, $"ScheduleEvent({ edge.Target.Id }, { edge.Delay }, { edge.Priority }, { parameterValues });", ref indent);
+                            WriteCode(sb, $"ScheduleEvent({ edge.Target.Id }, { (string.IsNullOrEmpty(edge.Delay) ? "0" : edge.Delay) }, { (string.IsNullOrEmpty(edge.Priority) ? "0" : edge.Priority) }, { parameterValues });", ref indent);
                         }
 
                         if (hasCondition)
@@ -343,11 +343,6 @@ struct ScheduleEntry : IComparable<ScheduleEntry>
 
         return Priority.CompareTo(other.Priority);
     }
-
-    public override string ToString()
-    {
-        return $""Event { EventId } @ { Time:f3 }"";
-    }
 }
 
 struct StopCondition
@@ -376,7 +371,7 @@ abstract class SimulationBase
     {
         Random = new Random(args.Seed);
 
-        ScheduleEvent(StartingEvent, 0, 0, ParseStartParameters(args.StartParameterValues));
+        ScheduleEvent(StartingEventId, 0, 0, ParseStartParameters(args.StartParameterValues));
 
         while (_schedule.Count > 0 && _clock < args.StopCondition.MaxTime)
         {

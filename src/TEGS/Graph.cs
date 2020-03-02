@@ -399,6 +399,7 @@ namespace TEGS
             using XmlWriter xmlWriter = XmlWriter.Create(outputStream, outputSettings);
 
             xmlWriter.WriteStartElement("graph");
+            xmlWriter.WriteAttributeString("name", Name);
             xmlWriter.WriteAttributeString("description", Description);
 
             xmlWriter.WriteStartElement("variables");

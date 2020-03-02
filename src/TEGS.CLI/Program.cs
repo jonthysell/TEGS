@@ -180,17 +180,22 @@ namespace TEGS.CLI
 
         private static void ShowBuildHelp()
         {
-            Console.WriteLine("Usage: tegs build graph.xml");
+            Console.WriteLine("Usage: tegs build [<options>] graph.xml");
+            Console.WriteLine();
+
+            Console.WriteLine("Options:");
+            Console.WriteLine("--output-source [file]  Write the built source to the given file");
             Console.WriteLine();
         }
 
         private void ParseBuildArgs()
         {
             Graph graph = null;
+            string graphFile = null;
 
             try
             {
-                string graphFile = Arguments[^1];
+                graphFile = Arguments[^1];
 
                 using FileStream fs = new FileStream(graphFile, FileMode.Open);
                 graph = Graph.LoadXml(fs);
@@ -200,7 +205,38 @@ namespace TEGS.CLI
                 throw new ParseArgumentsException("Unable to load graph.", ex);
             }
 
-            ProgramArgs = new BuildCommandArgs(graph);
+            string outputSourceFile = null;
+
+            try
+            {
+                for (int i = 1; i < Arguments.Length - 1; i++)
+                {
+                    switch (Arguments[i].ToLower())
+                    {
+                        case "--output-source":
+                            outputSourceFile = Arguments[++i];
+                            break;
+                        default:
+                            throw new Exception($"Did not recognize option \"{Arguments[i]}\".");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new ParseArgumentsException("Unable to parse options.", ex);
+            }
+
+            if (string.IsNullOrWhiteSpace(outputSourceFile))
+            {
+                throw new ParseArgumentsException("Please specify an output source file with --output-source.");
+            }
+
+            var buildCommandArgs = new BuildCommandArgs(graph)
+            {
+                OutputSourcePath = outputSourceFile
+            };
+
+            ProgramArgs = buildCommandArgs;
         }
 
         private void ExecuteBuildCommand()
@@ -208,6 +244,10 @@ namespace TEGS.CLI
             var args = ProgramArgs as BuildCommandArgs;
 
             ValidateLoadedGraph();
+
+            string code = CodeGenerator.Generate(args.Graph);
+
+            File.WriteAllText(args.OutputSourcePath, code, Encoding.UTF8);
         }
 
         #endregion
@@ -220,7 +260,7 @@ namespace TEGS.CLI
             Console.WriteLine();
 
             Console.WriteLine("Options:");
-            Console.WriteLine("-o, --output-file [file]           Write the output to the given file");
+            Console.WriteLine("-o, --output-file [file]           Write simulation output to the given file");
             Console.WriteLine("--seed [int]                       Set the starting seed for the simulation (default: random)");
             Console.WriteLine("--show-output                      Show simulation output to the console (default: False)");
             Console.WriteLine("--start-parameter [expression]     Set a simulation start parameter");
@@ -228,7 +268,7 @@ namespace TEGS.CLI
             Console.WriteLine("--stop-event-count [name] [count]  Stop the simulation if the named event occurs count times");
             Console.WriteLine("--stop-time [time]                 Stop the simulation if the clock passes the given time");
             Console.WriteLine("--trace-variable [name]            Add a trace variable by name");
-            Console.WriteLine("--validate-graph [bool]            Validating the graph before running (default: True)");
+            Console.WriteLine("--skip-validation                  Improve start-up performance by skipping graph validation");
             Console.WriteLine();
         }
 
@@ -253,7 +293,7 @@ namespace TEGS.CLI
             int? startingSeed = null;
             List<string> startParameters = new List<string>();
             StopCondition stopCondition = null;
-            bool validateGraph = true;
+            bool skipValidation = false;
 
             List<TraceExpression> traceExpressions = new List<TraceExpression>();
 
@@ -289,11 +329,11 @@ namespace TEGS.CLI
                             string name = Arguments[++i];
                             traceExpressions.Add(new StateVariableTraceExpression(graph.GetStateVariable(name)));
                             break;
-                        case "--validate-graph":
-                            validateGraph = bool.Parse(Arguments[++i]);
+                        case "--skip-validation":
+                            skipValidation = true;
                             break;
                         default:
-                            throw new Exception($"Did not recognize option \"{Arguments[i]}\"");
+                            throw new Exception($"Did not recognize option \"{Arguments[i]}\".");
                     }
                 }
             }
@@ -305,7 +345,7 @@ namespace TEGS.CLI
             var runCommandArgs = new RunCommandArgs(graph)
             {
                 ShowOutput = showOutput,
-                ValidateGraph = validateGraph,
+                SkipValidation = skipValidation,
             };
 
             if (!string.IsNullOrWhiteSpace(outputFile))
@@ -326,7 +366,7 @@ namespace TEGS.CLI
         {
             var args = ProgramArgs as RunCommandArgs;
 
-            if (args.ValidateGraph)
+            if (!args.SkipValidation)
             {
                 ValidateLoadedGraph();
             }
@@ -351,7 +391,7 @@ namespace TEGS.CLI
             simulation.Wait();
         }
 
-        private static VertexFiredEventHandler MakeOutputEventHandler(Action<string> writer, string seperator = "\t", int? columnWidth = null)
+        private static VertexFiredEventHandler MakeOutputEventHandler(Action<string> writer, string separator = "\t", int? columnWidth = null)
         {
             bool hasHeader = false;
 
@@ -361,12 +401,12 @@ namespace TEGS.CLI
                 {
                     writer(Truncate("Clock", columnWidth));
 
-                    writer(seperator);
+                    writer(separator);
                     writer(Truncate("Event", columnWidth));
 
                     for (int i = 0; i < e.TraceExpressions.Count; i++)
                     {
-                        writer(seperator);
+                        writer(separator);
                         writer(Truncate(e.TraceExpressions[i].Value.ToString(), columnWidth));
                     }
 
@@ -376,12 +416,12 @@ namespace TEGS.CLI
 
                 writer(Truncate(e.Clock.ToString(), columnWidth));
 
-                writer(seperator);
+                writer(separator);
                 writer(Truncate(e.Vertex.Name.ToString(), columnWidth));
 
                 for (int i = 0; i < e.TraceExpressions.Count; i++)
                 {
-                    writer(seperator);
+                    writer(separator);
                     writer(Truncate(e.TraceExpressions[i].Value.ToString(), columnWidth));
                 }
 

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<graph description="A deterministic queue (M/D/1) with breakdowns">
+<graph name="Breakdown" description="A deterministic queue (M/D/1) with breakdowns">
   <variables>
     <variable name="QUEUE" type="Integer" />
     <variable name="SERVER" type="Integer" />

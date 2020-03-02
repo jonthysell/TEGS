@@ -41,24 +41,31 @@ namespace TEGS.CLI
 
     public class BuildCommandArgs : ProgramArgs
     {
-        public StreamWriter OutputWriter { get; set; } = null;
+        public string OutputSourcePath { get; set; } = null;
 
         public BuildCommandArgs(Graph graph) : base(graph) { }
     }
 
-    public class RunCommandArgs : ProgramArgs
+    public class RunCommandArgs : ProgramArgs, IDisposable
     {
         public readonly SimulationArgs SimulationArgs;
 
         public bool ShowOutput { get; set; } = false;
 
-        public bool ValidateGraph { get; set; } = true;
+        public bool SkipValidation { get; set; } = false;
 
         public StreamWriter OutputWriter { get; set; } = null;
 
         public RunCommandArgs(Graph graph) : base(graph)
         {
             SimulationArgs = new SimulationArgs(graph);
+        }
+
+        public void Dispose()
+        {
+            OutputWriter?.Flush();
+            OutputWriter?.Close();
+            OutputWriter?.Dispose();
         }
     }
 
