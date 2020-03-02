@@ -1,28 +1,8 @@
-﻿// 
-// Program.cs
-//  
-// Author:
-//       Jon Thysell <thysell@gmail.com>
-// 
-// Copyright (c) 2019, 2020 Jon Thysell <http://jonthysell.com>
-// 
-// Permission is hereby granted, free of charge, to any person obtaining a copy
-// of this software and associated documentation files (the "Software"), to deal
-// in the Software without restriction, including without limitation the rights
-// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-// copies of the Software, and to permit persons to whom the Software is
-// furnished to do so, subject to the following conditions:
-// 
-// The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
-// 
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+﻿// Generated with tegs v0.9.0.0
+//
+// Name: Carwash
+// Description: An automatic carwash
+//
 
 using System;
 using System.Collections.Generic;
@@ -30,24 +10,106 @@ using System.Text;
 
 namespace Carwash
 {
+    class Simulation : SimulationBase
+    {
+        protected override int StartingEventId => 0;
+
+        // State Variables
+        int QUEUE = default;
+        int SERVERS = default;
+
+        public Simulation() { }
+
+        protected override object ParseStartParameters(string[] startParameters) => Tuple.Create(int.Parse(startParameters[0]), int.Parse(startParameters[1]));
+
+        protected override void ProcessEvent(int eventId, object parameterValues)
+        {
+            switch (eventId)
+            {
+                case 0:
+                    Event0((Tuple<int, int>)parameterValues);
+                    break;
+                case 1:
+                    Event1();
+                    break;
+                case 2:
+                    Event2();
+                    break;
+                case 3:
+                    Event3();
+                    break;
+            }
+        }
+
+        // Event RUN
+        private void Event0(Tuple<int, int> parameterValues)
+        {
+            // Parameters
+            QUEUE = parameterValues.Item1;
+            SERVERS = parameterValues.Item2;
+
+            // Edge 0 to ENTER
+            ScheduleEvent(1, 0, 5, null);
+        }
+
+        // Event ENTER
+        private void Event1()
+        {
+            // Event Code
+            QUEUE = QUEUE + 1;
+
+            // Edge 1 to ENTER
+            ScheduleEvent(1, Random.UniformVariate(3, 8), 6, null);
+
+            // Edge 2 to START
+            if (SERVERS > 0)
+            {
+                ScheduleEvent(2, 0, 5, null);
+            }
+        }
+
+        // Event START
+        private void Event2()
+        {
+            // Event Code
+            SERVERS = SERVERS - 1;
+            QUEUE = QUEUE - 1;
+
+            // Edge 3 to LEAVE
+            ScheduleEvent(3, Random.UniformVariate(5, 20), 6, null);
+        }
+
+        // Event LEAVE
+        private void Event3()
+        {
+            // Event Code
+            SERVERS = SERVERS + 1;
+
+            // Edge 4 to START
+            if (QUEUE > 0)
+            {
+                ScheduleEvent(2, 0, 5, null);
+            }
+        }
+    }
+
     class Program
     {
         static void Main(string[] args)
         {
             Console.OutputEncoding = Encoding.UTF8;
-
+    
             var simArgs = ParseArgs(args);
-
-            Simulation sim = new Simulation();
+    
+            var sim = new Simulation();
             sim.Run(simArgs);
         }
-
+    
         static SimulationArgs ParseArgs(string[] args)
         {
             var simArgs = new SimulationArgs();
-
-            List<int> startValues = new List<int>();
-
+            var startValues = new List<string>();
+    
             for (int i = 0; i < args.Length - 1; i++)
             {
                 switch (args[i].ToLower())
@@ -56,7 +118,7 @@ namespace Carwash
                         simArgs.Seed = int.Parse(args[++i]);
                         break;
                     case "--start-parameter":
-                        startValues.Add(int.Parse(args[++i]));
+                        startValues.Add(args[++i]);
                         break;
                     case "--stop-time":
                         simArgs.StopCondition.MaxTime = double.Parse(args[++i]);
@@ -65,10 +127,114 @@ namespace Carwash
                         throw new Exception($"Did not recognize option \"{args[i]}\"");
                 }
             }
-
-            simArgs.ParameterValues = startValues.ToArray();
-
+    
+            if (startValues.Count > 0)
+            {
+                simArgs.StartParameterValues = startValues.ToArray();
+            }
+    
             return simArgs;
+        }
+    }
+    
+    struct ScheduleEntry : IComparable<ScheduleEntry>
+    {
+        public double Time;
+        public double Priority;
+        public int EventId;
+        public object ParameterValues;
+    
+        public int CompareTo(ScheduleEntry other)
+        {
+            int timeCompare = Time.CompareTo(other.Time);
+    
+            if (timeCompare != 0)
+            {
+                return timeCompare;
+            }
+    
+            return Priority.CompareTo(other.Priority);
+        }
+    }
+    
+    struct StopCondition
+    {
+        public double MaxTime;
+    }
+    
+    struct SimulationArgs
+    {
+        public int Seed;
+        public string[] StartParameterValues;
+        public StopCondition StopCondition;
+    }
+    
+    abstract class SimulationBase
+    {
+        private double _clock = 0.0;
+    
+        private List<ScheduleEntry> _schedule = new List<ScheduleEntry>();
+    
+        protected Random Random;
+    
+        protected abstract int StartingEventId { get; }
+    
+        public void Run(SimulationArgs args)
+        {
+            Random = new Random(args.Seed);
+    
+            ScheduleEvent(StartingEventId, 0, 0, ParseStartParameters(args.StartParameterValues));
+    
+            while (_schedule.Count > 0 && _clock < args.StopCondition.MaxTime)
+            {
+                var entry = _schedule[0];
+                _schedule.RemoveAt(0);
+    
+                _clock = entry.Time;
+    
+                ProcessEvent(entry.EventId, entry.ParameterValues);
+            }
+        }
+    
+        protected virtual object ParseStartParameters(string[] startParameters) => null;
+    
+        protected abstract void ProcessEvent(int eventId, object parameterValues);
+    
+        protected void ScheduleEvent(int eventId, double delay, double priority, object parameterValues)
+        {
+            var entry = new ScheduleEntry()
+            {
+                Time = _clock + delay,
+                Priority = priority,
+                EventId = eventId,
+                ParameterValues = parameterValues
+            };
+    
+            int index = _schedule.BinarySearch(entry);
+    
+            if (index < 0)
+            {
+                index = ~index;
+            }
+    
+            if (index == _schedule.Count)
+            {
+                _schedule.Add(entry);
+            }
+            else
+            {
+                _schedule.Insert(index, entry);
+            }
+        }
+    
+        protected double Clock() => _clock;
+    }
+    
+    public static class RandomExtensions
+    {
+        public static double UniformVariate(this Random random, double alpha, double beta)
+        {
+            return alpha + (beta - alpha) * random.NextDouble();
         }
     }
 }

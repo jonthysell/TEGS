@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
 using System.Text;
 
 namespace TEGS
@@ -158,21 +159,48 @@ namespace TEGS
                     }
                 }
 
-                WriteCode(sb, $"protected override dynamic ParseStartParameters(string[] startParameters) => Tuple.Create({ tupleValuesSB.ToString() });", ref indent);
+                WriteCode(sb, $"protected override object ParseStartParameters(string[] startParameters) => Tuple.Create({ tupleValuesSB.ToString() });", ref indent);
             }
 
             sb.AppendLine();
-            StartBlock(sb, "protected override void ProcessEvent(int eventId, dynamic parameterValues)", ref indent);
+            StartBlock(sb, "protected override void ProcessEvent(int eventId, object parameterValues)", ref indent);
 
             StartBlock(sb, "switch (eventId)", ref indent);
+
+            var eventParameterTypes = new Dictionary<Vertex, string>();
 
             for (int i = 0; i < graph.Verticies.Count; i++)
             {
                 Vertex vertex = graph.Verticies[i];
 
+                int paramCount = vertex.ParameterNames.Count;
+
+                string eventParameterType = null;
+                if (paramCount > 0 && !eventParameterTypes.TryGetValue(vertex, out eventParameterType))
+                {
+                    StringBuilder tupleTypesSB = new StringBuilder();
+
+                    tupleTypesSB.Append("Tuple<");
+
+                    for (int j = 0; j < paramCount; j++)
+                    {
+                        if (j > 0)
+                        {
+                            tupleTypesSB.Append(", ");
+                        }
+
+                        tupleTypesSB.Append(GetStateVariableType(graph.GetStateVariable(startingVertex.ParameterNames[i])));
+                    }
+
+                    tupleTypesSB.Append(">");
+
+                    eventParameterType = tupleTypesSB.ToString();
+                    eventParameterTypes[vertex] = eventParameterType;
+                }
+
                 StartBlock(sb, $"case { i }:", ref indent, false);
 
-                WriteCode(sb, $"Event{ i }({ (vertex.ParameterNames.Count > 0 ? "parameterValues" : "") });", ref indent);
+                WriteCode(sb, $"Event{ i }({ (paramCount > 0 ? $"({ eventParameterType })parameterValues" : "") });", ref indent);
 
                 WriteCode(sb, "break;", ref indent);
 
@@ -193,7 +221,7 @@ namespace TEGS
 
                 int paramCount = vertex.ParameterNames.Count;
 
-                StartBlock(sb, $"private void Event{ i }({ (paramCount > 0 ? "dynamic parameterValues" : "") })", ref indent);
+                StartBlock(sb, $"private void Event{ i }({ (paramCount > 0 ? $"{ eventParameterTypes[vertex] } parameterValues" : "") })", ref indent);
 
                 bool addSpacing = false;
 
@@ -339,7 +367,7 @@ struct ScheduleEntry : IComparable<ScheduleEntry>
     public double Time;
     public double Priority;
     public int EventId;
-    public dynamic ParameterValues;
+    public object ParameterValues;
 
     public int CompareTo(ScheduleEntry other)
     {
@@ -393,11 +421,11 @@ abstract class SimulationBase
         }
     }
 
-    protected virtual dynamic ParseStartParameters(string[] startParameters) => null;
+    protected virtual object ParseStartParameters(string[] startParameters) => null;
 
-    protected abstract void ProcessEvent(int eventId, dynamic parameterValues);
+    protected abstract void ProcessEvent(int eventId, object parameterValues);
 
-    protected void ScheduleEvent(int eventId, double delay, double priority, dynamic parameterValues)
+    protected void ScheduleEvent(int eventId, double delay, double priority, object parameterValues)
     {
         var entry = new ScheduleEntry()
         {
