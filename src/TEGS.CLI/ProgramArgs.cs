@@ -25,7 +25,6 @@
 // THE SOFTWARE.
 
 using System;
-using System.IO;
 
 namespace TEGS.CLI
 {
@@ -48,7 +47,7 @@ namespace TEGS.CLI
         public BuildCommandArgs(Graph graph) : base(graph) { }
     }
 
-    public class RunCommandArgs : ProgramArgs, IDisposable
+    public class RunCommandArgs : ProgramArgs
     {
         public readonly SimulationArgs SimulationArgs;
 
@@ -56,18 +55,11 @@ namespace TEGS.CLI
 
         public bool SkipValidation { get; set; } = false;
 
-        public StreamWriter OutputWriter { get; set; } = null;
+        public string OutputFile { get; set; } = null;
 
         public RunCommandArgs(Graph graph) : base(graph)
         {
             SimulationArgs = new SimulationArgs(graph);
-        }
-
-        public void Dispose()
-        {
-            OutputWriter?.Flush();
-            OutputWriter?.Close();
-            OutputWriter?.Dispose();
         }
     }
 

@@ -192,11 +192,10 @@ namespace TEGS.CLI
         private void ParseBuildArgs()
         {
             Graph graph = null;
-            string graphFile = null;
 
             try
             {
-                graphFile = Arguments[^1];
+                string graphFile = Arguments[^1];
 
                 using FileStream fs = new FileStream(graphFile, FileMode.Open);
                 graph = Graph.LoadXml(fs);
@@ -350,14 +349,10 @@ namespace TEGS.CLI
 
             var runCommandArgs = new RunCommandArgs(graph)
             {
+                OutputFile = outputFile,
                 ShowOutput = showOutput,
                 SkipValidation = skipValidation,
             };
-
-            if (!string.IsNullOrWhiteSpace(outputFile))
-            {
-                runCommandArgs.OutputWriter = new StreamWriter(new FileStream(outputFile, FileMode.Create), Encoding.UTF8);
-            }
 
             runCommandArgs.SimulationArgs.StartingSeed = startingSeed;
             runCommandArgs.SimulationArgs.StartParameterExpressions = startParameters;
@@ -377,6 +372,8 @@ namespace TEGS.CLI
                 ValidateLoadedGraph();
             }
 
+            using StreamWriter outputWriter = null != args.OutputFile ? new StreamWriter(new FileStream(args.OutputFile, FileMode.Create), Encoding.UTF8) : null;
+
             Simulation simulation = new Simulation(args.SimulationArgs);
 
             int numTraceExpressions = args.SimulationArgs.TraceExpressions.Count;
@@ -388,9 +385,9 @@ namespace TEGS.CLI
                 simulation.VertexFired += MakeOutputEventHandler(Console.Write, " ", columnWidth);
             }
 
-            if (null != args.OutputWriter)
+            if (null != outputWriter)
             {
-                simulation.VertexFired += MakeOutputEventHandler(args.OutputWriter.Write);
+                simulation.VertexFired += MakeOutputEventHandler(outputWriter.Write);
             }
 
             simulation.Run();
@@ -413,7 +410,7 @@ namespace TEGS.CLI
                     for (int i = 0; i < e.TraceExpressions.Count; i++)
                     {
                         writer(separator);
-                        writer(Truncate(e.TraceExpressions[i].Value.ToString(), columnWidth));
+                        writer(Truncate(e.TraceExpressions[i].Label, columnWidth));
                     }
 
                     writer(Environment.NewLine);

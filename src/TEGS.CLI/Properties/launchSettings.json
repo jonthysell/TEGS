@@ -15,6 +15,10 @@
       "commandName": "Project",
       "commandLineArgs": "run --seed 12345 --show-output --start-parameter 5 --start-parameter 3 --stop-time 10000 --trace-variable QUEUE --trace-variable SERVERS $(ProjectDir)\\..\\..\\examples\\carwash.xml"
     },
+    "Run Carwash (Text Out)": {
+      "commandName": "Project",
+      "commandLineArgs": "run --output-file carwash.csv --seed 12345 --start-parameter 5 --start-parameter 3 --stop-time 10000 --trace-variable QUEUE --trace-variable SERVERS $(ProjectDir)\\..\\..\\examples\\carwash.xml"
+    },
     "Validate Carwash ": {
       "commandName": "Project",
       "commandLineArgs": "validate $(ProjectDir)\\..\\..\\examples\\carwash.xml"
