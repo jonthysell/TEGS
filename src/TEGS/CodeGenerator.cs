@@ -265,7 +265,8 @@ namespace TEGS
                             sb.AppendLine();
 
                             WriteComment(sb, $"Edge #{ j }", ref indent);
-                            WriteComment(sb, $"From { edge.Source.Name } to { edge.Target.Name }", ref indent);
+                            WriteComment(sb, $"Action: { edge.Action.ToString() }", ref indent);
+                            WriteComment(sb, $"Direction: { edge.Source.Name } to { edge.Target.Name }", ref indent);                            
                             WriteComment(sb, $"Description: { edge.Description }", ref indent);
                         }
 
@@ -275,10 +276,19 @@ namespace TEGS
                             StartBlock(sb, $"if ({ edge.Condition })", ref indent);
                         }
 
-                        if (edge.Action == EdgeAction.Schedule)
+                        string parameterValues = edge.ParameterExpressions.Count == 0 ? "null" : $"new { eventParameterTypes[vertex] }({ string.Join(", ", edge.ParameterExpressions) })";
+
+                        switch(edge.Action)
                         {
-                            string parameterValues = edge.ParameterExpressions.Count == 0 ? "null" : $"Tuple.Create({ string.Join(", ", edge.ParameterExpressions) })";
-                            WriteCode(sb, $"ScheduleEvent({ edge.Target.Id }, { (string.IsNullOrEmpty(edge.Delay) ? "0" : edge.Delay) }, { (string.IsNullOrEmpty(edge.Priority) ? "0" : edge.Priority) }, { parameterValues });", ref indent);
+                            case EdgeAction.Schedule:
+                                WriteCode(sb, $"ScheduleEvent({ edge.Target.Id }, { (string.IsNullOrEmpty(edge.Delay) ? "0" : edge.Delay) }, { (string.IsNullOrEmpty(edge.Priority) ? "0" : edge.Priority) }, { parameterValues });", ref indent);
+                                break;
+                            case EdgeAction.CancelNext:
+                                WriteCode(sb, $"CancelNextEvent({ edge.Target.Id }, { parameterValues });", ref indent);
+                                break;
+                            case EdgeAction.CancelAll:
+                                WriteCode(sb, $"CancelAllEvents({ edge.Target.Id }, { parameterValues });", ref indent);
+                                break;
                         }
 
                         if (hasCondition)
@@ -457,6 +467,29 @@ abstract class SimulationBase
         }
     }
 
+    protected void CancelNextEvent(int eventId, object parameterValues)
+    {
+        for (int i = 0; i < _schedule.Count; i++)
+        {
+            if (CancelPredicate(_schedule[i], eventId, parameterValues))
+            {
+                _schedule.RemoveAt(i);
+                break;
+            }
+        }
+    }
+
+    protected void CancelAllEvents(int eventId, object parameterValues)
+    {
+        _schedule.RemoveAll(entry => CancelPredicate(entry, eventId, parameterValues));
+    }
+
+    private static bool CancelPredicate(ScheduleEntry match, int eventId, object parameterValues)
+    {
+        return match.EventId == eventId &&
+            (null == parameterValues || (null != match.ParameterValues && match.ParameterValues.Equals(parameterValues)));
+    }
+
     protected double Clock() => _clock;
 }
 
@@ -565,8 +598,11 @@ public static class StringExtensions
         {
             string padding = GetIndentPadding(indent);
 
-            sb.Append(padding);
-            sb.AppendLine(code);
+            if (!string.IsNullOrWhiteSpace(code))
+            {
+                sb.Append(padding);
+                sb.AppendLine(code);
+            }
 
             if (addBrace)
             {

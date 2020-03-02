@@ -50,7 +50,8 @@ namespace Carwash
             SERVERS = parameterValues.Item2;
 
             // Edge #0
-            // From RUN to ENTER
+            // Action: Schedule
+            // Direction: RUN to ENTER
             // Description: The car will enter the line
             ScheduleEvent(1, 0, 5, null);
         }
@@ -64,12 +65,14 @@ namespace Carwash
             QUEUE = QUEUE + 1;
 
             // Edge #1
-            // From ENTER to ENTER
+            // Action: Schedule
+            // Direction: ENTER to ENTER
             // Description: The next customer enters in 3 to 8 minutes
             ScheduleEvent(1, Random.UniformVariate(3, 8), 6, null);
 
             // Edge #2
-            // From ENTER to START
+            // Action: Schedule
+            // Direction: ENTER to START
             // Description: There are available servers to start washing the car
             if (SERVERS > 0)
             {
@@ -87,7 +90,8 @@ namespace Carwash
             QUEUE = QUEUE - 1;
 
             // Edge #3
-            // From START to LEAVE
+            // Action: Schedule
+            // Direction: START to LEAVE
             // Description: The car will be in service for at least 5 minutes
             ScheduleEvent(3, Random.UniformVariate(5, 20), 6, null);
         }
@@ -101,7 +105,8 @@ namespace Carwash
             SERVERS = SERVERS + 1;
 
             // Edge #4
-            // From LEAVE to START
+            // Action: Schedule
+            // Direction: LEAVE to START
             // Description: There are cars in queue, start service for the next car in line
             if (QUEUE > 0)
             {
@@ -242,6 +247,29 @@ namespace Carwash
             {
                 _schedule.Insert(index, entry);
             }
+        }
+    
+        protected void CancelNextEvent(int eventId, object parameterValues)
+        {
+            for (int i = 0; i < _schedule.Count; i++)
+            {
+                if (CancelPredicate(_schedule[i], eventId, parameterValues))
+                {
+                    _schedule.RemoveAt(i);
+                    break;
+                }
+            }
+        }
+    
+        protected void CancelAllEvents(int eventId, object parameterValues)
+        {
+            _schedule.RemoveAll(entry => CancelPredicate(entry, eventId, parameterValues));
+        }
+    
+        private static bool CancelPredicate(ScheduleEntry match, int eventId, object parameterValues)
+        {
+            return match.EventId == eventId &&
+                (null == parameterValues || (null != match.ParameterValues && match.ParameterValues.Equals(parameterValues)));
         }
     
         protected double Clock() => _clock;
