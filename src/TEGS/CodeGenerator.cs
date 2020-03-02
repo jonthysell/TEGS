@@ -52,7 +52,7 @@ namespace TEGS
             int indent = 0;
 
             // Header
-            AddHeader(sb, graph);
+            AddHeader(sb, graph, ref indent);
 
             // Usings
             sb.AppendLine();
@@ -76,13 +76,12 @@ namespace TEGS
 
         #region Header
 
-        private static void AddHeader(StringBuilder sb, Graph graph)
+        private static void AddHeader(StringBuilder sb, Graph graph, ref int indent)
         {
-            sb.AppendLine($"// Generated with { AppInfo.Name } v{ AppInfo.Version }");
-            sb.AppendLine("//");
-            sb.AppendLine($"// Name: { graph.Name }");
-            sb.AppendLine($"// Description: { graph.Description }");
-            sb.AppendLine("//");
+            WriteComment(sb, $"Generated with { AppInfo.Name } v{ AppInfo.Version }", ref indent);
+            WriteComment(sb, "", ref indent);
+            WriteComment(sb, $"Name: { graph.Name }", ref indent);
+            WriteComment(sb, $"Description: { graph.Description }", ref indent);
         }
 
         #endregion
@@ -119,7 +118,7 @@ namespace TEGS
             if (graph.StateVariables.Count > 0)
             {
                 sb.AppendLine();
-                WriteCode(sb, "// State Variables", ref indent);
+                WriteComment(sb, "State Variables", ref indent);
 
                 for (int i = 0; i < graph.StateVariables.Count; i++)
                 {
@@ -217,7 +216,9 @@ namespace TEGS
 
                 sb.AppendLine();
 
-                WriteCode(sb, $"// Event { vertex.Name }", ref indent);
+                WriteComment(sb, $"Event #{ i }", ref indent);
+                WriteComment(sb, $"Name: { vertex.Name }", ref indent);
+                WriteComment(sb, $"Description: { vertex.Description }", ref indent);
 
                 int paramCount = vertex.ParameterNames.Count;
 
@@ -227,7 +228,7 @@ namespace TEGS
 
                 if (paramCount > 0)
                 {
-                    WriteCode(sb, "// Parameters", ref indent);
+                    WriteComment(sb, "Parameters", ref indent);
                     for (int j = 0; j < paramCount; j++)
                     {
                         WriteCode(sb, $"{ vertex.ParameterNames[j] } = parameterValues.Item{ j + 1 };", ref indent);
@@ -244,7 +245,7 @@ namespace TEGS
                         sb.AppendLine();
                     }
 
-                    WriteCode(sb, "// Event Code", ref indent);
+                    WriteComment(sb, "Event Code", ref indent);
                     for (int j = 0; j < code.Length; j++)
                     {
                         WriteCode(sb, $"{ code[j] };", ref indent);
@@ -263,7 +264,9 @@ namespace TEGS
                         {
                             sb.AppendLine();
 
-                            WriteCode(sb, $"// Edge { j } to { edge.Target.Name }", ref indent);
+                            WriteComment(sb, $"Edge #{ j }", ref indent);
+                            WriteComment(sb, $"From { edge.Source.Name } to { edge.Target.Name }", ref indent);
+                            WriteComment(sb, $"Description: { edge.Description }", ref indent);
                         }
 
                         bool hasCondition = !string.IsNullOrEmpty(edge.Condition);
@@ -282,6 +285,8 @@ namespace TEGS
                         {
                             EndBlock(sb, ref indent); // if condition
                         }
+
+                        addSpacing = true;
                     }
                 }
 
@@ -484,6 +489,32 @@ public static class RandomExtensions
             string[] codeLines = code.Trim().Split(LineSeperators, StringSplitOptions.None);
 
             WriteCode(sb, codeLines, ref indent);
+        }
+
+        private static void WriteComment(StringBuilder sb, string[] comments, ref int indent)
+        {
+            string padding = GetIndentPadding(indent);
+
+            for (int i = 0; i < comments.Length; i++)
+            {
+                sb.Append(padding);
+                if (string.IsNullOrWhiteSpace(comments[i]))
+                {
+                    sb.AppendLine("//");
+                }
+                else
+                {
+                    sb.Append("// ");
+                    sb.AppendLine(comments[i]);
+                }
+            }
+        }
+
+        private static void WriteComment(StringBuilder sb, string comment, ref int indent)
+        {
+            string[] commentLines = comment.Trim().Split(LineSeperators, StringSplitOptions.None);
+
+            WriteComment(sb, commentLines, ref indent);
         }
 
         private static readonly string[] LineSeperators = new[] { "\r\n", "\r", "\n" };

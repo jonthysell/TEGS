@@ -2,7 +2,6 @@
 //
 // Name: Carwash
 // Description: An automatic carwash
-//
 
 using System;
 using System.Collections.Generic;
@@ -41,51 +40,69 @@ namespace Carwash
             }
         }
 
-        // Event RUN
+        // Event #0
+        // Name: RUN
+        // Description: The simulation run is started
         private void Event0(Tuple<int, int> parameterValues)
         {
             // Parameters
             QUEUE = parameterValues.Item1;
             SERVERS = parameterValues.Item2;
 
-            // Edge 0 to ENTER
+            // Edge #0
+            // From RUN to ENTER
+            // Description: The car will enter the line
             ScheduleEvent(1, 0, 5, null);
         }
 
-        // Event ENTER
+        // Event #1
+        // Name: ENTER
+        // Description: Cars enter the line
         private void Event1()
         {
             // Event Code
             QUEUE = QUEUE + 1;
 
-            // Edge 1 to ENTER
+            // Edge #1
+            // From ENTER to ENTER
+            // Description: The next customer enters in 3 to 8 minutes
             ScheduleEvent(1, Random.UniformVariate(3, 8), 6, null);
 
-            // Edge 2 to START
+            // Edge #2
+            // From ENTER to START
+            // Description: There are available servers to start washing the car
             if (SERVERS > 0)
             {
                 ScheduleEvent(2, 0, 5, null);
             }
         }
 
-        // Event START
+        // Event #2
+        // Name: START
+        // Description: Service starts
         private void Event2()
         {
             // Event Code
             SERVERS = SERVERS - 1;
             QUEUE = QUEUE - 1;
 
-            // Edge 3 to LEAVE
+            // Edge #3
+            // From START to LEAVE
+            // Description: The car will be in service for at least 5 minutes
             ScheduleEvent(3, Random.UniformVariate(5, 20), 6, null);
         }
 
-        // Event LEAVE
+        // Event #3
+        // Name: LEAVE
+        // Description: Cars leave
         private void Event3()
         {
             // Event Code
             SERVERS = SERVERS + 1;
 
-            // Edge 4 to START
+            // Edge #4
+            // From LEAVE to START
+            // Description: There are cars in queue, start service for the next car in line
             if (QUEUE > 0)
             {
                 ScheduleEvent(2, 0, 5, null);
