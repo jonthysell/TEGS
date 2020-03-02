@@ -80,8 +80,16 @@ namespace TEGS
         {
             WriteComment(sb, $"Generated with { AppInfo.Name } v{ AppInfo.Version }", ref indent);
             WriteComment(sb, "", ref indent);
-            WriteComment(sb, $"Name: { graph.Name }", ref indent);
-            WriteComment(sb, $"Description: { graph.Description }", ref indent);
+
+            if (!string.IsNullOrWhiteSpace(graph.Name))
+            {
+                WriteComment(sb, $"Name: { graph.Name }", ref indent);
+            }
+
+            if (!string.IsNullOrWhiteSpace(graph.Description))
+            {
+                WriteComment(sb, $"Description: { graph.Description }", ref indent);
+            }
         }
 
         #endregion
@@ -218,7 +226,10 @@ namespace TEGS
 
                 WriteComment(sb, $"Event #{ i }", ref indent);
                 WriteComment(sb, $"Name: { vertex.Name }", ref indent);
-                WriteComment(sb, $"Description: { vertex.Description }", ref indent);
+                if (!string.IsNullOrWhiteSpace(vertex.Description))
+                {
+                    WriteComment(sb, $"Description: { vertex.Description }", ref indent);
+                }
 
                 int paramCount = vertex.ParameterNames.Count;
 
@@ -266,8 +277,12 @@ namespace TEGS
 
                             WriteComment(sb, $"Edge #{ j }", ref indent);
                             WriteComment(sb, $"Action: { edge.Action.ToString() }", ref indent);
-                            WriteComment(sb, $"Direction: { edge.Source.Name } to { edge.Target.Name }", ref indent);                            
-                            WriteComment(sb, $"Description: { edge.Description }", ref indent);
+                            WriteComment(sb, $"Direction: { edge.Source.Name } to { edge.Target.Name }", ref indent);
+
+                            if (!string.IsNullOrWhiteSpace(edge.Description))
+                            {
+                                WriteComment(sb, $"Description: { edge.Description }", ref indent);
+                            }
                         }
 
                         bool hasCondition = !string.IsNullOrEmpty(edge.Condition);

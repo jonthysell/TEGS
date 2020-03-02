@@ -145,7 +145,6 @@ namespace Breakdown
             // Edge #9
             // Action: Schedule
             // Direction: FIX to START
-            // Description:
             if (QUEUE > 0)
             {
                 ScheduleEvent(2, 0, 5, null);
@@ -169,7 +168,6 @@ namespace Breakdown
             // Edge #7
             // Action: CancelNext
             // Direction: FAIL to LEAVE
-            // Description:
             CancelNextEvent(3, null);
         }
     }
