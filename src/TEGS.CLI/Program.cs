@@ -184,7 +184,8 @@ namespace TEGS.CLI
             Console.WriteLine();
 
             Console.WriteLine("Options:");
-            Console.WriteLine("--output-source [file]  Write the built source to the given file");
+            Console.WriteLine("--namespace [string]    Generate the source code in the given namespace");
+            Console.WriteLine("--output-source [file]  Write the source code to the given file");
             Console.WriteLine();
         }
 
@@ -206,6 +207,7 @@ namespace TEGS.CLI
             }
 
             string outputSourceFile = null;
+            string targetNamespace = null;
 
             try
             {
@@ -213,6 +215,9 @@ namespace TEGS.CLI
                 {
                     switch (Arguments[i].ToLower())
                     {
+                        case "--namespace":
+                            targetNamespace = Arguments[++i];
+                            break;
                         case "--output-source":
                             outputSourceFile = Arguments[++i];
                             break;
@@ -233,6 +238,7 @@ namespace TEGS.CLI
 
             var buildCommandArgs = new BuildCommandArgs(graph)
             {
+                TargetNamespace = targetNamespace,
                 OutputSourcePath = outputSourceFile
             };
 
@@ -245,7 +251,7 @@ namespace TEGS.CLI
 
             ValidateLoadedGraph();
 
-            string code = CodeGenerator.Generate(args.Graph);
+            string code = CodeGenerator.Generate(args.Graph, args.TargetNamespace);
 
             File.WriteAllText(args.OutputSourcePath, code, Encoding.UTF8);
         }

@@ -31,11 +31,20 @@ namespace TEGS
 {
     public static class CodeGenerator
     {
-        public static string Generate(Graph graph)
+        public static string Generate(Graph graph, string targetNamespace = null)
         {
             if (null == graph)
             {
                 throw new ArgumentNullException(nameof(graph));
+            }
+
+            if (string.IsNullOrWhiteSpace(targetNamespace))
+            {
+                targetNamespace = ScriptingHost.IsValidSymbolName(graph.Name, true) ? graph.Name : "TegsGenerated";
+            }
+            else if (!ScriptingHost.IsValidSymbolName(targetNamespace, true))
+            {
+                throw new ArgumentOutOfRangeException(nameof(targetNamespace));
             }
 
             StringBuilder sb = new StringBuilder();
@@ -50,7 +59,7 @@ namespace TEGS
 
             // Namespace
             sb.AppendLine();
-            StartBlock(sb, "namespace GeneratedApp", ref indent);
+            StartBlock(sb, $"namespace { targetNamespace }", ref indent);
 
             // Graph Code
             WriteGraphCode(sb, graph, ref indent);
@@ -296,7 +305,7 @@ class Program
     static SimulationArgs ParseArgs(string[] args)
     {
         var simArgs = new SimulationArgs();
-        var startValues = new List<string>()
+        var startValues = new List<string>();
 
         for (int i = 0; i < args.Length - 1; i++)
         {

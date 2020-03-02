@@ -43,6 +43,8 @@ namespace TEGS.CLI
     {
         public string OutputSourcePath { get; set; } = null;
 
+        public string TargetNamespace { get; set; } = null;
+
         public BuildCommandArgs(Graph graph) : base(graph) { }
     }
 
