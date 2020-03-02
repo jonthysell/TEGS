@@ -26,6 +26,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		..\README.md = ..\README.md
 	EndProjectSection
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Breakdown", "NativeExamples\Breakdown\Breakdown.csproj", "{CF3E35C0-346B-43F1-8C88-97724D2AE5C0}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		TEGS\TEGS.projitems*{ce581cf7-25a3-461f-b5b3-691086b847ca}*SharedItemsImports = 13
@@ -47,12 +49,17 @@ Global
 		{19AD9C90-B96F-49F2-A782-F8B79F986A9A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{19AD9C90-B96F-49F2-A782-F8B79F986A9A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{19AD9C90-B96F-49F2-A782-F8B79F986A9A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CF3E35C0-346B-43F1-8C88-97724D2AE5C0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CF3E35C0-346B-43F1-8C88-97724D2AE5C0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CF3E35C0-346B-43F1-8C88-97724D2AE5C0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CF3E35C0-346B-43F1-8C88-97724D2AE5C0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{19AD9C90-B96F-49F2-A782-F8B79F986A9A} = {7A230B6C-BC82-4778-BAEF-ABF790363088}
+		{CF3E35C0-346B-43F1-8C88-97724D2AE5C0} = {7A230B6C-BC82-4778-BAEF-ABF790363088}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {1A0536E0-FBEC-4DD8-BF2D-5A92D930FC34}

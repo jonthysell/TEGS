@@ -22,6 +22,10 @@
     "Validate Carwash ": {
       "commandName": "Project",
       "commandLineArgs": "validate $(ProjectDir)\\..\\..\\examples\\carwash.xml"
-    }
+    },
+    "Build Breakdown": {
+      "commandName": "Project",
+      "commandLineArgs": "build --output-source $(ProjectDir)\\..\\..\\src\\NativeExamples\\Breakdown\\Program.cs  $(ProjectDir)\\..\\..\\examples\\breakdown.xml"
+    },
   }
 }
