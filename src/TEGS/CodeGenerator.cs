@@ -147,7 +147,7 @@ namespace TEGS
             return null;
         }
 
-        private const string StateVariableRewritePrefix = "SV_";
+        private const string StateVariableRewritePrefix = "StateVariable_";
 
         private static readonly Dictionary<string, string> FunctionRewriteMap = new Dictionary<string, string>()
         {
@@ -197,11 +197,56 @@ namespace TEGS
 
         private static void WriteGraphCode(StringBuilder sb, Graph graph, ref int indent)
         {
+            StartBlock(sb, "enum EventType", ref indent);
+
+            var eventNames = new Dictionary<Vertex, string>();
+            var eventParameterTypes = new Dictionary<Vertex, string>();
+
+            for (int i = 0; i < graph.Verticies.Count; i++)
+            {
+                Vertex vertex = graph.Verticies[i];
+
+                int paramCount = vertex.ParameterNames.Count;
+
+                if (paramCount > 0 && !eventParameterTypes.TryGetValue(vertex, out string eventParameterType))
+                {
+                    StringBuilder tupleTypesSB = new StringBuilder();
+
+                    tupleTypesSB.Append("Tuple<");
+
+                    for (int j = 0; j < paramCount; j++)
+                    {
+                        if (j > 0)
+                        {
+                            tupleTypesSB.Append(", ");
+                        }
+
+                        tupleTypesSB.Append(GetStateVariableType(graph.GetStateVariable(vertex.ParameterNames[i])));
+                    }
+
+                    tupleTypesSB.Append(">");
+
+                    eventParameterType = tupleTypesSB.ToString();
+                    eventParameterTypes[vertex] = eventParameterType;
+                }
+
+                if (!eventNames.TryGetValue(vertex, out string eventName))
+                {
+                    eventName = $"{ EventNamePrefix }{ ( ScriptingHost.IsValidSymbolName(vertex.Name, false) ? vertex.Name : i.ToString()) }";
+                    eventNames[vertex] = eventName;
+                }
+
+                WriteCode(sb, $"{ eventName } = { i },", ref indent);
+            }
+
+            EndBlock(sb, ref indent); // enum EventType
+
+            sb.AppendLine();
             StartBlock(sb, "class Simulation : SimulationBase", ref indent);
 
             Vertex startingVertex = graph.StartingVertex;
 
-            WriteCode(sb, $"protected override int StartingEventId => { startingVertex.Id };", ref indent);
+            WriteCode(sb, $"protected override EventType StartingEventType => EventType.{ eventNames[startingVertex] };", ref indent);
 
             if (graph.StateVariables.Count > 0)
             {
@@ -250,44 +295,17 @@ namespace TEGS
             }
 
             sb.AppendLine();
-            StartBlock(sb, "protected override void ProcessEvent(int eventId, object parameterValues)", ref indent);
+            StartBlock(sb, "protected override void ProcessEvent(EventType eventType, object parameterValues)", ref indent);
 
-            StartBlock(sb, "switch (eventId)", ref indent);
-
-            var eventParameterTypes = new Dictionary<Vertex, string>();
+            StartBlock(sb, "switch (eventType)", ref indent);
 
             for (int i = 0; i < graph.Verticies.Count; i++)
             {
                 Vertex vertex = graph.Verticies[i];
 
-                int paramCount = vertex.ParameterNames.Count;
+                StartBlock(sb, $"case EventType.{ eventNames[vertex] }:", ref indent, false);
 
-                string eventParameterType = null;
-                if (paramCount > 0 && !eventParameterTypes.TryGetValue(vertex, out eventParameterType))
-                {
-                    StringBuilder tupleTypesSB = new StringBuilder();
-
-                    tupleTypesSB.Append("Tuple<");
-
-                    for (int j = 0; j < paramCount; j++)
-                    {
-                        if (j > 0)
-                        {
-                            tupleTypesSB.Append(", ");
-                        }
-
-                        tupleTypesSB.Append(GetStateVariableType(graph.GetStateVariable(startingVertex.ParameterNames[i])));
-                    }
-
-                    tupleTypesSB.Append(">");
-
-                    eventParameterType = tupleTypesSB.ToString();
-                    eventParameterTypes[vertex] = eventParameterType;
-                }
-
-                StartBlock(sb, $"case { i }:", ref indent, false);
-
-                WriteCode(sb, $"Event{ i }({ (paramCount > 0 ? $"({ eventParameterType })parameterValues" : "") });", ref indent);
+                WriteCode(sb, $"{ eventNames[vertex] }({ (vertex.ParameterNames.Count > 0 ? $"({ eventParameterTypes[vertex] })parameterValues" : "") });", ref indent);
 
                 WriteCode(sb, "break;", ref indent);
 
@@ -304,8 +322,7 @@ namespace TEGS
 
                 sb.AppendLine();
 
-                WriteComment(sb, $"Event #{ i }", ref indent);
-                WriteComment(sb, $"Name: { vertex.Name }", ref indent);
+                WriteComment(sb, $"Event #{ i }: { vertex.Name }", ref indent);
                 if (!string.IsNullOrWhiteSpace(vertex.Description))
                 {
                     WriteComment(sb, $"Description: { vertex.Description }", ref indent);
@@ -313,7 +330,7 @@ namespace TEGS
 
                 int paramCount = vertex.ParameterNames.Count;
 
-                StartBlock(sb, $"private void Event{ i }({ (paramCount > 0 ? $"{ eventParameterTypes[vertex] } parameterValues" : "") })", ref indent);
+                StartBlock(sb, $"private void { eventNames[vertex] }({ (paramCount > 0 ? $"{ eventParameterTypes[vertex] } parameterValues" : "") })", ref indent);
 
                 bool addSpacing = false;
 
@@ -355,9 +372,7 @@ namespace TEGS
                         {
                             sb.AppendLine();
 
-                            WriteComment(sb, $"Edge #{ j }", ref indent);
-                            WriteComment(sb, $"Action: { edge.Action.ToString() }", ref indent);
-                            WriteComment(sb, $"Direction: { edge.Source.Name } to { edge.Target.Name }", ref indent);
+                            WriteComment(sb, $"Edge #{ j }: { edge.Action.ToString() } { edge.Source.Name } to { edge.Target.Name }", ref indent);
 
                             if (!string.IsNullOrWhiteSpace(edge.Description))
                             {
@@ -395,13 +410,13 @@ namespace TEGS
                         switch(edge.Action)
                         {
                             case EdgeAction.Schedule:
-                                WriteCode(sb, $"ScheduleEvent({ edge.Target.Id }, { (string.IsNullOrEmpty(edge.Delay) ? "0" : RewriteExpression(graph, edge.Delay)) }, { (string.IsNullOrEmpty(edge.Priority) ? "0" : RewriteExpression(graph, edge.Priority)) }, { parameterValuesSB.ToString() });", ref indent);
+                                WriteCode(sb, $"ScheduleEvent(EventType.{ eventNames[edge.Target] }, { (string.IsNullOrEmpty(edge.Delay) ? "0" : RewriteExpression(graph, edge.Delay)) }, { (string.IsNullOrEmpty(edge.Priority) ? "0" : RewriteExpression(graph, edge.Priority)) }, { parameterValuesSB.ToString() });", ref indent);
                                 break;
                             case EdgeAction.CancelNext:
-                                WriteCode(sb, $"CancelNextEvent({ edge.Target.Id }, { parameterValuesSB.ToString() });", ref indent);
+                                WriteCode(sb, $"CancelNextEvent(EventType.{ eventNames[edge.Target] }, { parameterValuesSB.ToString() });", ref indent);
                                 break;
                             case EdgeAction.CancelAll:
-                                WriteCode(sb, $"CancelAllEvents({ edge.Target.Id }, { parameterValuesSB.ToString() });", ref indent);
+                                WriteCode(sb, $"CancelAllEvents(EventType.{ eventNames[edge.Target] }, { parameterValuesSB.ToString() });", ref indent);
                                 break;
                         }
 
@@ -436,6 +451,8 @@ namespace TEGS
                     return "object";
             }
         }
+
+        private const string EventNamePrefix = "Event_";
 
         #endregion
 
@@ -495,7 +512,7 @@ struct ScheduleEntry : IComparable<ScheduleEntry>
 {
     public double Time;
     public double Priority;
-    public int EventId;
+    public EventType EventType;
     public object ParameterValues;
 
     public int CompareTo(ScheduleEntry other)
@@ -531,13 +548,13 @@ abstract class SimulationBase
 
     protected Random Random;
 
-    protected abstract int StartingEventId { get; }
+    protected abstract EventType StartingEventType { get; }
 
     public void Run(SimulationArgs args)
     {
         Random = new Random(args.Seed);
 
-        ScheduleEvent(StartingEventId, 0, 0, ParseStartParameters(args.StartParameterValues));
+        ScheduleEvent(StartingEventType, 0, 0, ParseStartParameters(args.StartParameterValues));
 
         while (_schedule.Count > 0 && _clock < args.StopCondition.MaxTime)
         {
@@ -546,21 +563,21 @@ abstract class SimulationBase
 
             _clock = entry.Time;
 
-            ProcessEvent(entry.EventId, entry.ParameterValues);
+            ProcessEvent(entry.EventType, entry.ParameterValues);
         }
     }
 
     protected virtual object ParseStartParameters(string[] startParameters) => null;
 
-    protected abstract void ProcessEvent(int eventId, object parameterValues);
+    protected abstract void ProcessEvent(EventType eventType, object parameterValues);
 
-    protected void ScheduleEvent(int eventId, double delay, double priority, object parameterValues)
+    protected void ScheduleEvent(EventType eventType, double delay, double priority, object parameterValues)
     {
         var entry = new ScheduleEntry()
         {
             Time = _clock + delay,
             Priority = priority,
-            EventId = eventId,
+            EventType = eventType,
             ParameterValues = parameterValues
         };
 
@@ -581,11 +598,11 @@ abstract class SimulationBase
         }
     }
 
-    protected void CancelNextEvent(int eventId, object parameterValues)
+    protected void CancelNextEvent(EventType eventType, object parameterValues)
     {
         for (int i = 0; i < _schedule.Count; i++)
         {
-            if (CancelPredicate(_schedule[i], eventId, parameterValues))
+            if (CancelPredicate(_schedule[i], eventType, parameterValues))
             {
                 _schedule.RemoveAt(i);
                 break;
@@ -593,14 +610,14 @@ abstract class SimulationBase
         }
     }
 
-    protected void CancelAllEvents(int eventId, object parameterValues)
+    protected void CancelAllEvents(EventType eventType, object parameterValues)
     {
-        _schedule.RemoveAll(entry => CancelPredicate(entry, eventId, parameterValues));
+        _schedule.RemoveAll(entry => CancelPredicate(entry, eventType, parameterValues));
     }
 
-    private static bool CancelPredicate(ScheduleEntry match, int eventId, object parameterValues)
+    private static bool CancelPredicate(ScheduleEntry match, EventType eventType, object parameterValues)
     {
-        return match.EventId == eventId &&
+        return match.EventType == eventType &&
             (null == parameterValues || (null != match.ParameterValues && match.ParameterValues.Equals(parameterValues)));
     }
 

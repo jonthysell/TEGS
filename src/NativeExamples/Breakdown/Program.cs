@@ -9,166 +9,150 @@ using System.Text;
 
 namespace Breakdown
 {
+    enum EventType
+    {
+        Event_RUN = 0,
+        Event_ENTER = 1,
+        Event_START = 2,
+        Event_LEAVE = 3,
+        Event_FIX = 4,
+        Event_FAIL = 5,
+    }
+
     class Simulation : SimulationBase
     {
-        protected override int StartingEventId => 0;
+        protected override EventType StartingEventType => EventType.Event_RUN;
 
         // State Variables
-        int SV_QUEUE = default;
-        int SV_SERVER = default;
+        int StateVariable_QUEUE = default;
+        int StateVariable_SERVER = default;
 
         public Simulation() { }
 
         protected override object ParseStartParameters(string[] startParameters) => Tuple.Create(int.Parse(startParameters[0]));
 
-        protected override void ProcessEvent(int eventId, object parameterValues)
+        protected override void ProcessEvent(EventType eventType, object parameterValues)
         {
-            switch (eventId)
+            switch (eventType)
             {
-                case 0:
-                    Event0((Tuple<int>)parameterValues);
+                case EventType.Event_RUN:
+                    Event_RUN((Tuple<int>)parameterValues);
                     break;
-                case 1:
-                    Event1();
+                case EventType.Event_ENTER:
+                    Event_ENTER();
                     break;
-                case 2:
-                    Event2();
+                case EventType.Event_START:
+                    Event_START();
                     break;
-                case 3:
-                    Event3();
+                case EventType.Event_LEAVE:
+                    Event_LEAVE();
                     break;
-                case 4:
-                    Event4();
+                case EventType.Event_FIX:
+                    Event_FIX();
                     break;
-                case 5:
-                    Event5();
+                case EventType.Event_FAIL:
+                    Event_FAIL();
                     break;
             }
         }
 
-        // Event #0
-        // Name: RUN
+        // Event #0: RUN
         // Description: The simulation has started
-        private void Event0(Tuple<int> parameterValues)
+        private void Event_RUN(Tuple<int> parameterValues)
         {
             // Parameters
-            SV_QUEUE = parameterValues.Item1;
+            StateVariable_QUEUE = parameterValues.Item1;
 
             // Event Code
-            SV_SERVER = 1;
+            StateVariable_SERVER = 1;
 
-            // Edge #0
-            // Action: Schedule
-            // Direction: RUN to ENTER
+            // Edge #0: Schedule RUN to ENTER
             // Description: Initiate the first job arrival
-            ScheduleEvent(1, 0, 5, null);
+            ScheduleEvent(EventType.Event_ENTER, 0, 5, null);
 
-            // Edge #1
-            // Action: Schedule
-            // Direction: RUN to FAIL
+            // Edge #1: Schedule RUN to FAIL
             // Description: Schedule the first machine breakdown
-            ScheduleEvent(5, Random.ExponentialVariate(1.0 / 15.0), 4, null);
+            ScheduleEvent(EventType.Event_FAIL, Random.ExponentialVariate(1.0 / 15.0), 4, null);
         }
 
-        // Event #1
-        // Name: ENTER
+        // Event #1: ENTER
         // Description: Arrival of a job
-        private void Event1()
+        private void Event_ENTER()
         {
             // Event Code
-            SV_QUEUE = SV_QUEUE + 1;
+            StateVariable_QUEUE = StateVariable_QUEUE + 1;
 
-            // Edge #2
-            // Action: Schedule
-            // Direction: ENTER to ENTER
+            // Edge #2: Schedule ENTER to ENTER
             // Description: Schedule the next arrival
-            ScheduleEvent(1, Random.ExponentialVariate(1.0 / 6.0), 6, null);
+            ScheduleEvent(EventType.Event_ENTER, Random.ExponentialVariate(1.0 / 6.0), 6, null);
 
-            // Edge #3
-            // Action: Schedule
-            // Direction: ENTER to START
+            // Edge #3: Schedule ENTER to START
             // Description: Start service
-            if (SV_SERVER > 0)
+            if (StateVariable_SERVER > 0)
             {
-                ScheduleEvent(2, 0, 5, null);
+                ScheduleEvent(EventType.Event_START, 0, 5, null);
             }
         }
 
-        // Event #2
-        // Name: START
+        // Event #2: START
         // Description: Start of Service
-        private void Event2()
+        private void Event_START()
         {
             // Event Code
-            SV_SERVER = 0;
-            SV_QUEUE = SV_QUEUE - 1;
+            StateVariable_SERVER = 0;
+            StateVariable_QUEUE = StateVariable_QUEUE - 1;
 
-            // Edge #4
-            // Action: Schedule
-            // Direction: START to LEAVE
+            // Edge #4: Schedule START to LEAVE
             // Description: The job is placed in service for 2 minutes
-            ScheduleEvent(3, 2, 6, null);
+            ScheduleEvent(EventType.Event_LEAVE, 2, 6, null);
         }
 
-        // Event #3
-        // Name: LEAVE
+        // Event #3: LEAVE
         // Description: End of Service
-        private void Event3()
+        private void Event_LEAVE()
         {
             // Event Code
-            SV_SERVER = 1;
+            StateVariable_SERVER = 1;
 
-            // Edge #5
-            // Action: Schedule
-            // Direction: LEAVE to START
+            // Edge #5: Schedule LEAVE to START
             // Description: Start servicing the waiting job
-            if (SV_QUEUE > 0)
+            if (StateVariable_QUEUE > 0)
             {
-                ScheduleEvent(2, 0, 5, null);
+                ScheduleEvent(EventType.Event_START, 0, 5, null);
             }
         }
 
-        // Event #4
-        // Name: FIX
+        // Event #4: FIX
         // Description: Completion of repair on the machine
-        private void Event4()
+        private void Event_FIX()
         {
             // Event Code
-            SV_SERVER = 1;
+            StateVariable_SERVER = 1;
 
-            // Edge #8
-            // Action: Schedule
-            // Direction: FIX to FAIL
+            // Edge #8: Schedule FIX to FAIL
             // Description: Schedule the next machine failure
-            ScheduleEvent(5, Random.ExponentialVariate(1.0 / 15.0), 4, null);
+            ScheduleEvent(EventType.Event_FAIL, Random.ExponentialVariate(1.0 / 15.0), 4, null);
 
-            // Edge #9
-            // Action: Schedule
-            // Direction: FIX to START
-            if (SV_QUEUE > 0)
+            // Edge #9: Schedule FIX to START
+            if (StateVariable_QUEUE > 0)
             {
-                ScheduleEvent(2, 0, 5, null);
+                ScheduleEvent(EventType.Event_START, 0, 5, null);
             }
         }
 
-        // Event #5
-        // Name: FAIL
+        // Event #5: FAIL
         // Description: The occurrence of a service failure
-        private void Event5()
+        private void Event_FAIL()
         {
             // Event Code
-            SV_SERVER =  - 1;
+            StateVariable_SERVER =  - 1;
 
-            // Edge #6
-            // Action: Schedule
-            // Direction: FAIL to FIX
+            // Edge #6: Schedule FAIL to FIX
             // Description: After 30 minutes the machine will be fixed
-            ScheduleEvent(4, 30, 6, null);
+            ScheduleEvent(EventType.Event_FIX, 30, 6, null);
 
-            // Edge #7
-            // Action: CancelNext
-            // Direction: FAIL to LEAVE
-            CancelNextEvent(3, null);
+            // Edge #7: CancelNext FAIL to LEAVE
+            CancelNextEvent(EventType.Event_LEAVE, null);
         }
     }
 
@@ -220,7 +204,7 @@ namespace Breakdown
     {
         public double Time;
         public double Priority;
-        public int EventId;
+        public EventType EventType;
         public object ParameterValues;
     
         public int CompareTo(ScheduleEntry other)
@@ -256,13 +240,13 @@ namespace Breakdown
     
         protected Random Random;
     
-        protected abstract int StartingEventId { get; }
+        protected abstract EventType StartingEventType { get; }
     
         public void Run(SimulationArgs args)
         {
             Random = new Random(args.Seed);
     
-            ScheduleEvent(StartingEventId, 0, 0, ParseStartParameters(args.StartParameterValues));
+            ScheduleEvent(StartingEventType, 0, 0, ParseStartParameters(args.StartParameterValues));
     
             while (_schedule.Count > 0 && _clock < args.StopCondition.MaxTime)
             {
@@ -271,21 +255,21 @@ namespace Breakdown
     
                 _clock = entry.Time;
     
-                ProcessEvent(entry.EventId, entry.ParameterValues);
+                ProcessEvent(entry.EventType, entry.ParameterValues);
             }
         }
     
         protected virtual object ParseStartParameters(string[] startParameters) => null;
     
-        protected abstract void ProcessEvent(int eventId, object parameterValues);
+        protected abstract void ProcessEvent(EventType eventType, object parameterValues);
     
-        protected void ScheduleEvent(int eventId, double delay, double priority, object parameterValues)
+        protected void ScheduleEvent(EventType eventType, double delay, double priority, object parameterValues)
         {
             var entry = new ScheduleEntry()
             {
                 Time = _clock + delay,
                 Priority = priority,
-                EventId = eventId,
+                EventType = eventType,
                 ParameterValues = parameterValues
             };
     
@@ -306,11 +290,11 @@ namespace Breakdown
             }
         }
     
-        protected void CancelNextEvent(int eventId, object parameterValues)
+        protected void CancelNextEvent(EventType eventType, object parameterValues)
         {
             for (int i = 0; i < _schedule.Count; i++)
             {
-                if (CancelPredicate(_schedule[i], eventId, parameterValues))
+                if (CancelPredicate(_schedule[i], eventType, parameterValues))
                 {
                     _schedule.RemoveAt(i);
                     break;
@@ -318,14 +302,14 @@ namespace Breakdown
             }
         }
     
-        protected void CancelAllEvents(int eventId, object parameterValues)
+        protected void CancelAllEvents(EventType eventType, object parameterValues)
         {
-            _schedule.RemoveAll(entry => CancelPredicate(entry, eventId, parameterValues));
+            _schedule.RemoveAll(entry => CancelPredicate(entry, eventType, parameterValues));
         }
     
-        private static bool CancelPredicate(ScheduleEntry match, int eventId, object parameterValues)
+        private static bool CancelPredicate(ScheduleEntry match, EventType eventType, object parameterValues)
         {
-            return match.EventId == eventId &&
+            return match.EventType == eventType &&
                 (null == parameterValues || (null != match.ParameterValues && match.ParameterValues.Equals(parameterValues)));
         }
     
