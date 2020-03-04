@@ -74,11 +74,11 @@ namespace TEGS
                 CurrentValue = default;
                 CurrentSymbol = default;
             }
-            else if (TryParseValue(out VariableValue value))
+            else if (TryParseValue(out VariableValue value, out string literal))
             {
                 CurrentToken = TokenType.Value;
                 CurrentValue = value;
-                CurrentSymbol = default;
+                CurrentSymbol = literal;
             }
             else if (TryParseSymbol(out string symbol))
             {
@@ -214,7 +214,7 @@ namespace TEGS
             return false;
         }
 
-        private bool TryParseValue(out VariableValue result)
+        private bool TryParseValue(out VariableValue result, out string literal)
         {
             if (char.IsDigit(CurrentChar) || CurrentChar == '.') // Number
             {
@@ -230,6 +230,7 @@ namespace TEGS
                 string value = Expression.Substring(startIndex, CurrentIndex - startIndex);
 
                 result = hasDecimalPoint ? new VariableValue(double.Parse(value, CultureInfo.InvariantCulture)) : new VariableValue(int.Parse(value, CultureInfo.InvariantCulture));
+                literal = value;
                 return true;
             }
             else if (CurrentChar == 't' || CurrentChar == 'f') // Boolean
@@ -239,19 +240,23 @@ namespace TEGS
                 if (remaining.StartsWith("true"))
                 {
                     result = VariableValue.True;
-                    ReadChar("true".Length);
+                    literal = "true";
+                    ReadChar(literal.Length);
                     return true;
                 }
                 else if (remaining.StartsWith("false"))
                 {
                     result = VariableValue.False;
-                    ReadChar("false".Length);
+                    literal = "false";
+                    ReadChar(literal.Length);
                     return true;
                 }
             }
             else if (CurrentChar == '"') // String
             {
                 StringBuilder sb = new StringBuilder();
+
+                int startIndex = CurrentIndex;
 
                 bool foundClosingQuote = false;
 
@@ -283,11 +288,13 @@ namespace TEGS
                     ReadChar();
 
                     result = new VariableValue(sb.ToString());
+                    literal = Expression.Substring(startIndex, CurrentIndex - startIndex);
                     return true;
                 }
             }
 
             result = default;
+            literal = default;
             return false;
         }
 

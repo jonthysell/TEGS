@@ -67,7 +67,7 @@ namespace Breakdown
             // Action: Schedule
             // Direction: RUN to FAIL
             // Description: Schedule the first machine breakdown
-            ScheduleEvent(5, Random.ExponentialVariate(1d / 15d), 4, null);
+            ScheduleEvent(5, Random.ExponentialVariate(1.0 / 15.0), 4, null);
         }
 
         // Event #1
@@ -82,7 +82,7 @@ namespace Breakdown
             // Action: Schedule
             // Direction: ENTER to ENTER
             // Description: Schedule the next arrival
-            ScheduleEvent(1, Random.ExponentialVariate(1d / 6d), 6, null);
+            ScheduleEvent(1, Random.ExponentialVariate(1.0 / 6.0), 6, null);
 
             // Edge #3
             // Action: Schedule
@@ -140,7 +140,7 @@ namespace Breakdown
             // Action: Schedule
             // Direction: FIX to FAIL
             // Description: Schedule the next machine failure
-            ScheduleEvent(5, Random.ExponentialVariate(1d / 15d), 4, null);
+            ScheduleEvent(5, Random.ExponentialVariate(1.0 / 15.0), 4, null);
 
             // Edge #9
             // Action: Schedule
@@ -330,6 +330,8 @@ namespace Breakdown
         }
     
         protected double Clock() => _clock;
+    
+        protected int String_Length(string str) => str.Length;
     }
     
     public static class RandomExtensions
@@ -368,10 +370,5 @@ namespace Breakdown
         {
             return Math.Exp(random.NormalVariate(mu, sigma));
         }
-    }
-    
-    public static class StringExtensions
-    {
-        public static int Length(this string str) => str.Length;
     }
 }

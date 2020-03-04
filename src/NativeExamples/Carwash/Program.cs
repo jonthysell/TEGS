@@ -273,6 +273,8 @@ namespace Carwash
         }
     
         protected double Clock() => _clock;
+    
+        protected int String_Length(string str) => str.Length;
     }
     
     public static class RandomExtensions
@@ -311,10 +313,5 @@ namespace Carwash
         {
             return Math.Exp(random.NormalVariate(mu, sigma));
         }
-    }
-    
-    public static class StringExtensions
-    {
-        public static int Length(this string str) => str.Length;
     }
 }

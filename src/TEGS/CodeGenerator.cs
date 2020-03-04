@@ -141,19 +141,7 @@ namespace TEGS
                         return FunctionRewriteMap.TryGetValue(symbol, out string result) ? result : symbol;
                     }
                 case TokenType.Value:
-                    var value = tokenReader.CurrentValue;
-                    switch (value.Type)
-                    {
-                        case VariableValueType.Boolean:
-                            return value.BooleanValue ? "true" : "false";
-                        case VariableValueType.Integer:
-                            return value.IntegerValue.ToString();
-                        case VariableValueType.Double:
-                            return $"{ value.DoubleValue }d";
-                        case VariableValueType.String:
-                            return $"\"{ value.StringValue }\"";
-                    }
-                    break;
+                    return tokenReader.CurrentSymbol; // Contains the literal value read by the parser
             }
 
             return null;
