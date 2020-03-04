@@ -132,7 +132,14 @@ namespace TEGS
                     return " || ";
                 case TokenType.Symbol:
                     string symbol = tokenReader.CurrentSymbol;
-                    return graph.HasStateVariable(symbol) ? $"SV_{ symbol }" : symbol;
+                    if (graph.HasStateVariable(symbol))
+                    {
+                        return $"{ StateVariableRewritePrefix }{ symbol }";
+                    }
+                    else
+                    {
+                        return FunctionRewriteMap.TryGetValue(symbol, out string result) ? result : symbol;
+                    }
                 case TokenType.Value:
                     var value = tokenReader.CurrentValue;
                     switch (value.Type)
@@ -151,6 +158,13 @@ namespace TEGS
 
             return null;
         }
+
+        private const string StateVariableRewritePrefix = "SV_";
+
+        private static readonly Dictionary<string, string> FunctionRewriteMap = new Dictionary<string, string>()
+        {
+            {  "String.Length", "String_Length" },
+        };
 
         #region Header
 
@@ -603,6 +617,8 @@ abstract class SimulationBase
     }
 
     protected double Clock() => _clock;
+
+    protected int String_Length(string str) => str.Length;
 }
 
 public static class RandomExtensions
@@ -641,11 +657,6 @@ public static class RandomExtensions
     {
         return Math.Exp(random.NormalVariate(mu, sigma));
     }
-}
-
-public static class StringExtensions
-{
-    public static int Length(this string str) => str.Length;
 }
 ";
 
