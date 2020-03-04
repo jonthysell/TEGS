@@ -5,7 +5,7 @@
     },
     "Build Carwash": {
       "commandName": "Project",
-      "commandLineArgs": "build --output-source $(ProjectDir)\\..\\..\\src\\NativeExamples\\Carwash\\Program.cs  $(ProjectDir)\\..\\..\\examples\\carwash.xml"
+      "commandLineArgs": "build --output-path $(ProjectDir)\\..\\..\\src\\NativeExamples\\Carwash  $(ProjectDir)\\..\\..\\examples\\carwash.xml"
     },
     "Run Carwash (Perf)": {
       "commandName": "Project",
@@ -25,7 +25,7 @@
     },
     "Build Breakdown": {
       "commandName": "Project",
-      "commandLineArgs": "build --output-source $(ProjectDir)\\..\\..\\src\\NativeExamples\\Breakdown\\Program.cs  $(ProjectDir)\\..\\..\\examples\\breakdown.xml"
+      "commandLineArgs": "build --output-path $(ProjectDir)\\..\\..\\src\\NativeExamples\\Breakdown  $(ProjectDir)\\..\\..\\examples\\breakdown.xml"
     },
   }
 }

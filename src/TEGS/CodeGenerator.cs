@@ -32,7 +32,7 @@ namespace TEGS
 {
     public static class CodeGenerator
     {
-        public static string Generate(Graph graph, string targetNamespace = null)
+        public static string Generate(Graph graph, string targetNamespace)
         {
             if (null == graph)
             {
@@ -41,11 +41,7 @@ namespace TEGS
 
             if (string.IsNullOrWhiteSpace(targetNamespace))
             {
-                targetNamespace = ScriptingHost.IsValidSymbolName(graph.Name, true) ? graph.Name : "TegsGenerated";
-            }
-            else if (!ScriptingHost.IsValidSymbolName(targetNamespace, true))
-            {
-                throw new ArgumentOutOfRangeException(nameof(targetNamespace));
+                throw new ArgumentNullException(nameof(targetNamespace));
             }
 
             StringBuilder sb = new StringBuilder();
@@ -232,7 +228,11 @@ namespace TEGS
 
                 if (!eventNames.TryGetValue(vertex, out string eventName))
                 {
-                    eventName = $"{ EventNamePrefix }{ ( ScriptingHost.IsValidSymbolName(vertex.Name, false) ? vertex.Name : i.ToString()) }";
+                    if (!ScriptingHost.TrySymbolify(vertex.Name, false, out string result))
+                    {
+                        result = i.ToString();
+                    }
+                    eventName = $"{ EventNamePrefix }{ result }";
                     eventNames[vertex] = eventName;
                 }
 

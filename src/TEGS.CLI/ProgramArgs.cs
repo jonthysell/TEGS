@@ -31,20 +31,26 @@ namespace TEGS.CLI
     public abstract class ProgramArgs
     {
         public readonly Graph Graph;
+        public readonly string GraphFile;
 
-        public ProgramArgs(Graph graph)
+        public ProgramArgs(Graph graph, string graphFile)
         {
             Graph = graph ?? throw new ArgumentNullException(nameof(graph));
+            GraphFile = graphFile ?? throw new ArgumentNullException(nameof(graphFile));
         }
     }
 
     public class BuildCommandArgs : ProgramArgs
     {
-        public string OutputSourcePath { get; set; } = null;
+        public string OutputPath { get; set; } = null;
 
-        public string TargetNamespace { get; set; } = null;
+        public string ProjectFile { get; set; } = null;
 
-        public BuildCommandArgs(Graph graph) : base(graph) { }
+        public string SourceFile { get; set; } = null;
+
+        public bool SourceOnly { get; set; } = false;
+
+        public BuildCommandArgs(Graph graph, string graphFile) : base(graph, graphFile) { }
     }
 
     public class RunCommandArgs : ProgramArgs
@@ -57,7 +63,7 @@ namespace TEGS.CLI
 
         public string OutputFile { get; set; } = null;
 
-        public RunCommandArgs(Graph graph) : base(graph)
+        public RunCommandArgs(Graph graph, string graphFile) : base(graph, graphFile)
         {
             SimulationArgs = new SimulationArgs(graph);
         }
@@ -65,6 +71,6 @@ namespace TEGS.CLI
 
     public class ValidateCommandArgs : ProgramArgs
     {
-        public ValidateCommandArgs(Graph graph) : base(graph) { }
+        public ValidateCommandArgs(Graph graph, string graphFile) : base(graph, graphFile) { }
     }
 }

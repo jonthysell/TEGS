@@ -50,11 +50,11 @@ namespace TEGS.Test
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentNullException))]
-        public void CodeGenerator_NullInvalidTest() => CodeGenerator.Generate(null);
+        public void CodeGenerator_NullInvalidTest() => CodeGenerator.Generate(null, "");
 
         private static void CodeGenerator_ValidTest(Graph graph)
         {
-            string code = CodeGenerator.Generate(graph);
+            string code = CodeGenerator.Generate(graph, graph.Name);
             Assert.IsNotNull(code);
 
             byte[] compiledCode = CompileCode(code, $"{ graph.Name }.exe");

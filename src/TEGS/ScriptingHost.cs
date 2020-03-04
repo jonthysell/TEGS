@@ -26,6 +26,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Text;
 
 namespace TEGS
 {
@@ -351,6 +352,85 @@ namespace TEGS
             }
 
             return true;
+        }
+
+        public static bool TrySymbolify(string name, bool allowDot, out string result)
+        {
+            try
+            {
+                result = Symbolify(name, allowDot);
+                return true;
+            }
+            catch (Exception) { }
+
+            result = default;
+            return false;
+        }
+
+        public static string Symbolify(string name, bool allowDot)
+        {
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                throw new ArgumentNullException(nameof(name));
+            }
+
+            if (IsValidSymbolName(name, allowDot))
+            {
+                return name;
+            }
+
+            StringBuilder sb = new StringBuilder();
+
+            bool lastWhitespace = false;
+
+            for (int i = 0; i < name.Length; i++)
+            {
+                if (i == 0)
+                {
+                    if (char.IsLetter(name[i]) || name[i] == '_')
+                    {
+                        sb.Append(name[i]);
+                        lastWhitespace = false;
+                    }
+                }
+                else if (i > 0 && i < name.Length - 1)
+                {
+                    if (char.IsLetterOrDigit(name[i]) || name[i] == '_' || (allowDot && name[i] == '.'))
+                    {
+                        sb.Append(name[i]);
+                        lastWhitespace = false;
+                    }
+                    else if (!lastWhitespace && char.IsWhiteSpace(name[i]))
+                    {
+                        sb.Append('_');
+                        lastWhitespace = true;
+                    }
+                }
+                else
+                {
+                    if (name[i - 1] == '.')
+                    {
+                        // After a dot
+                        if (char.IsLetter(name[i]) || name[i] == '_')
+                        {
+                            sb.Append(name[i]);
+                            lastWhitespace = false;
+                        }
+                    }
+                    else
+                    {
+                        if (char.IsLetterOrDigit(name[i]) || name[i] == '_')
+                        {
+                            sb.Append(name[i]);
+                            lastWhitespace = false;
+                        }
+                    }
+                }
+            }
+
+            string result = sb.ToString();
+
+            return !string.IsNullOrEmpty(result) ? result : throw new ArgumentException($"Unable to symbolify \"{ name }\".", nameof(name));
         }
 
         public static readonly HashSet<string> ReservedKeywords = new HashSet<string>()

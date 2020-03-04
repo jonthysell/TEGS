@@ -184,18 +184,21 @@ namespace TEGS.CLI
             Console.WriteLine();
 
             Console.WriteLine("Options:");
-            Console.WriteLine("--namespace [string]    Generate the source code in the given namespace");
-            Console.WriteLine("--output-source [file]  Write the source code to the given file");
+            Console.WriteLine("--output-path [path]   Output generated files into the given path (Default: Current)");
+            Console.WriteLine("--project-file [name]  Specify the name of the generated project file");
+            Console.WriteLine("--source-file [name]   Specify the name of the generated C# source file");
+            Console.WriteLine("--source-only          Generate just the C# source file, directly into the output path");
             Console.WriteLine();
         }
 
         private void ParseBuildArgs()
         {
             Graph graph = null;
+            string graphFile = null;
 
             try
             {
-                string graphFile = Arguments[^1];
+                graphFile = Arguments[^1];
 
                 using FileStream fs = new FileStream(graphFile, FileMode.Open);
                 graph = Graph.LoadXml(fs);
@@ -205,8 +208,10 @@ namespace TEGS.CLI
                 throw new ParseArgumentsException("Unable to load graph.", ex);
             }
 
-            string outputSourceFile = null;
-            string targetNamespace = null;
+            string outputPath = null;
+            string projectFile = null;
+            string sourceFile = null;
+            bool sourceOnly = false;
 
             try
             {
@@ -214,14 +219,20 @@ namespace TEGS.CLI
                 {
                     switch (Arguments[i].ToLower())
                     {
-                        case "--namespace":
-                            targetNamespace = Arguments[++i];
+                        case "--output-path":
+                            outputPath = Arguments[++i];
                             break;
-                        case "--output-source":
-                            outputSourceFile = Arguments[++i];
+                        case "--project-file":
+                            projectFile = Arguments[++i];
+                            break;
+                        case "--source-file":
+                            sourceFile = Arguments[++i];
+                            break;
+                        case "--source-only":
+                            sourceOnly = true;
                             break;
                         default:
-                            throw new Exception($"Did not recognize option \"{Arguments[i]}\".");
+                            throw new Exception($"Did not recognize option \"{ Arguments[i] }\".");
                     }
                 }
             }
@@ -230,15 +241,12 @@ namespace TEGS.CLI
                 throw new ParseArgumentsException("Unable to parse options.", ex);
             }
 
-            if (string.IsNullOrWhiteSpace(outputSourceFile))
+            var buildCommandArgs = new BuildCommandArgs(graph, graphFile)
             {
-                throw new ParseArgumentsException("Please specify an output source file with --output-source.");
-            }
-
-            var buildCommandArgs = new BuildCommandArgs(graph)
-            {
-                TargetNamespace = targetNamespace,
-                OutputSourcePath = outputSourceFile
+                OutputPath = outputPath,
+                ProjectFile = projectFile,
+                SourceFile = sourceFile,
+                SourceOnly = sourceOnly,
             };
 
             ProgramArgs = buildCommandArgs;
@@ -250,9 +258,17 @@ namespace TEGS.CLI
 
             ValidateLoadedGraph();
 
-            string code = CodeGenerator.Generate(args.Graph, args.TargetNamespace);
+            if (!ScriptingHost.TrySymbolify(args.Graph.Name, false, out string targetNamespace))
+            {
+                if (!ScriptingHost.TrySymbolify(args.GraphFile, false, out targetNamespace))
+                {
+                    targetNamespace = "TegsGenerated";
+                }
+            }
 
-            File.WriteAllText(args.OutputSourcePath, code, Encoding.UTF8);
+            string code = CodeGenerator.Generate(args.Graph, targetNamespace);
+
+            File.WriteAllText(Path.Combine(args.OutputPath ?? ".", args.SourceFile ?? "Program.cs" ), code, Encoding.UTF8);
         }
 
         #endregion
@@ -280,11 +296,11 @@ namespace TEGS.CLI
         private void ParseRunArgs()
         {
             Graph graph = null;
+            string graphFile = null;
 
             try
             {
-                string graphFile = Arguments[^1];
-
+                graphFile = Arguments[^1];
                 using FileStream fs = new FileStream(graphFile, FileMode.Open);
                 graph = Graph.LoadXml(fs);
             }
@@ -338,7 +354,7 @@ namespace TEGS.CLI
                             skipValidation = true;
                             break;
                         default:
-                            throw new Exception($"Did not recognize option \"{Arguments[i]}\".");
+                            throw new Exception($"Did not recognize option \"{ Arguments[i] }\".");
                     }
                 }
             }
@@ -347,7 +363,7 @@ namespace TEGS.CLI
                 throw new ParseArgumentsException("Unable to parse options.", ex);
             }
 
-            var runCommandArgs = new RunCommandArgs(graph)
+            var runCommandArgs = new RunCommandArgs(graph, graphFile)
             {
                 OutputFile = outputFile,
                 ShowOutput = showOutput,
@@ -462,10 +478,11 @@ namespace TEGS.CLI
         private void ParseValidateArgs()
         {
             Graph graph = null;
+            string graphFile = null;
 
             try
             {
-                string graphFile = Arguments[^1];
+                graphFile = Arguments[^1];
 
                 using FileStream fs = new FileStream(graphFile, FileMode.Open);
                 graph = Graph.LoadXml(fs);
@@ -475,7 +492,7 @@ namespace TEGS.CLI
                 throw new ParseArgumentsException("Unable to load graph.", ex);
             }
 
-            ProgramArgs = new ValidateCommandArgs(graph);
+            ProgramArgs = new ValidateCommandArgs(graph, graphFile);
         }
 
         private void ExecuteValidateCommand()
@@ -528,6 +545,7 @@ namespace TEGS.CLI
                     Console.WriteLine();
 
                     Console.WriteLine("Commands:");
+                    Console.WriteLine("build     Build stand-alone code for a given graph");
                     Console.WriteLine("run       Run a simulation with a given graph");
                     Console.WriteLine("validate  Validate a given graph");
                     Console.WriteLine();
