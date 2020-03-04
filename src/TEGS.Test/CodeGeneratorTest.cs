@@ -25,7 +25,12 @@
 // THE SOFTWARE.
 
 using System;
+using System.Diagnostics;
+using System.Linq;
+using System.IO;
 
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace TEGS.Test
@@ -51,6 +56,55 @@ namespace TEGS.Test
         {
             string code = CodeGenerator.Generate(graph);
             Assert.IsNotNull(code);
+
+            byte[] compiledCode = CompileCode(code, $"{ graph.Name }.exe");
+            Assert.IsNotNull(compiledCode);
+        }
+
+        private static byte[] CompileCode(string code, string assemblyName)
+        {
+            var options = CSharpParseOptions.Default.WithLanguageVersion(LanguageVersion.Latest);
+
+            var parsedSyntaxTree = SyntaxFactory.ParseSyntaxTree(code, options);
+
+            var references = new MetadataReference[]
+            {
+                MetadataReference.CreateFromFile(typeof(object).Assembly.Location),
+                MetadataReference.CreateFromFile(typeof(Console).Assembly.Location),
+                MetadataReference.CreateFromFile(typeof(System.Runtime.AssemblyTargetedPatchBandAttribute).Assembly.Location),
+            };
+
+            var compilation = CSharpCompilation.Create(assemblyName,
+                new[] { parsedSyntaxTree },
+                references: references,
+                options: new CSharpCompilationOptions(OutputKind.ConsoleApplication,
+                optimizationLevel: OptimizationLevel.Release));
+
+            using (var memoryStream = new MemoryStream())
+            {
+                var result = compilation.Emit(memoryStream);
+
+                if (!result.Success)
+                {
+                    var failures = result.Diagnostics.Where(diagnostic => diagnostic.IsWarningAsError || diagnostic.Severity == DiagnosticSeverity.Error);
+
+                    Trace.WriteLine("Compilation Failures:");
+
+                    Trace.Indent();
+
+                    foreach (var diagnostic in failures)
+                    {
+                        Trace.WriteLine($"{ diagnostic.Id }: { diagnostic.GetMessage() }");
+                    }
+
+                    Trace.Unindent();
+
+                    return null;
+                }
+
+                memoryStream.Seek(0, SeekOrigin.Begin);
+                return memoryStream.ToArray();
+            }
         }
     }
 }
