@@ -14,8 +14,8 @@ namespace Breakdown
         protected override int StartingEventId => 0;
 
         // State Variables
-        int QUEUE = default;
-        int SERVER = default;
+        int SV_QUEUE = default;
+        int SV_SERVER = default;
 
         public Simulation() { }
 
@@ -52,10 +52,10 @@ namespace Breakdown
         private void Event0(Tuple<int> parameterValues)
         {
             // Parameters
-            QUEUE = parameterValues.Item1;
+            SV_QUEUE = parameterValues.Item1;
 
             // Event Code
-            SERVER = 1;
+            SV_SERVER = 1;
 
             // Edge #0
             // Action: Schedule
@@ -67,7 +67,7 @@ namespace Breakdown
             // Action: Schedule
             // Direction: RUN to FAIL
             // Description: Schedule the first machine breakdown
-            ScheduleEvent(5, Random.ExponentialVariate(1.0/15.0), 4, null);
+            ScheduleEvent(5, Random.ExponentialVariate(1d / 15d), 4, null);
         }
 
         // Event #1
@@ -76,19 +76,19 @@ namespace Breakdown
         private void Event1()
         {
             // Event Code
-            QUEUE = QUEUE + 1;
+            SV_QUEUE = SV_QUEUE + 1;
 
             // Edge #2
             // Action: Schedule
             // Direction: ENTER to ENTER
             // Description: Schedule the next arrival
-            ScheduleEvent(1, Random.ExponentialVariate(1.0/6.0), 6, null);
+            ScheduleEvent(1, Random.ExponentialVariate(1d / 6d), 6, null);
 
             // Edge #3
             // Action: Schedule
             // Direction: ENTER to START
             // Description: Start service
-            if (SERVER > 0)
+            if (SV_SERVER > 0)
             {
                 ScheduleEvent(2, 0, 5, null);
             }
@@ -100,8 +100,8 @@ namespace Breakdown
         private void Event2()
         {
             // Event Code
-            SERVER = 0;
-            QUEUE = QUEUE - 1;
+            SV_SERVER = 0;
+            SV_QUEUE = SV_QUEUE - 1;
 
             // Edge #4
             // Action: Schedule
@@ -116,13 +116,13 @@ namespace Breakdown
         private void Event3()
         {
             // Event Code
-            SERVER = 1;
+            SV_SERVER = 1;
 
             // Edge #5
             // Action: Schedule
             // Direction: LEAVE to START
             // Description: Start servicing the waiting job
-            if (QUEUE > 0)
+            if (SV_QUEUE > 0)
             {
                 ScheduleEvent(2, 0, 5, null);
             }
@@ -134,18 +134,18 @@ namespace Breakdown
         private void Event4()
         {
             // Event Code
-            SERVER = 1;
+            SV_SERVER = 1;
 
             // Edge #8
             // Action: Schedule
             // Direction: FIX to FAIL
             // Description: Schedule the next machine failure
-            ScheduleEvent(5, Random.ExponentialVariate(1.0/15.0), 4, null);
+            ScheduleEvent(5, Random.ExponentialVariate(1d / 15d), 4, null);
 
             // Edge #9
             // Action: Schedule
             // Direction: FIX to START
-            if (QUEUE > 0)
+            if (SV_QUEUE > 0)
             {
                 ScheduleEvent(2, 0, 5, null);
             }
@@ -157,7 +157,7 @@ namespace Breakdown
         private void Event5()
         {
             // Event Code
-            SERVER = -1;
+            SV_SERVER =  - 1;
 
             // Edge #6
             // Action: Schedule

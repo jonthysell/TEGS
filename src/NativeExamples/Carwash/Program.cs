@@ -14,8 +14,8 @@ namespace Carwash
         protected override int StartingEventId => 0;
 
         // State Variables
-        int QUEUE = default;
-        int SERVERS = default;
+        int SV_QUEUE = default;
+        int SV_SERVERS = default;
 
         public Simulation() { }
 
@@ -46,8 +46,8 @@ namespace Carwash
         private void Event0(Tuple<int, int> parameterValues)
         {
             // Parameters
-            QUEUE = parameterValues.Item1;
-            SERVERS = parameterValues.Item2;
+            SV_QUEUE = parameterValues.Item1;
+            SV_SERVERS = parameterValues.Item2;
 
             // Edge #0
             // Action: Schedule
@@ -62,7 +62,7 @@ namespace Carwash
         private void Event1()
         {
             // Event Code
-            QUEUE = QUEUE + 1;
+            SV_QUEUE = SV_QUEUE + 1;
 
             // Edge #1
             // Action: Schedule
@@ -74,7 +74,7 @@ namespace Carwash
             // Action: Schedule
             // Direction: ENTER to START
             // Description: There are available servers to start washing the car
-            if (SERVERS > 0)
+            if (SV_SERVERS > 0)
             {
                 ScheduleEvent(2, 0, 5, null);
             }
@@ -86,8 +86,8 @@ namespace Carwash
         private void Event2()
         {
             // Event Code
-            SERVERS = SERVERS - 1;
-            QUEUE = QUEUE - 1;
+            SV_SERVERS = SV_SERVERS - 1;
+            SV_QUEUE = SV_QUEUE - 1;
 
             // Edge #3
             // Action: Schedule
@@ -102,13 +102,13 @@ namespace Carwash
         private void Event3()
         {
             // Event Code
-            SERVERS = SERVERS + 1;
+            SV_SERVERS = SV_SERVERS + 1;
 
             // Edge #4
             // Action: Schedule
             // Direction: LEAVE to START
             // Description: There are cars in queue, start service for the next car in line
-            if (QUEUE > 0)
+            if (SV_QUEUE > 0)
             {
                 ScheduleEvent(2, 0, 5, null);
             }

@@ -74,6 +74,84 @@ namespace TEGS
             return sb.ToString();
         }
 
+        public static string RewriteExpression(Graph graph, string expression)
+        {
+            StringBuilder sb = new StringBuilder();
+
+            TokenReader tr = new TokenReader(expression);
+            while (tr.CurrentToken != TokenType.End)
+            {
+                sb.Append(RewriteToken(tr, graph));
+                tr.ReadNext();
+            }
+
+            return sb.ToString();
+        }
+
+        private static string RewriteToken(TokenReader tokenReader, Graph graph)
+        {
+            switch (tokenReader.CurrentToken)
+            {
+                case TokenType.Add:
+                    return " + ";
+                case TokenType.Subtract:
+                    return " - ";
+                case TokenType.Multiply:
+                    return " * ";
+                case TokenType.Divide:
+                    return " / ";
+                case TokenType.OpenParens:
+                    return "(";
+                case TokenType.CloseParens:
+                    return ")";
+                case TokenType.Comma:
+                    return ", ";
+                case TokenType.Assign:
+                    return " = ";
+                case TokenType.LessThan:
+                    return " < ";
+                case TokenType.GreaterThan:
+                    return " > ";
+                case TokenType.LessThanEquals:
+                    return " <= ";
+                case TokenType.GreaterThanEquals:
+                    return " >= ";
+                case TokenType.Not:
+                    return "!";
+                case TokenType.Equals:
+                    return " == ";
+                case TokenType.NotEquals:
+                    return " != ";
+                case TokenType.And:
+                    return " & ";
+                case TokenType.Or:
+                    return " | ";
+                case TokenType.ConditionalAnd:
+                    return " && ";
+                case TokenType.ConditionalOr:
+                    return " || ";
+                case TokenType.Symbol:
+                    string symbol = tokenReader.CurrentSymbol;
+                    return graph.HasStateVariable(symbol) ? $"SV_{ symbol }" : symbol;
+                case TokenType.Value:
+                    var value = tokenReader.CurrentValue;
+                    switch (value.Type)
+                    {
+                        case VariableValueType.Boolean:
+                            return value.BooleanValue ? "true" : "false";
+                        case VariableValueType.Integer:
+                            return value.IntegerValue.ToString();
+                        case VariableValueType.Double:
+                            return $"{ value.DoubleValue }d";
+                        case VariableValueType.String:
+                            return $"\"{ value.StringValue }\"";
+                    }
+                    break;
+            }
+
+            return null;
+        }
+
         #region Header
 
         private static void AddHeader(StringBuilder sb, Graph graph, ref int indent)
@@ -131,7 +209,7 @@ namespace TEGS
                 for (int i = 0; i < graph.StateVariables.Count; i++)
                 {
                     StateVariable stateVariable = graph.StateVariables[i];
-                    WriteCode(sb, $"{ GetStateVariableType(stateVariable) } { stateVariable.Name } = default;", ref indent);
+                    WriteCode(sb, $"{ GetStateVariableType(stateVariable) } { RewriteExpression(graph, stateVariable.Name) } = default;", ref indent);
                 }
             }
 
@@ -242,7 +320,7 @@ namespace TEGS
                     WriteComment(sb, "Parameters", ref indent);
                     for (int j = 0; j < paramCount; j++)
                     {
-                        WriteCode(sb, $"{ vertex.ParameterNames[j] } = parameterValues.Item{ j + 1 };", ref indent);
+                        WriteCode(sb, $"{ RewriteExpression(graph, vertex.ParameterNames[j]) } = parameterValues.Item{ j + 1 };", ref indent);
                     }
 
                     addSpacing = true;
@@ -259,7 +337,7 @@ namespace TEGS
                     WriteComment(sb, "Event Code", ref indent);
                     for (int j = 0; j < code.Length; j++)
                     {
-                        WriteCode(sb, $"{ code[j] };", ref indent);
+                        WriteCode(sb, $"{ RewriteExpression(graph, code[j]) };", ref indent);
                     }
 
                     addSpacing = true;
@@ -288,21 +366,40 @@ namespace TEGS
                         bool hasCondition = !string.IsNullOrEmpty(edge.Condition);
                         if (hasCondition)
                         {
-                            StartBlock(sb, $"if ({ edge.Condition })", ref indent);
+                            StartBlock(sb, $"if ({ RewriteExpression(graph, edge.Condition) })", ref indent);
                         }
 
-                        string parameterValues = edge.ParameterExpressions.Count == 0 ? "null" : $"new { eventParameterTypes[vertex] }({ string.Join(", ", edge.ParameterExpressions) })";
+                        StringBuilder parameterValuesSB = new StringBuilder();
+
+                        if (edge.ParameterExpressions.Count == 0)
+                        {
+                            parameterValuesSB.Append("null");
+                        }
+                        else
+                        {
+                            parameterValuesSB.Append($"new { eventParameterTypes[vertex] }(");
+                            for (int k = 0; k < edge.ParameterExpressions.Count; k++)
+                            {
+                                if (k > 0)
+                                {
+                                    parameterValuesSB.Append(", ");
+                                }
+
+                                parameterValuesSB.Append(RewriteExpression(graph, edge.ParameterExpressions[k]));
+                            }
+                            parameterValuesSB.Append(")");
+                        }
 
                         switch(edge.Action)
                         {
                             case EdgeAction.Schedule:
-                                WriteCode(sb, $"ScheduleEvent({ edge.Target.Id }, { (string.IsNullOrEmpty(edge.Delay) ? "0" : edge.Delay) }, { (string.IsNullOrEmpty(edge.Priority) ? "0" : edge.Priority) }, { parameterValues });", ref indent);
+                                WriteCode(sb, $"ScheduleEvent({ edge.Target.Id }, { (string.IsNullOrEmpty(edge.Delay) ? "0" : RewriteExpression(graph, edge.Delay)) }, { (string.IsNullOrEmpty(edge.Priority) ? "0" : RewriteExpression(graph, edge.Priority)) }, { parameterValuesSB.ToString() });", ref indent);
                                 break;
                             case EdgeAction.CancelNext:
-                                WriteCode(sb, $"CancelNextEvent({ edge.Target.Id }, { parameterValues });", ref indent);
+                                WriteCode(sb, $"CancelNextEvent({ edge.Target.Id }, { parameterValuesSB.ToString() });", ref indent);
                                 break;
                             case EdgeAction.CancelAll:
-                                WriteCode(sb, $"CancelAllEvents({ edge.Target.Id }, { parameterValues });", ref indent);
+                                WriteCode(sb, $"CancelAllEvents({ edge.Target.Id }, { parameterValuesSB.ToString() });", ref indent);
                                 break;
                         }
 
