@@ -1,4 +1,4 @@
-﻿// Generated with tegs v0.9.0.0
+// Generated with tegs v0.9.0.0
 //
 // Name: Breakdown
 // Description: A deterministic queue (M/D/1) with breakdowns

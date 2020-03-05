@@ -40,21 +40,25 @@ namespace TEGS.Test
     public class CodeGeneratorTest
     {
         [TestMethod]
-        public void CodeGenerator_CarwashValidTest() => CodeGenerator_ValidTest(TestGraph.Carwash);
+        public void CodeGenerator_CarwashGenerateSourceValidTest() => CodeGenerator_GenerateSourceValidTest(TestGraph.Carwash);
 
         [TestMethod]
-        public void CodeGenerator_BreakdownValidTest() => CodeGenerator_ValidTest(TestGraph.Breakdown);
+        public void CodeGenerator_BreakdownGenerateSourceValidTest() => CodeGenerator_GenerateSourceValidTest(TestGraph.Breakdown);
 
         [TestMethod]
-        public void CodeGenerator_CarwashXMLValidTest() => CodeGenerator_ValidTest(TestGraph.LoadXml("carwash.xml"));
+        public void CodeGenerator_CarwashXMLGenerateSourceValidTest() => CodeGenerator_GenerateSourceValidTest(TestGraph.LoadXml("carwash.xml"));
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentNullException))]
-        public void CodeGenerator_NullInvalidTest() => CodeGenerator.Generate(null, "");
+        public void CodeGenerator_GenerateSourceNullInvalidTest() => CodeGenerator.GenerateSource(null, "");
 
-        private static void CodeGenerator_ValidTest(Graph graph)
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void CodeGenerator_GenerateProjectNullInvalidTest() => CodeGenerator.GenerateProject(null);
+
+        private static void CodeGenerator_GenerateSourceValidTest(Graph graph)
         {
-            string code = CodeGenerator.Generate(graph, graph.Name);
+            string code = CodeGenerator.GenerateSource(graph, graph.Name);
             Assert.IsNotNull(code);
 
             byte[] compiledCode = CompileCode(code, $"{ graph.Name }.exe");

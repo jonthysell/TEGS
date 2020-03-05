@@ -35,6 +35,8 @@ namespace TEGS.CLI
     {
         #region Main Statics
 
+        public static readonly Encoding UTF8NoBOM = new UTF8Encoding(false);
+
         public static void Main(string[] args)
         {
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
@@ -108,6 +110,8 @@ namespace TEGS.CLI
         public readonly string[] Arguments;
 
         public ProgramArgs ProgramArgs { get; private set; }
+
+
 
         #endregion
 
@@ -266,9 +270,26 @@ namespace TEGS.CLI
                 }
             }
 
-            string code = CodeGenerator.Generate(args.Graph, targetNamespace);
+            string code = CodeGenerator.GenerateSource(args.Graph, targetNamespace);
 
-            File.WriteAllText(Path.Combine(args.OutputPath ?? ".", args.SourceFile ?? "Program.cs" ), code, Encoding.UTF8);
+            string rootPath = args.OutputPath ?? ".";
+            string sourceFile = args.SourceFile ?? "Program.cs";
+
+            if (!Directory.Exists(rootPath))
+            {
+                Directory.CreateDirectory(rootPath);
+            }
+
+            File.WriteAllText(Path.Combine(rootPath, sourceFile), code, UTF8NoBOM);
+
+            if (!args.SourceOnly)
+            {
+                string projectXml = CodeGenerator.GenerateProject(targetNamespace);
+
+                string projectFile = args.ProjectFile ?? $"{ targetNamespace }.csproj";
+
+                File.WriteAllText(Path.Combine(rootPath, projectFile), projectXml, UTF8NoBOM);
+            }
         }
 
         #endregion
@@ -388,7 +409,7 @@ namespace TEGS.CLI
                 ValidateLoadedGraph();
             }
 
-            using StreamWriter outputWriter = null != args.OutputFile ? new StreamWriter(new FileStream(args.OutputFile, FileMode.Create), Encoding.UTF8) : null;
+            using StreamWriter outputWriter = null != args.OutputFile ? new StreamWriter(new FileStream(args.OutputFile, FileMode.Create), UTF8NoBOM) : null;
 
             Simulation simulation = new Simulation(args.SimulationArgs);
 

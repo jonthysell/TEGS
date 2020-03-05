@@ -32,7 +32,29 @@ namespace TEGS
 {
     public static class CodeGenerator
     {
-        public static string Generate(Graph graph, string targetNamespace)
+        public static string GenerateProject(string targetNamespace)
+        {
+            if (string.IsNullOrWhiteSpace(targetNamespace))
+            {
+                throw new ArgumentNullException(nameof(targetNamespace));
+            }
+
+            return string.Format(ProjectTemplate.TrimStart(), targetNamespace);
+        }
+
+        private const string ProjectTemplate = @"
+<Project Sdk=""Microsoft.NET.Sdk"">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <StartupObject>{0}.Program</StartupObject>
+  </PropertyGroup>
+
+</Project>
+";
+
+        public static string GenerateSource(Graph graph, string targetNamespace)
         {
             if (null == graph)
             {

@@ -392,7 +392,7 @@ namespace TEGS
 
             XmlWriterSettings outputSettings = new XmlWriterSettings()
             {
-                Encoding = Encoding.UTF8,
+                Encoding = new UTF8Encoding(false),
                 NewLineHandling = NewLineHandling.Entitize
             };
 
