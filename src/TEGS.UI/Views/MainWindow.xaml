@@ -1,0 +1,35 @@
+<Window Height="600"
+        Title="{Binding Title}"
+        Width="800"
+        d:DesignHeight="600"
+        d:DesignWidth="800"
+        mc:Ignorable="d"
+        x:Class="TEGS.UI.MainWindow"
+        xmlns="https://github.com/avaloniaui"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="clr-namespace:TEGS.UI.ViewModels"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Window.DataContext>
+        <vm:MainViewModel />
+    </Window.DataContext>
+    <DockPanel>
+        <Menu DockPanel.Dock="Top">
+            <MenuItem Header="_File">
+                <MenuItem Command="{Binding NewGraph}"
+                          Header="_New" />
+                <MenuItem Command="{Binding OpenGraph}"
+                          Header="_Open..." />
+                <MenuItem Header="_Save" />
+                <MenuItem Header="Save _As..." />
+                <Separator />
+                <MenuItem Click="Exit_Click"
+                          Header="E_xit" />
+            </MenuItem>
+            <MenuItem Header="_Help">
+                <MenuItem Header="_About TEGS" />
+            </MenuItem>
+        </Menu>
+        <Grid />
+    </DockPanel>
+</Window>

@@ -1,5 +1,5 @@
-// 
-// Program.cs
+﻿// 
+// AppViewModel.cs
 //  
 // Author:
 //       Jon Thysell <thysell@gmail.com>
@@ -24,23 +24,47 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using Avalonia;
-using Avalonia.Logging.Serilog;
+using System;
 
-namespace TEGS.UI
+using GalaSoft.MvvmLight;
+
+namespace TEGS.UI.ViewModels
 {
-    public class Program
+    public class AppViewModel : ViewModelBase
     {
-        // Initialization code. Don't use any Avalonia, third-party APIs or any
-        // SynchronizationContext-reliant code before AppMain is called: things aren't initialized
-        // yet and stuff might break.
-        public static void Main(string[] args) => BuildAvaloniaApp()
-            .StartWithClassicDesktopLifetime(args);
+        #region Singleton Statics
 
-        // Avalonia configuration, don't remove; also used by visual designer.
-        public static AppBuilder BuildAvaloniaApp()
-            => AppBuilder.Configure<App>()
-                .UsePlatformDetect()
-                .LogToDebug();
+        public static AppViewModel Instance
+        {
+            get
+            {
+                if (null == _instance)
+                {
+                    Initialize();
+                }
+                return _instance;
+            }
+        }
+        private static AppViewModel _instance;
+
+        public static void Initialize(string[] args = null)
+        {
+            if (null != _instance)
+            {
+                throw new InvalidOperationException($"{ nameof(Instance) } is already initialized.");
+            }
+
+            _instance = new AppViewModel();
+            if (null != args && args.Length > 0)
+            {
+                _instance.ParseArgs(args);
+            }
+        }
+
+        #endregion
+
+        private AppViewModel() { }
+
+        private void ParseArgs(string[] args) { }
     }
 }

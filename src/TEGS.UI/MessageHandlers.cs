@@ -1,5 +1,5 @@
-// 
-// App.xaml.cs
+﻿// 
+// MessageHandlers.cs
 //  
 // Author:
 //       Jon Thysell <thysell@gmail.com>
@@ -24,49 +24,44 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System;
+using System.Threading.Tasks;
+
 using Avalonia;
+using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
-using Avalonia.Markup.Xaml;
+using GalaSoft.MvvmLight.Messaging;
 
-using TEGS.UI.ViewModels;
-
-namespace TEGS.UI
+namespace TEGS.UI.ViewModels
 {
-    public class App : Application
+    public class MessageHandlers
     {
-        public AppViewModel AppVM => AppViewModel.Instance;
+        public static Window MainWindow => (Application.Current.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime).MainWindow;
 
-        public override void Initialize()
+        public static void RegisterMessageHandlers(object recipient)
         {
-            AvaloniaXamlLoader.Load(this);
+            Messenger.Default.Register<OpenFileMessage>(recipient, async (message) => await ShowOpenFileAsync(message));
         }
 
-        public override void OnFrameworkInitializationCompleted()
+        public static void UnregisterMessageHandlers(object recipient)
         {
-            if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
+            Messenger.Default.Unregister<OpenFileMessage>(recipient);
+        }
+
+        private static async Task ShowOpenFileAsync(OpenFileMessage message)
+        {
+            var dialog = new OpenFileDialog()
             {
-                desktop.Startup += Desktop_Startup;
-                desktop.Exit += Desktop_Exit;
-            }
+                AllowMultiple = false,
+                Title = message.Title,
+            };
 
-            base.OnFrameworkInitializationCompleted();
-        }
+            string[] filenames = await dialog.ShowAsync(MainWindow);
 
-        private void Desktop_Startup(object sender, ControlledApplicationLifetimeStartupEventArgs e)
-        {
-            MessageHandlers.RegisterMessageHandlers(this);
-
-            AppViewModel.Initialize(e.Args);
-
-            if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
+            if (null != filenames && filenames.Length > 0 && !string.IsNullOrWhiteSpace(filenames[0]))
             {
-                desktop.MainWindow = new MainWindow();
+                message.Success(filenames[0].Trim());
             }
-        }
-
-        private void Desktop_Exit(object sender, ControlledApplicationLifetimeExitEventArgs e)
-        {
-            MessageHandlers.UnregisterMessageHandlers(this);
         }
     }
 }

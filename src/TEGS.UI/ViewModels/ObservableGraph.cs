@@ -1,5 +1,5 @@
-// 
-// Program.cs
+﻿// 
+// ObservableGraph.cs
 //  
 // Author:
 //       Jon Thysell <thysell@gmail.com>
@@ -24,23 +24,41 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using Avalonia;
-using Avalonia.Logging.Serilog;
+using System;
+using System.IO;
 
-namespace TEGS.UI
+using GalaSoft.MvvmLight;
+
+namespace TEGS.UI.ViewModels
 {
-    public class Program
+    public class ObservableGraph : ObservableObject
     {
-        // Initialization code. Don't use any Avalonia, third-party APIs or any
-        // SynchronizationContext-reliant code before AppMain is called: things aren't initialized
-        // yet and stuff might break.
-        public static void Main(string[] args) => BuildAvaloniaApp()
-            .StartWithClassicDesktopLifetime(args);
+        public string FileName { get; private set; }
 
-        // Avalonia configuration, don't remove; also used by visual designer.
-        public static AppBuilder BuildAvaloniaApp()
-            => AppBuilder.Configure<App>()
-                .UsePlatformDetect()
-                .LogToDebug();
+        internal Graph Graph { get; private set; }
+
+        private ObservableGraph(Graph graph)
+        {
+            Graph = graph ?? throw new ArgumentNullException(nameof(graph));
+        }
+
+        public static ObservableGraph NewGraph() => new ObservableGraph(new Graph());
+
+        public static ObservableGraph OpenGraph(string filename)
+        {
+            if (string.IsNullOrWhiteSpace(filename))
+            {
+                throw new ArgumentNullException(nameof(filename));
+            }
+
+            filename = Path.GetFullPath(filename);
+
+            using var fs = new FileStream(filename, FileMode.Open);
+
+            return new ObservableGraph(Graph.LoadXml(fs))
+            {
+                FileName = filename
+            };
+        }
     }
 }

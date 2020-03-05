@@ -1,5 +1,5 @@
-// 
-// Program.cs
+﻿// 
+// Messages.cs
 //  
 // Author:
 //       Jon Thysell <thysell@gmail.com>
@@ -24,23 +24,33 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using Avalonia;
-using Avalonia.Logging.Serilog;
+using System;
 
-namespace TEGS.UI
+using GalaSoft.MvvmLight.Messaging;
+
+namespace TEGS.UI.ViewModels
 {
-    public class Program
+    public abstract class CallbackMessage<T> : MessageBase
     {
-        // Initialization code. Don't use any Avalonia, third-party APIs or any
-        // SynchronizationContext-reliant code before AppMain is called: things aren't initialized
-        // yet and stuff might break.
-        public static void Main(string[] args) => BuildAvaloniaApp()
-            .StartWithClassicDesktopLifetime(args);
+        private readonly Action<T> Callback;
 
-        // Avalonia configuration, don't remove; also used by visual designer.
-        public static AppBuilder BuildAvaloniaApp()
-            => AppBuilder.Configure<App>()
-                .UsePlatformDetect()
-                .LogToDebug();
+        protected CallbackMessage(Action<T> callback = null) : base()
+        {
+            Callback = callback;
+        }
+
+        public void Success(T result)
+        {
+            Callback?.Invoke(result);
+        }
+    }
+
+    public class OpenFileMessage : CallbackMessage<string>
+    {
+        public readonly string Title;
+        public OpenFileMessage(string title, Action<string> callback) : base(callback)
+        {
+            Title = title;
+        }
     }
 }

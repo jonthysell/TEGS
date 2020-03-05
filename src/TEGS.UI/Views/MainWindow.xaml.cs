@@ -26,6 +26,7 @@
 
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 
 namespace TEGS.UI
@@ -43,6 +44,11 @@ namespace TEGS.UI
         private void InitializeComponent()
         {
             AvaloniaXamlLoader.Load(this);
+        }
+
+        private void Exit_Click(object sender, RoutedEventArgs args)
+        {
+            Close();
         }
     }
 }
