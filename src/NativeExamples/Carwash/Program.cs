@@ -1,4 +1,4 @@
-// Generated with tegs v0.9.0.0
+// Generated with tegs-cli v0.9.0.0
 //
 // Name: Carwash
 // Description: An automatic carwash

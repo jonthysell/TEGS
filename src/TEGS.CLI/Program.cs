@@ -184,7 +184,7 @@ namespace TEGS.CLI
 
         private static void ShowBuildHelp()
         {
-            Console.WriteLine("Usage: tegs build [<options>] graph.xml");
+            Console.WriteLine("Usage: tegs-cli build [<options>] graph.xml");
             Console.WriteLine();
 
             Console.WriteLine("Options:");
@@ -298,7 +298,7 @@ namespace TEGS.CLI
 
         private static void ShowRunHelp()
         {
-            Console.WriteLine("Usage: tegs run [<options>] graph.xml");
+            Console.WriteLine("Usage: tegs-cli run [<options>] graph.xml");
             Console.WriteLine();
 
             Console.WriteLine("Options:");
@@ -492,7 +492,7 @@ namespace TEGS.CLI
 
         private static void ShowValidateHelp()
         {
-            Console.WriteLine("Usage: tegs validate graph.xml");
+            Console.WriteLine("Usage: tegs-cli validate graph.xml");
             Console.WriteLine();
         }
 
@@ -561,8 +561,8 @@ namespace TEGS.CLI
                     ShowValidateHelp();
                     break;
                 default:
-                    Console.WriteLine("Usage: tegs [--version] [--help]");
-                    Console.WriteLine("            <command> [<args>]");
+                    Console.WriteLine("Usage: tegs-cli [--version] [--help]");
+                    Console.WriteLine("                <command> [<args>]");
                     Console.WriteLine();
 
                     Console.WriteLine("Commands:");
@@ -571,7 +571,7 @@ namespace TEGS.CLI
                     Console.WriteLine("validate  Validate a given graph");
                     Console.WriteLine();
 
-                    Console.WriteLine("See 'tegs help <command>' to see the arguments for that command.");
+                    Console.WriteLine("See 'tegs-cli help <command>' to see the arguments for that command.");
                     break;
             }
         }
