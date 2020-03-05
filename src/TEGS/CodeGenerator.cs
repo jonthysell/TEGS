@@ -50,7 +50,7 @@ namespace TEGS
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <StartupObject>{0}.Program</StartupObject>
   </PropertyGroup>
-
+  
 </Project>
 ";
 
