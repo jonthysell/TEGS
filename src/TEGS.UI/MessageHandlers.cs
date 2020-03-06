@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using System;
+using System.Diagnostics;
 using System.Threading.Tasks;
 
 using Avalonia;
@@ -32,7 +33,9 @@ using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using GalaSoft.MvvmLight.Messaging;
 
-namespace TEGS.UI.ViewModels
+using TEGS.UI.ViewModels;
+
+namespace TEGS.UI
 {
     public class MessageHandlers
     {
@@ -40,27 +43,41 @@ namespace TEGS.UI.ViewModels
 
         public static void RegisterMessageHandlers(object recipient)
         {
-            Messenger.Default.Register<OpenFileMessage>(recipient, async (message) => await ShowOpenFileAsync(message));
+            Messenger.Default.Register<ExceptionMessage>(recipient, async (message) => await ShowExceptionDialogAsync(message));
+            Messenger.Default.Register<OpenFileMessage>(recipient, async (message) => await ShowOpenFileDialogAsync(message));
         }
 
         public static void UnregisterMessageHandlers(object recipient)
         {
+            Messenger.Default.Unregister<ExceptionMessage>(recipient);
             Messenger.Default.Unregister<OpenFileMessage>(recipient);
         }
 
-        private static async Task ShowOpenFileAsync(OpenFileMessage message)
+        private static async Task ShowExceptionDialogAsync(ExceptionMessage message)
         {
-            var dialog = new OpenFileDialog()
-            {
-                AllowMultiple = false,
-                Title = message.Title,
-            };
+            Trace.TraceError($"Exception: { message.Exception.Message }");
+        }
 
-            string[] filenames = await dialog.ShowAsync(MainWindow);
-
-            if (null != filenames && filenames.Length > 0 && !string.IsNullOrWhiteSpace(filenames[0]))
+        private static async Task ShowOpenFileDialogAsync(OpenFileMessage message)
+        {
+            try
             {
-                message.Success(filenames[0].Trim());
+                var dialog = new OpenFileDialog()
+                {
+                    AllowMultiple = false,
+                    Title = message.Title,
+                };
+
+                string[] filenames = await dialog.ShowAsync(MainWindow);
+
+                if (null != filenames && filenames.Length > 0 && !string.IsNullOrWhiteSpace(filenames[0]))
+                {
+                    message.Success(filenames[0].Trim());
+                }
+            }
+            catch (Exception ex)
+            {
+                ExceptionUtils.HandleException(ex);
             }
         }
     }

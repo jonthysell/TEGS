@@ -90,7 +90,14 @@ namespace TEGS.UI.ViewModels
             {
                 return _newGraph ?? (_newGraph = new RelayCommand(() =>
                 {
-                    Graph = ObservableGraph.NewGraph();
+                    try
+                    {
+                        Graph = ObservableGraph.NewGraph();
+                    }
+                    catch (Exception ex)
+                    {
+                        ExceptionUtils.HandleException(ex);
+                    }
                 }));
             }
         }
@@ -104,7 +111,14 @@ namespace TEGS.UI.ViewModels
                 {
                     Messenger.Default.Send(new OpenFileMessage("Open Graph", (filename) =>
                     {
-                        Graph = ObservableGraph.OpenGraph(filename);
+                        try
+                        {
+                            Graph = ObservableGraph.OpenGraph(filename);
+                        }
+                        catch (Exception ex)
+                        {
+                            ExceptionUtils.HandleException(ex);
+                        }
                     }));
                 }));
             }

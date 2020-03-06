@@ -1,5 +1,5 @@
-﻿// 
-// Messages.cs
+// 
+// ExceptionUtils.cs
 //  
 // Author:
 //       Jon Thysell <thysell@gmail.com>
@@ -26,41 +26,19 @@
 
 using System;
 
+using Avalonia.Threading;
 using GalaSoft.MvvmLight.Messaging;
 
 namespace TEGS.UI.ViewModels
 {
-    public class ExceptionMessage : MessageBase
+    public static class ExceptionUtils
     {
-        public readonly Exception Exception;
-
-        public ExceptionMessage(Exception exception)
+        public static void HandleException(Exception exception)
         {
-            Exception = exception ?? throw new ArgumentNullException(nameof(exception));
-        }
-    }
-
-    public abstract class CallbackMessage<T> : MessageBase
-    {
-        private readonly Action<T> Callback;
-
-        protected CallbackMessage(Action<T> callback = null) : base()
-        {
-            Callback = callback;
-        }
-
-        public void Success(T result)
-        {
-            Callback?.Invoke(result);
-        }
-    }
-
-    public class OpenFileMessage : CallbackMessage<string>
-    {
-        public readonly string Title;
-        public OpenFileMessage(string title, Action<string> callback) : base(callback)
-        {
-            Title = title;
+            Dispatcher.UIThread.Post(() =>
+            {
+                Messenger.Default.Send(new ExceptionMessage(exception));
+            });
         }
     }
 }
