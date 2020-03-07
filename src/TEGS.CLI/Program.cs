@@ -35,8 +35,6 @@ namespace TEGS.CLI
     {
         #region Main Statics
 
-        public static readonly Encoding UTF8NoBOM = new UTF8Encoding(false);
-
         public static void Main(string[] args)
         {
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
@@ -280,7 +278,7 @@ namespace TEGS.CLI
                 Directory.CreateDirectory(rootPath);
             }
 
-            File.WriteAllText(Path.Combine(rootPath, sourceFile), code, UTF8NoBOM);
+            File.WriteAllText(Path.Combine(rootPath, sourceFile), code, Encoding.UTF8);
 
             if (!args.SourceOnly)
             {
@@ -288,7 +286,7 @@ namespace TEGS.CLI
 
                 string projectFile = args.ProjectFile ?? $"{ targetNamespace }.csproj";
 
-                File.WriteAllText(Path.Combine(rootPath, projectFile), projectXml, UTF8NoBOM);
+                File.WriteAllText(Path.Combine(rootPath, projectFile), projectXml, Encoding.UTF8);
             }
         }
 
@@ -409,7 +407,7 @@ namespace TEGS.CLI
                 ValidateLoadedGraph();
             }
 
-            using StreamWriter outputWriter = null != args.OutputFile ? new StreamWriter(new FileStream(args.OutputFile, FileMode.Create), UTF8NoBOM) : null;
+            using StreamWriter outputWriter = null != args.OutputFile ? new StreamWriter(new FileStream(args.OutputFile, FileMode.Create), Encoding.UTF8) : null;
 
             Simulation simulation = new Simulation(args.SimulationArgs);
 

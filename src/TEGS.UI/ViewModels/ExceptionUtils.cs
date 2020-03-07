@@ -1,4 +1,4 @@
-// 
+﻿// 
 // ExceptionUtils.cs
 //  
 // Author:

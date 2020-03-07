@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <graph name="Breakdown" description="A deterministic queue (M/D/1) with breakdowns">
   <variables>
     <variable name="QUEUE" type="Integer" />
