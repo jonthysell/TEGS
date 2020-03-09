@@ -20,11 +20,26 @@
                           Header="_New" />
                 <MenuItem Command="{Binding OpenGraph}"
                           Header="_Open..." />
-                <MenuItem Header="_Save" />
-                <MenuItem Header="Save _As..." />
+                <MenuItem Command="{Binding Graph.Save}"
+                          Header="_Save" />
+                <MenuItem Command="{Binding Graph.SaveAs}"
+                          Header="Save _As..." />
                 <Separator />
                 <MenuItem Click="Exit_Click"
                           Header="E_xit" />
+            </MenuItem>
+            <MenuItem Header="_Graph">
+                <MenuItem Header="_Properties..." />
+                <MenuItem Header="_State Variables..." />
+                <MenuItem Header="_Verticies..." />
+                <MenuItem Header="_Edges..." />
+            </MenuItem>
+            <MenuItem Header="_Simulation">
+                <MenuItem Header="_Start..." />
+                <Separator />
+                <MenuItem Header="_Run" />
+                <MenuItem Header="_Pause" />
+                <MenuItem Header="_Step" />
             </MenuItem>
             <MenuItem Header="_Help">
                 <MenuItem Header="_About TEGS" />

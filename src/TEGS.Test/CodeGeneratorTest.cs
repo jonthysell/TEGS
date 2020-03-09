@@ -84,31 +84,30 @@ namespace TEGS.Test
                 options: new CSharpCompilationOptions(OutputKind.ConsoleApplication,
                 optimizationLevel: OptimizationLevel.Release));
 
-            using (var memoryStream = new MemoryStream())
+            using var memoryStream = new MemoryStream();
+
+            var result = compilation.Emit(memoryStream);
+
+            if (!result.Success)
             {
-                var result = compilation.Emit(memoryStream);
+                var failures = result.Diagnostics.Where(diagnostic => diagnostic.IsWarningAsError || diagnostic.Severity == DiagnosticSeverity.Error);
 
-                if (!result.Success)
+                Trace.WriteLine("Compilation Failures:");
+
+                Trace.Indent();
+
+                foreach (var diagnostic in failures)
                 {
-                    var failures = result.Diagnostics.Where(diagnostic => diagnostic.IsWarningAsError || diagnostic.Severity == DiagnosticSeverity.Error);
-
-                    Trace.WriteLine("Compilation Failures:");
-
-                    Trace.Indent();
-
-                    foreach (var diagnostic in failures)
-                    {
-                        Trace.WriteLine($"{ diagnostic.Id }: { diagnostic.GetMessage() }");
-                    }
-
-                    Trace.Unindent();
-
-                    return null;
+                    Trace.WriteLine($"{ diagnostic.Id }: { diagnostic.GetMessage() }");
                 }
 
-                memoryStream.Seek(0, SeekOrigin.Begin);
-                return memoryStream.ToArray();
+                Trace.Unindent();
+
+                return null;
             }
+
+            memoryStream.Seek(0, SeekOrigin.Begin);
+            return memoryStream.ToArray();
         }
     }
 }

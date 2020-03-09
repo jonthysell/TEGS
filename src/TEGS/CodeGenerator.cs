@@ -225,8 +225,7 @@ namespace TEGS
                 Vertex vertex = graph.Verticies[i];
 
                 int paramCount = vertex.ParameterNames.Count;
-
-                if (paramCount > 0 && !eventParameterTypes.TryGetValue(vertex, out string eventParameterType))
+                if (paramCount > 0 && !eventParameterTypes.ContainsKey(vertex))
                 {
                     StringBuilder tupleTypesSB = new StringBuilder();
 
@@ -244,8 +243,7 @@ namespace TEGS
 
                     tupleTypesSB.Append(">");
 
-                    eventParameterType = tupleTypesSB.ToString();
-                    eventParameterTypes[vertex] = eventParameterType;
+                    eventParameterTypes[vertex] = tupleTypesSB.ToString();
                 }
 
                 if (!eventNames.TryGetValue(vertex, out string eventName))

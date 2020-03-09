@@ -25,7 +25,7 @@
 // THE SOFTWARE.
 
 using System;
-using System.Collections.Generic;
+using System.ComponentModel;
 using System.Text;
 
 using GalaSoft.MvvmLight;
@@ -48,7 +48,18 @@ namespace TEGS.UI.ViewModels
             }
             private set
             {
+                if (_graph != null)
+                {
+                    _graph.PropertyChanged -= Graph_PropertyChanged;
+                }
+
+                if (value != null)
+                {
+                    value.PropertyChanged += Graph_PropertyChanged;
+                }
+
                 _graph = value;
+
                 RaisePropertyChanged();
                 RaisePropertyChanged(nameof(Title));
             }
@@ -63,14 +74,24 @@ namespace TEGS.UI.ViewModels
 
                 if (null != Graph)
                 {
+                    if (Graph.IsDirty)
+                    {
+                        sb.Append("*");
+                    }
+
                     if (!string.IsNullOrWhiteSpace(Graph.FileName))
                     {
                         sb.Append(Graph.FileName);
+                    }
+                    else if (!string.IsNullOrWhiteSpace(Graph.Name))
+                    {
+                        sb.Append(Graph.Name);
                     }
                     else
                     {
                         sb.Append("Untitled");
                     }
+
                     sb.Append(" - ");
                 }
 
@@ -109,7 +130,7 @@ namespace TEGS.UI.ViewModels
             {
                 return _openGraph ?? (_openGraph = new RelayCommand(() =>
                 {
-                    Messenger.Default.Send(new OpenFileMessage("Open Graph", (filename) =>
+                    Messenger.Default.Send(new OpenFileMessage("Open Graph", FileType.Graph, (filename) =>
                     {
                         try
                         {
@@ -125,11 +146,34 @@ namespace TEGS.UI.ViewModels
         }
         private RelayCommand _openGraph;
 
+        public RelayCommand Close
+        {
+            get
+            {
+                return _close ?? (_close = new RelayCommand(() =>
+                {
+                }));
+            }
+        }
+        private RelayCommand _close;
+
         #endregion
 
         public MainViewModel()
         {
 
+        }
+
+        private void Graph_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            switch (e.PropertyName)
+            {
+                case nameof(Graph.Name):
+                case nameof(Graph.FileName):
+                case nameof(Graph.IsDirty):
+                    RaisePropertyChanged(nameof(Title));
+                    break;
+            }
         }
     }
 }

@@ -28,21 +28,136 @@ using System;
 using System.IO;
 
 using GalaSoft.MvvmLight;
+using GalaSoft.MvvmLight.Command;
+using GalaSoft.MvvmLight.Messaging;
 
 namespace TEGS.UI.ViewModels
 {
     public class ObservableGraph : ObservableObject
     {
-        public string FileName { get; private set; }
+        #region Properties
+
+        public string Name
+        {
+            get
+            {
+                return Graph.Name;
+            }
+            set
+            {
+                Graph.Name = value;
+                RaisePropertyChanged();
+            }
+        }
+
+        public string Description
+        {
+            get
+            {
+                return Graph.Description;
+            }
+            set
+            {
+                Graph.Description = value;
+                RaisePropertyChanged();
+            }
+        }
+
+        public string FileName
+        {
+            get
+            {
+                return _fileName;
+            }
+            private set
+            {
+                _fileName = value?.Trim() ?? "";
+                RaisePropertyChanged();
+            }
+        }
+        private string _fileName = "";
+
+        public bool IsDirty
+        {
+            get
+            {
+                return _isDirty;
+            }
+            private set
+            {
+                _isDirty = value;
+                RaisePropertyChanged();
+                Save.RaiseCanExecuteChanged();
+            }
+        }
+        private bool _isDirty = false;
+
+        #endregion
+
+        #region Commands
+
+        public RelayCommand Save
+        {
+            get
+            {
+                return _save ?? (_save = new RelayCommand(() =>
+                {
+                    try
+                    {
+                        if (string.IsNullOrWhiteSpace(FileName))
+                        {
+                            TrySaveAs();
+                        }
+                        else
+                        {
+                            using Stream outputStream = new FileStream(FileName, FileMode.Create);
+                            Graph.SaveXml(outputStream);
+                            IsDirty = false;
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        ExceptionUtils.HandleException(ex);
+                    }
+                }, () =>
+                {
+                    return IsDirty;
+                }));
+            }
+        }
+        private RelayCommand _save;
+
+        public RelayCommand SaveAs
+        {
+            get
+            {
+                return _saveAs ?? (_saveAs = new RelayCommand(() =>
+                {
+                    try
+                    {
+                        TrySaveAs();
+                    }
+                    catch (Exception ex)
+                    {
+                        ExceptionUtils.HandleException(ex);
+                    }
+                }));
+            }
+        }
+        private RelayCommand _saveAs;
+
+        #endregion
 
         internal Graph Graph { get; private set; }
+
+        #region Creation
 
         private ObservableGraph(Graph graph)
         {
             Graph = graph ?? throw new ArgumentNullException(nameof(graph));
         }
 
-        public static ObservableGraph NewGraph() => new ObservableGraph(new Graph());
+        public static ObservableGraph NewGraph() => new ObservableGraph(new Graph()) { IsDirty = true };
 
         public static ObservableGraph OpenGraph(string filename)
         {
@@ -59,6 +174,27 @@ namespace TEGS.UI.ViewModels
             {
                 FileName = filename
             };
+        }
+
+        #endregion
+
+        private void TrySaveAs()
+        {
+            Messenger.Default.Send(new SaveFileMessage("Save Graph As...", FileType.Graph, (fileName) =>
+            {
+                try
+                {
+                    using Stream outputStream = new FileStream(fileName, FileMode.Create);
+                    Graph.SaveXml(outputStream);
+
+                    FileName = fileName;
+                    IsDirty = false;
+                }
+                catch (Exception ex)
+                {
+                    ExceptionUtils.HandleException(ex);
+                }
+            }));
         }
     }
 }

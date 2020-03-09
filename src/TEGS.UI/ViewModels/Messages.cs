@@ -30,16 +30,6 @@ using GalaSoft.MvvmLight.Messaging;
 
 namespace TEGS.UI.ViewModels
 {
-    public class ExceptionMessage : MessageBase
-    {
-        public readonly Exception Exception;
-
-        public ExceptionMessage(Exception exception)
-        {
-            Exception = exception ?? throw new ArgumentNullException(nameof(exception));
-        }
-    }
-
     public abstract class CallbackMessage<T> : MessageBase
     {
         private readonly Action<T> Callback;
@@ -55,12 +45,55 @@ namespace TEGS.UI.ViewModels
         }
     }
 
+    public abstract class ViewModelMessage<T, U> : CallbackMessage<U>
+    {
+        public readonly T ViewModel;
+
+        protected ViewModelMessage(T viewmodel, Action<U> callback = null) : base(callback)
+        {
+            ViewModel = viewmodel ?? throw new ArgumentNullException(nameof(viewmodel));
+        }
+    }
+
+    public class ExceptionMessage : MessageBase
+    {
+        public readonly Exception Exception;
+
+        public ExceptionMessage(Exception exception)
+        {
+            Exception = exception ?? throw new ArgumentNullException(nameof(exception));
+        }
+    }
+
+    [Flags]
+    public enum FileType
+    {
+        None = 0,
+        Graph = 1,
+        SimulationOutput,
+    }
+
     public class OpenFileMessage : CallbackMessage<string>
     {
         public readonly string Title;
-        public OpenFileMessage(string title, Action<string> callback) : base(callback)
+        public readonly FileType FileType;
+
+        public OpenFileMessage(string title, FileType fileType, Action<string> callback) : base(callback)
         {
             Title = title;
+            FileType = fileType;
+        }
+    }
+
+    public class SaveFileMessage : CallbackMessage<string>
+    {
+        public readonly string Title;
+        public readonly FileType FileType;
+
+        public SaveFileMessage(string title, FileType fileType, Action<string> callback) : base(callback)
+        {
+            Title = title;
+            FileType = fileType;
         }
     }
 }

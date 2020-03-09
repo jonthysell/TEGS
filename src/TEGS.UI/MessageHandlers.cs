@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
 
@@ -45,12 +46,14 @@ namespace TEGS.UI
         {
             Messenger.Default.Register<ExceptionMessage>(recipient, async (message) => await ShowExceptionDialogAsync(message));
             Messenger.Default.Register<OpenFileMessage>(recipient, async (message) => await ShowOpenFileDialogAsync(message));
+            Messenger.Default.Register<SaveFileMessage>(recipient, async (message) => await ShowSaveFileDialogAsync(message));
         }
 
         public static void UnregisterMessageHandlers(object recipient)
         {
             Messenger.Default.Unregister<ExceptionMessage>(recipient);
             Messenger.Default.Unregister<OpenFileMessage>(recipient);
+            Messenger.Default.Unregister<SaveFileMessage>(recipient);
         }
 
         private static async Task ShowExceptionDialogAsync(ExceptionMessage message)
@@ -66,19 +69,88 @@ namespace TEGS.UI
                 {
                     AllowMultiple = false,
                     Title = message.Title,
+                    Filters = GetFilters(message.FileType),
                 };
 
                 string[] filenames = await dialog.ShowAsync(MainWindow);
 
                 if (null != filenames && filenames.Length > 0 && !string.IsNullOrWhiteSpace(filenames[0]))
                 {
-                    message.Success(filenames[0].Trim());
+                    message.Success(filenames[0]);
                 }
             }
             catch (Exception ex)
             {
                 ExceptionUtils.HandleException(ex);
             }
+        }
+
+        private static async Task ShowSaveFileDialogAsync(SaveFileMessage message)
+        {
+            try
+            {
+                var dialog = new SaveFileDialog()
+                {
+                    Title = message.Title,
+                    Filters = GetFilters(message.FileType),
+                    DefaultExtension = GetDefaultExtension(message.FileType),
+                };
+
+                string fileName = await dialog.ShowAsync(MainWindow);
+
+                if (!string.IsNullOrWhiteSpace(fileName))
+                {
+                    message.Success(fileName);
+                }
+            }
+            catch (Exception ex)
+            {
+                ExceptionUtils.HandleException(ex);
+            }
+        }
+
+        private static string GetDefaultExtension(FileType fileType)
+        {
+            switch (fileType)
+            {
+                case FileType.Graph:
+                    return "xml";
+                case FileType.SimulationOutput:
+                    return "txt";
+                default:
+                    return null;
+            }
+        }
+
+        private static List<FileDialogFilter> GetFilters(FileType fileType)
+        {
+            var filters = new List<FileDialogFilter>();
+
+            if (fileType.HasFlag(FileType.Graph))
+            {
+                filters.Add(new FileDialogFilter()
+                {
+                    Name = "Graph Files",
+                    Extensions = new List<string>() { "xml" }
+                });
+            }
+
+            if (fileType.HasFlag(FileType.SimulationOutput))
+            {
+                filters.Add(new FileDialogFilter()
+                {
+                    Name = "Output Files",
+                    Extensions = new List<string>() { "txt", "csv", "tsv" }
+                });
+            }
+
+            filters.Add(new FileDialogFilter()
+            {
+                Name = "All Files",
+                Extensions = new List<string>() { "*" }
+            });
+
+            return filters;
         }
     }
 }
