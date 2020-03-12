@@ -30,7 +30,7 @@ using GalaSoft.MvvmLight;
 
 namespace TEGS.UI.ViewModels
 {
-    public class AppViewModel : ViewModelBase
+    public class AppViewModel : GalaSoft.MvvmLight.ViewModelBase
     {
         #region Singleton Statics
 

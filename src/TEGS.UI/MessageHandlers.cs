@@ -35,6 +35,7 @@ using Avalonia.Controls.ApplicationLifetimes;
 using GalaSoft.MvvmLight.Messaging;
 
 using TEGS.UI.ViewModels;
+using TEGS.UI.Views;
 
 namespace TEGS.UI
 {
@@ -47,6 +48,7 @@ namespace TEGS.UI
             Messenger.Default.Register<ExceptionMessage>(recipient, async (message) => await ShowExceptionDialogAsync(message));
             Messenger.Default.Register<OpenFileMessage>(recipient, async (message) => await ShowOpenFileDialogAsync(message));
             Messenger.Default.Register<SaveFileMessage>(recipient, async (message) => await ShowSaveFileDialogAsync(message));
+            Messenger.Default.Register<ShowGraphPropertiesMessage>(recipient, async (message) => await ShowAceptRejectDialogAsync<GraphPropertiesWindow, GraphPropertiesViewModel>(message));
         }
 
         public static void UnregisterMessageHandlers(object recipient)
@@ -54,6 +56,7 @@ namespace TEGS.UI
             Messenger.Default.Unregister<ExceptionMessage>(recipient);
             Messenger.Default.Unregister<OpenFileMessage>(recipient);
             Messenger.Default.Unregister<SaveFileMessage>(recipient);
+            Messenger.Default.Unregister<ShowGraphPropertiesMessage>(recipient);
         }
 
         private static async Task ShowExceptionDialogAsync(ExceptionMessage message)
@@ -63,6 +66,8 @@ namespace TEGS.UI
 
         private static async Task ShowOpenFileDialogAsync(OpenFileMessage message)
         {
+            string filename = null;
+
             try
             {
                 var dialog = new OpenFileDialog()
@@ -76,17 +81,23 @@ namespace TEGS.UI
 
                 if (null != filenames && filenames.Length > 0 && !string.IsNullOrWhiteSpace(filenames[0]))
                 {
-                    message.Success(filenames[0]);
+                    filename = filenames[0];
                 }
             }
             catch (Exception ex)
             {
                 ExceptionUtils.HandleException(ex);
             }
+            finally
+            {
+                message.Process(filename);
+            }
         }
 
         private static async Task ShowSaveFileDialogAsync(SaveFileMessage message)
         {
+            string filename = null;
+
             try
             {
                 var dialog = new SaveFileDialog()
@@ -96,16 +107,15 @@ namespace TEGS.UI
                     DefaultExtension = GetDefaultExtension(message.FileType),
                 };
 
-                string fileName = await dialog.ShowAsync(MainWindow);
-
-                if (!string.IsNullOrWhiteSpace(fileName))
-                {
-                    message.Success(fileName);
-                }
+                filename = await dialog.ShowAsync(MainWindow);
             }
             catch (Exception ex)
             {
                 ExceptionUtils.HandleException(ex);
+            }
+            finally
+            {
+                message.Process(filename);
             }
         }
 
@@ -151,6 +161,24 @@ namespace TEGS.UI
             });
 
             return filters;
+        }
+
+        private static async Task ShowAceptRejectDialogAsync<TWindow, TViewModel>(ShowAcceptRejectViewModelMessage<TViewModel> message) where TWindow : Window, IView<TViewModel>, new() where TViewModel : AcceptRejectViewModelBase
+        {
+            try
+            {
+                var window = new TWindow();
+                window.VM = message.ViewModel;
+                await window.ShowDialog(MainWindow);
+            }
+            catch (Exception ex)
+            {
+                ExceptionUtils.HandleException(ex);
+            }
+            finally
+            {
+                message.Process();
+            }
         }
     }
 }

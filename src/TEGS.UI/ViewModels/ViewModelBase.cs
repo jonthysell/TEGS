@@ -1,5 +1,5 @@
 ﻿// 
-// MainWindow.xaml.cs
+// ViewModelBase.cs
 //  
 // Author:
 //       Jon Thysell <thysell@gmail.com>
@@ -24,40 +24,42 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using Avalonia;
-using Avalonia.Controls;
-using Avalonia.Markup.Xaml;
+using System;
 
-using TEGS.UI.ViewModels;
+using GalaSoft.MvvmLight.Command;
 
-namespace TEGS.UI.Views
+namespace TEGS.UI.ViewModels
 {
-    public class MainWindow : Window, IView<MainViewModel>
+    public abstract class ViewModelBase : GalaSoft.MvvmLight.ViewModelBase
     {
-        public MainViewModel VM
+        public AppViewModel AppVM => AppViewModel.Instance;
+
+        #region Properties
+
+        public abstract string Title { get; }
+
+        #endregion
+
+        #region Commands
+
+        public RelayCommand NotImplementedCommand
         {
             get
             {
-                return (MainViewModel)DataContext;
+                return _notImplementedCommand ?? (_notImplementedCommand = new RelayCommand(() =>
+                {
+                    ExceptionUtils.HandleException(new NotImplementedException());
+                }, () => {
+                    return false;
+                }));
             }
-            set
-            {
-                DataContext = value;
-                value.RequestClose = Close;
-            }
         }
+        private RelayCommand _notImplementedCommand;
 
-        public MainWindow()
-        {
-            InitializeComponent();
-#if DEBUG
-            this.AttachDevTools();
-#endif
-        }
+        #endregion
 
-        private void InitializeComponent()
-        {
-            AvaloniaXamlLoader.Load(this);
-        }
+        public Action RequestClose;
+
+        protected ViewModelBase() { }
     }
 }

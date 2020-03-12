@@ -1,5 +1,5 @@
 ﻿// 
-// MainWindow.xaml.cs
+// GraphPropertiesWindow.xaml.cs
 //  
 // Author:
 //       Jon Thysell <thysell@gmail.com>
@@ -24,6 +24,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System;
+
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
@@ -32,13 +34,13 @@ using TEGS.UI.ViewModels;
 
 namespace TEGS.UI.Views
 {
-    public class MainWindow : Window, IView<MainViewModel>
+    public class GraphPropertiesWindow : Window, IView<GraphPropertiesViewModel>
     {
-        public MainViewModel VM
+        public GraphPropertiesViewModel VM
         {
             get
             {
-                return (MainViewModel)DataContext;
+                return (GraphPropertiesViewModel)DataContext;
             }
             set
             {
@@ -47,9 +49,9 @@ namespace TEGS.UI.Views
             }
         }
 
-        public MainWindow()
+        public GraphPropertiesWindow()
         {
-            InitializeComponent();
+            this.InitializeComponent();
 #if DEBUG
             this.AttachDevTools();
 #endif

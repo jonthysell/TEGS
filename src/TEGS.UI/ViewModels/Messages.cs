@@ -39,19 +39,34 @@ namespace TEGS.UI.ViewModels
             Callback = callback;
         }
 
-        public void Success(T result)
+        public void Process(T result)
         {
             Callback?.Invoke(result);
         }
     }
 
-    public abstract class ViewModelMessage<T, U> : CallbackMessage<U>
+    public abstract class ShowViewModelMessage<T> : MessageBase where T : ViewModelBase
     {
         public readonly T ViewModel;
 
-        protected ViewModelMessage(T viewmodel, Action<U> callback = null) : base(callback)
+        protected ShowViewModelMessage(T viewmodel) : base()
         {
             ViewModel = viewmodel ?? throw new ArgumentNullException(nameof(viewmodel));
+        }
+    }
+
+    public abstract class ShowAcceptRejectViewModelMessage<T> : ShowViewModelMessage<T> where T : AcceptRejectViewModelBase
+    {
+        private readonly Action<T> Callback;
+
+        protected ShowAcceptRejectViewModelMessage(T viewmodel, Action<T> callback = null) : base(viewmodel)
+        {
+            Callback = callback;
+        }
+
+        public void Process()
+        {
+            Callback?.Invoke(ViewModel);
         }
     }
 
@@ -95,5 +110,10 @@ namespace TEGS.UI.ViewModels
             Title = title;
             FileType = fileType;
         }
+    }
+
+    public class ShowGraphPropertiesMessage : ShowAcceptRejectViewModelMessage<GraphPropertiesViewModel>
+    {
+        public ShowGraphPropertiesMessage(ObservableGraph graph, Action<GraphPropertiesViewModel> callback = null) : base(new GraphPropertiesViewModel(graph), callback) { }
     }
 }

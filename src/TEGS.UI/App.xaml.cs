@@ -29,6 +29,7 @@ using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 
 using TEGS.UI.ViewModels;
+using TEGS.UI.Views;
 
 namespace TEGS.UI
 {
@@ -60,7 +61,9 @@ namespace TEGS.UI
 
             if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
             {
-                desktop.MainWindow = new MainWindow();
+                var window = new MainWindow();
+                window.VM = new MainViewModel();
+                desktop.MainWindow = window;
             }
         }
 

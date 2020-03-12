@@ -146,6 +146,25 @@ namespace TEGS.UI.ViewModels
         }
         private RelayCommand _saveAs;
 
+        public RelayCommand ShowProperties
+        {
+            get
+            {
+                return _showProperties ?? (_showProperties = new RelayCommand(() =>
+                {
+                    try
+                    {
+                        Messenger.Default.Send(new ShowGraphPropertiesMessage(this));
+                    }
+                    catch (Exception ex)
+                    {
+                        ExceptionUtils.HandleException(ex);
+                    }
+                }));
+            }
+        }
+        private RelayCommand _showProperties;
+
         #endregion
 
         internal Graph Graph { get; private set; }
@@ -180,20 +199,23 @@ namespace TEGS.UI.ViewModels
 
         private void TrySaveAs()
         {
-            Messenger.Default.Send(new SaveFileMessage("Save Graph As...", FileType.Graph, (fileName) =>
+            Messenger.Default.Send(new SaveFileMessage("Save Graph As...", FileType.Graph, (filename) =>
             {
-                try
-                {
-                    using Stream outputStream = new FileStream(fileName, FileMode.Create);
-                    Graph.SaveXml(outputStream);
+                    try
+                    {
+                        if (!string.IsNullOrWhiteSpace(filename))
+                        {
+                            using Stream outputStream = new FileStream(filename, FileMode.Create);
+                            Graph.SaveXml(outputStream);
 
-                    FileName = fileName;
-                    IsDirty = false;
-                }
-                catch (Exception ex)
-                {
-                    ExceptionUtils.HandleException(ex);
-                }
+                            FileName = filename;
+                            IsDirty = false;
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        ExceptionUtils.HandleException(ex);
+                    }
             }));
         }
     }

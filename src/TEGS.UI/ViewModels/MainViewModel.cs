@@ -28,7 +28,6 @@ using System;
 using System.ComponentModel;
 using System.Text;
 
-using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using GalaSoft.MvvmLight.Messaging;
 
@@ -36,8 +35,6 @@ namespace TEGS.UI.ViewModels
 {
     public class MainViewModel : ViewModelBase
     {
-        public AppViewModel AppVM => AppViewModel.Instance;
-
         #region Properties
 
         public ObservableGraph Graph
@@ -66,7 +63,7 @@ namespace TEGS.UI.ViewModels
         }
         private ObservableGraph _graph;
 
-        public string Title
+        public override string Title
         {
             get
             {
@@ -134,7 +131,10 @@ namespace TEGS.UI.ViewModels
                     {
                         try
                         {
-                            Graph = ObservableGraph.OpenGraph(filename);
+                            if (!string.IsNullOrWhiteSpace(filename))
+                            {
+                                Graph = ObservableGraph.OpenGraph(filename);
+                            }
                         }
                         catch (Exception ex)
                         {
@@ -152,6 +152,14 @@ namespace TEGS.UI.ViewModels
             {
                 return _close ?? (_close = new RelayCommand(() =>
                 {
+                    try
+                    {
+                        RequestClose?.Invoke();
+                    }
+                    catch (Exception ex)
+                    {
+                        ExceptionUtils.HandleException(ex);
+                    }
                 }));
             }
         }
@@ -159,10 +167,7 @@ namespace TEGS.UI.ViewModels
 
         #endregion
 
-        public MainViewModel()
-        {
-
-        }
+        public MainViewModel() : base() { }
 
         private void Graph_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {

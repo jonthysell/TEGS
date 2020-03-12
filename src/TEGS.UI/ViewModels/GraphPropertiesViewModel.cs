@@ -1,5 +1,5 @@
 ﻿// 
-// MainWindow.xaml.cs
+// GraphPropertiesViewModel.cs
 //  
 // Author:
 //       Jon Thysell <thysell@gmail.com>
@@ -24,40 +24,59 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using Avalonia;
-using Avalonia.Controls;
-using Avalonia.Markup.Xaml;
+using System;
 
-using TEGS.UI.ViewModels;
-
-namespace TEGS.UI.Views
+namespace TEGS.UI.ViewModels
 {
-    public class MainWindow : Window, IView<MainViewModel>
+    public class GraphPropertiesViewModel : AcceptRejectViewModelBase
     {
-        public MainViewModel VM
+        #region Properties
+
+        public override string Title => "Graph Properties";
+
+        public string Name
         {
             get
             {
-                return (MainViewModel)DataContext;
+                return _name;
             }
             set
             {
-                DataContext = value;
-                value.RequestClose = Close;
+                _name = value;
+                RaisePropertyChanged();
             }
         }
+        private string _name;
 
-        public MainWindow()
+        public string Description
         {
-            InitializeComponent();
-#if DEBUG
-            this.AttachDevTools();
-#endif
+            get
+            {
+                return _description;
+            }
+            set
+            {
+                _description = value;
+                RaisePropertyChanged();
+            }
+        }
+        private string _description;
+
+        #endregion
+
+        private ObservableGraph _graph;
+
+        public GraphPropertiesViewModel(ObservableGraph graph) : base()
+        {
+            _graph = graph ?? throw new ArgumentNullException(nameof(graph));
+            _name = _graph.Name;
+            _description = _graph.Description;
         }
 
-        private void InitializeComponent()
+        protected override void ProcessAccept()
         {
-            AvaloniaXamlLoader.Load(this);
+            _graph.Name = _name;
+            _graph.Description = _description;
         }
     }
 }

@@ -1,0 +1,54 @@
+<Window Height="480"
+        MinHeight="240"
+        MinWidth="320"
+        Title="{Binding Title}"
+        Width="320"
+        WindowStartupLocation="CenterOwner"
+        d:DesignHeight="480"
+        d:DesignWidth="320"
+        mc:Ignorable="d"
+        x:Class="TEGS.UI.Views.GraphPropertiesWindow"
+        xmlns="https://github.com/avaloniaui"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <DockPanel>
+        <StackPanel DockPanel.Dock="Top"
+                    Margin="5">
+            <TextBlock Margin="5"
+                       Text="Name" />
+            <TextBox Margin="5"
+                     Padding="5"
+                     Text="{Binding Name}"
+                     Watermark="Name" />
+        </StackPanel>
+        <StackPanel DockPanel.Dock="Bottom"
+                    HorizontalAlignment="Right"
+                    Margin="5"
+                    Orientation="Horizontal">
+            <Button Command="{Binding Accept}"
+                    Content="OK"
+                    Margin="5"
+                    MinWidth="100"
+                    Padding="5" />
+            <Button Command="{Binding Reject}"
+                    Content="Cancel"
+                    Margin="5"
+                    MinWidth="100"
+                    Padding="5" />
+        </StackPanel>
+        <Grid Margin="5"
+              RowDefinitions="Auto,*">
+            <TextBlock Grid.Row="0"
+                       Margin="5"
+                       Text="Description" />
+            <TextBox AcceptsReturn="True"
+                     Grid.Row="1"
+                     Margin="5"
+                     Padding="5"
+                     Text="{Binding Description}"
+                     TextWrapping="Wrap"
+                     Watermark="Description" />
+        </Grid>
+    </DockPanel>
+</Window>
