@@ -25,6 +25,8 @@
 // THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 
 using GalaSoft.MvvmLight;
@@ -45,8 +47,14 @@ namespace TEGS.UI.ViewModels
             }
             set
             {
-                Graph.Name = value;
-                RaisePropertyChanged();
+                value = value?.Trim() ?? "";
+
+                if (value != Graph.Name)
+                {
+                    Graph.Name = value;
+                    RaisePropertyChanged();
+                    IsDirty = true;
+                }
             }
         }
 
@@ -58,8 +66,14 @@ namespace TEGS.UI.ViewModels
             }
             set
             {
-                Graph.Description = value;
-                RaisePropertyChanged();
+                value = value?.Trim() ?? "";
+
+                if (value != Graph.Description)
+                {
+                    Graph.Description = value;
+                    RaisePropertyChanged();
+                    IsDirty = true;
+                }
             }
         }
 
@@ -193,6 +207,21 @@ namespace TEGS.UI.ViewModels
             {
                 FileName = filename
             };
+        }
+
+        #endregion
+
+        #region Setters
+
+        public void SetStateVariables(IEnumerable<ObservableStateVariable> observableStateVariables)
+        {
+            Graph.ClearStateVariables();
+            foreach (var observableStateVariable in observableStateVariables)
+            {
+                Graph.AddStateVariable(observableStateVariable.StateVariable);
+            }
+
+            IsDirty = true;
         }
 
         #endregion

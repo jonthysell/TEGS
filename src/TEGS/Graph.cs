@@ -98,8 +98,13 @@ namespace TEGS
             return item;
         }
 
-        private void AddStateVariable(StateVariable item)
+        public void AddStateVariable(StateVariable item)
         {
+            if (null == item)
+            {
+                throw new ArgumentNullException(nameof(item));
+            }
+
             _stateVariables.Add(item);
         }
 
@@ -183,6 +188,11 @@ namespace TEGS
             }
 
             throw new StateVariableNotFoundException(name, type);
+        }
+
+        public void ClearStateVariables()
+        {
+            _stateVariables.Clear();
         }
 
         #endregion

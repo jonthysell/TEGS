@@ -61,8 +61,10 @@ namespace TEGS.UI
 
             if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
             {
-                var window = new MainWindow();
-                window.VM = new MainViewModel();
+                var window = new MainWindow
+                {
+                    VM = new MainViewModel()
+                };
                 desktop.MainWindow = window;
             }
         }

@@ -80,10 +80,6 @@ namespace TEGS.UI.ViewModels
                     {
                         sb.Append(Graph.FileName);
                     }
-                    else if (!string.IsNullOrWhiteSpace(Graph.Name))
-                    {
-                        sb.Append(Graph.Name);
-                    }
                     else
                     {
                         sb.Append("Untitled");

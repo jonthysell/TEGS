@@ -1,5 +1,5 @@
 ﻿// 
-// GraphPropertiesViewModel.cs
+// ObservableStateVariable.cs
 //  
 // Author:
 //       Jon Thysell <thysell@gmail.com>
@@ -25,58 +25,72 @@
 // THE SOFTWARE.
 
 using System;
+using System.Collections.ObjectModel;
+
+using GalaSoft.MvvmLight;
 
 namespace TEGS.UI.ViewModels
 {
-    public class GraphPropertiesViewModel : AcceptRejectViewModelBase
+    public class ObservableStateVariable : ObservableObject
     {
         #region Properties
-
-        public override string Title => "Properties";
 
         public string Name
         {
             get
             {
-                return _name;
+                return StateVariable.Name;
             }
             set
             {
-                _name = value;
+                StateVariable = new StateVariable(value, StateVariable.Type);
                 RaisePropertyChanged();
             }
         }
-        private string _name;
 
-        public string Description
+        public string Type
         {
             get
             {
-                return _description;
+                return StateVariable.Type.ToString();
             }
             set
             {
-                _description = value;
+                StateVariable = new StateVariable(StateVariable.Name, Enum.Parse<VariableValueType>(value));
                 RaisePropertyChanged();
             }
         }
-        private string _description;
 
         #endregion
 
-        public ObservableGraph Graph { get; private set; }
+        internal StateVariable StateVariable { get; private set; }
 
-        public GraphPropertiesViewModel(ObservableGraph graph) : base()
+        #region Creation
+
+        public ObservableStateVariable(StateVariable stateVariable)
         {
-            Graph = graph ?? throw new ArgumentNullException(nameof(graph));
-            _name = Graph.Name;
-            _description = Graph.Description;
+            StateVariable = stateVariable ?? throw new ArgumentNullException(nameof(stateVariable));
         }
 
-        protected override void ProcessAccept()
+        public static ObservableStateVariable CreateNew() => new ObservableStateVariable(new StateVariable(default, default));
+
+        public static ObservableCollection<ObservableStateVariable> MakeObservableStateVariables(ObservableGraph graph)
         {
-            Graph.Name = _name;
-            Graph.Description = _description;
+            if (null == graph)
+            {
+                throw new ArgumentNullException(nameof(graph));
+            }
+
+            var stateVariables = new ObservableCollection<ObservableStateVariable>();
+
+            foreach (var stateVariable in graph.Graph.StateVariables)
+            {
+                stateVariables.Add(new ObservableStateVariable(stateVariable));
+            }
+
+            return stateVariables;
         }
+
+        #endregion
     }
 }
