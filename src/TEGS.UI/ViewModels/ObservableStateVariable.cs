@@ -61,6 +61,8 @@ namespace TEGS.UI.ViewModels
             }
         }
 
+        public ObservableCollection<string> Types => ObservableEnums.GetCollection<VariableValueType>();
+
         public string Description
         {
             get

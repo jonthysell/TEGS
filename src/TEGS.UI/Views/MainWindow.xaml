@@ -12,20 +12,25 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <DockPanel>
+    <DockPanel Margin="5">
         <Menu DockPanel.Dock="Top">
             <MenuItem Header="_File">
                 <MenuItem Command="{Binding NewGraph}"
-                          Header="_New" />
+                          Header="_New"
+                          HotKey="Ctrl+N" />
                 <MenuItem Command="{Binding OpenGraph}"
-                          Header="_Open..." />
+                          Header="_Open..."
+                          HotKey="Ctrl+O" />
                 <MenuItem Command="{Binding Graph.Save}"
-                          Header="_Save" />
+                          Header="_Save"
+                          HotKey="Ctrl+S" />
                 <MenuItem Command="{Binding Graph.SaveAs}"
-                          Header="Save _As..." />
+                          Header="Save _As..."
+                          HotKey="Ctrl+Shift+S" />
                 <Separator />
                 <MenuItem Command="{Binding Close}"
-                          Header="E_xit" />
+                          Header="E_xit"
+                          HotKey="Alt+F4" />
             </MenuItem>
             <MenuItem Header="_Graph">
                 <MenuItem Command="{Binding Graph.ShowProperties}"

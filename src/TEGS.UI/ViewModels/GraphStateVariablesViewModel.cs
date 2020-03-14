@@ -38,17 +38,19 @@ namespace TEGS.UI.ViewModels
 
         public override string Title => "State Variables";
 
+        public ObservableCollection<ObservableStateVariable> StateVariables { get; private set; }
+
         public ObservableStateVariable SelectedStateVariable
         {
             get
             {
                 return SelectedStateVariableIndex != -1 ? StateVariables[SelectedStateVariableIndex] : null;
             }
+            set
+            {
+                SelectedStateVariableIndex = value != null ? StateVariables.IndexOf(value) : -1;
+            }
         }
-
-        public ObservableCollection<ObservableStateVariable> StateVariables { get; private set; }
-
-        public ObservableCollection<string> StateVariableTypes => ObservableEnums.GetCollection<VariableValueType>();
 
         public int SelectedStateVariableIndex
         {

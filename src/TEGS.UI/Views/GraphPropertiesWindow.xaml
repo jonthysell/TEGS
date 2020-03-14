@@ -12,16 +12,15 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <DockPanel>
-        <StackPanel DockPanel.Dock="Top"
-                    Margin="5">
-            <TextBlock Margin="5"
-                       Text="Name" />
+    <DockPanel Margin="5">
+        <Panel DockPanel.Dock="Top"
+               Margin="5">
             <TextBox Margin="5"
                      Padding="5"
                      Text="{Binding Name}"
+                     UseFloatingWatermark="True"
                      Watermark="Name" />
-        </StackPanel>
+        </Panel>
         <StackPanel DockPanel.Dock="Bottom"
                     HorizontalAlignment="Right"
                     Margin="5"
@@ -37,18 +36,14 @@
                     MinWidth="100"
                     Padding="5" />
         </StackPanel>
-        <Grid Margin="5"
-              RowDefinitions="Auto,*">
-            <TextBlock Grid.Row="0"
-                       Margin="5"
-                       Text="Description" />
+        <Panel Margin="5">
             <TextBox AcceptsReturn="True"
-                     Grid.Row="1"
                      Margin="5"
                      Padding="5"
                      Text="{Binding Description}"
                      TextWrapping="Wrap"
+                     UseFloatingWatermark="True"
                      Watermark="Description" />
-        </Grid>
+        </Panel>
     </DockPanel>
 </Window>
