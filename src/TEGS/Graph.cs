@@ -62,8 +62,7 @@ namespace TEGS
         }
         private string _description = "";
 
-        public IReadOnlyList<StateVariable> StateVariables => _stateVariables;
-        private readonly List<StateVariable> _stateVariables = new List<StateVariable>();
+        public readonly List<StateVariable> StateVariables = new List<StateVariable>();
 
         public Vertex StartingVertex
         {
@@ -91,31 +90,18 @@ namespace TEGS
 
         #region Variables
 
-        public StateVariable AddStateVariable(string name, VariableValueType type)
+        public StateVariable AddStateVariable(string name, VariableValueType type, string description = "")
         {
-            StateVariable item = new StateVariable(name, type);
-            AddStateVariable(item);
+            StateVariable item = new StateVariable()
+            {
+                Name = name,
+                Type = type,
+                Description = description,
+            };
+
+            StateVariables.Add(item);
+
             return item;
-        }
-
-        public void AddStateVariable(StateVariable item)
-        {
-            if (null == item)
-            {
-                throw new ArgumentNullException(nameof(item));
-            }
-
-            _stateVariables.Add(item);
-        }
-
-        public bool RemoveStateVariable(StateVariable item)
-        {
-            if (null == item)
-            {
-                throw new ArgumentNullException(nameof(item));
-            }
-
-            return _stateVariables.Remove(item);
         }
 
         public bool HasStateVariable(string name)
@@ -125,7 +111,7 @@ namespace TEGS
                 throw new ArgumentNullException(nameof(name));
             }
 
-            foreach (StateVariable sv in _stateVariables)
+            foreach (StateVariable sv in StateVariables)
             {
                 if (sv.Name == name)
                 {
@@ -143,7 +129,7 @@ namespace TEGS
                 throw new ArgumentNullException(nameof(name));
             }
 
-            foreach (StateVariable sv in _stateVariables)
+            foreach (StateVariable sv in StateVariables)
             {
                 if (sv.Name == name & sv.Type == type)
                 {
@@ -161,7 +147,7 @@ namespace TEGS
                 throw new ArgumentNullException(nameof(name));
             }
 
-            foreach (StateVariable sv in _stateVariables)
+            foreach (StateVariable sv in StateVariables)
             {
                 if (sv.Name == name)
                 {
@@ -170,29 +156,6 @@ namespace TEGS
             }
 
             throw new StateVariableNotFoundException(name);
-        }
-
-        public StateVariable GetStateVariable(string name, VariableValueType type)
-        {
-            if (string.IsNullOrEmpty(name))
-            {
-                throw new ArgumentNullException(nameof(name));
-            }
-
-            foreach (StateVariable sv in _stateVariables)
-            {
-                if (sv.Name == name && sv.Type == type)
-                {
-                    return sv;
-                }
-            }
-
-            throw new StateVariableNotFoundException(name, type);
-        }
-
-        public void ClearStateVariables()
-        {
-            _stateVariables.Clear();
         }
 
         #endregion
@@ -310,8 +273,9 @@ namespace TEGS
                         {
                             string name = xmlReader.GetAttribute("name");
                             VariableValueType type = (VariableValueType)Enum.Parse(typeof(VariableValueType), xmlReader.GetAttribute("type"));
+                            string description = xmlReader.GetAttribute("description");
 
-                            graph.AddStateVariable(name, type);
+                            graph.AddStateVariable(name, type, description);
                         }
                         else if (xmlReader.Name == "vertex")
                         {
@@ -414,12 +378,13 @@ namespace TEGS
 
             xmlWriter.WriteStartElement("variables");
 
-            foreach (StateVariable stateVariable in _stateVariables)
+            foreach (StateVariable stateVariable in StateVariables)
             {
                 xmlWriter.WriteStartElement("variable");
 
                 xmlWriter.WriteAttributeString("name", stateVariable.Name);
                 xmlWriter.WriteAttributeString("type", stateVariable.Type.ToString());
+                xmlWriter.WriteAttributeString("description", stateVariable.Description.ToString());
 
                 xmlWriter.WriteEndElement();
             }

@@ -25,7 +25,6 @@
 // THE SOFTWARE.
 
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 
@@ -76,6 +75,21 @@ namespace TEGS.UI.ViewModels
                 }
             }
         }
+
+        public ReadOnlyObservableCollection<ObservableStateVariable> StateVariables
+        {
+            get
+            {
+                return _stateVariables ?? (_stateVariables = new ReadOnlyObservableCollection<ObservableStateVariable>(ObservableStateVariable.MakeObservableStateVariables(this, false)));
+            }
+            private set
+            {
+                _stateVariables = value;
+                RaisePropertyChanged();
+                IsDirty = true;
+            }
+        }
+        private ReadOnlyObservableCollection<ObservableStateVariable> _stateVariables;
 
         public string FileName
         {
@@ -179,6 +193,25 @@ namespace TEGS.UI.ViewModels
         }
         private RelayCommand _showProperties;
 
+        public RelayCommand ShowStateVariables
+        {
+            get
+            {
+                return _showStateVariables ?? (_showStateVariables = new RelayCommand(() =>
+                {
+                    try
+                    {
+                        Messenger.Default.Send(new ShowGraphStateVariablesMessage(this));
+                    }
+                    catch (Exception ex)
+                    {
+                        ExceptionUtils.HandleException(ex);
+                    }
+                }));
+            }
+        }
+        private RelayCommand _showStateVariables;
+
         #endregion
 
         internal Graph Graph { get; private set; }
@@ -213,15 +246,15 @@ namespace TEGS.UI.ViewModels
 
         #region Setters
 
-        public void SetStateVariables(IEnumerable<ObservableStateVariable> observableStateVariables)
+        public void ReplaceStateVariables(ObservableCollection<ObservableStateVariable> observableStateVariables)
         {
-            Graph.ClearStateVariables();
+            Graph.StateVariables.Clear();
             foreach (var observableStateVariable in observableStateVariables)
             {
-                Graph.AddStateVariable(observableStateVariable.StateVariable);
+                Graph.StateVariables.Add(observableStateVariable.StateVariable);
             }
 
-            IsDirty = true;
+            StateVariables = new ReadOnlyObservableCollection<ObservableStateVariable>(observableStateVariables);
         }
 
         #endregion
@@ -230,21 +263,21 @@ namespace TEGS.UI.ViewModels
         {
             Messenger.Default.Send(new SaveFileMessage("Save Graph As...", FileType.Graph, (filename) =>
             {
-                    try
+                try
+                {
+                    if (!string.IsNullOrWhiteSpace(filename))
                     {
-                        if (!string.IsNullOrWhiteSpace(filename))
-                        {
-                            using Stream outputStream = new FileStream(filename, FileMode.Create);
-                            Graph.SaveXml(outputStream);
+                        using Stream outputStream = new FileStream(filename, FileMode.Create);
+                        Graph.SaveXml(outputStream);
 
-                            FileName = filename;
-                            IsDirty = false;
-                        }
+                        FileName = filename;
+                        IsDirty = false;
                     }
-                    catch (Exception ex)
-                    {
-                        ExceptionUtils.HandleException(ex);
-                    }
+                }
+                catch (Exception ex)
+                {
+                    ExceptionUtils.HandleException(ex);
+                }
             }));
         }
     }

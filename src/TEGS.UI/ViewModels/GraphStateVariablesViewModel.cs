@@ -38,7 +38,17 @@ namespace TEGS.UI.ViewModels
 
         public override string Title => "State Variables";
 
+        public ObservableStateVariable SelectedStateVariable
+        {
+            get
+            {
+                return SelectedStateVariableIndex != -1 ? StateVariables[SelectedStateVariableIndex] : null;
+            }
+        }
+
         public ObservableCollection<ObservableStateVariable> StateVariables { get; private set; }
+
+        public ObservableCollection<string> StateVariableTypes => ObservableEnums.GetCollection<VariableValueType>();
 
         public int SelectedStateVariableIndex
         {
@@ -50,6 +60,7 @@ namespace TEGS.UI.ViewModels
             {
                 _selectedStateVariableIndex = value >= 0 && value < StateVariables.Count ? value : -1;
                 RaisePropertyChanged();
+                RaisePropertyChanged(nameof(SelectedStateVariable));
                 RemoveStateVariable.RaiseCanExecuteChanged();
             }
         }
@@ -108,7 +119,7 @@ namespace TEGS.UI.ViewModels
         {
             Graph = graph ?? throw new ArgumentNullException(nameof(graph));
 
-            StateVariables = ObservableStateVariable.MakeObservableStateVariables(Graph);
+            StateVariables = ObservableStateVariable.MakeObservableStateVariables(Graph, true);
             StateVariables.CollectionChanged += StateVariables_CollectionChanged;
         }
 
@@ -126,7 +137,7 @@ namespace TEGS.UI.ViewModels
 
         protected override void ProcessAccept()
         {
-            Graph.SetStateVariables(StateVariables);
+            Graph.ReplaceStateVariables(StateVariables);
         }
     }
 }

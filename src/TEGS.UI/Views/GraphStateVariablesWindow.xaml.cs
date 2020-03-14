@@ -1,5 +1,5 @@
 ﻿// 
-// GraphPropertiesWindow.xaml.cs
+// GraphStateVariablesWindow.xaml.cs
 //  
 // Author:
 //       Jon Thysell <thysell@gmail.com>
@@ -32,13 +32,13 @@ using TEGS.UI.ViewModels;
 
 namespace TEGS.UI.Views
 {
-    public class GraphPropertiesWindow : Window, IView<GraphPropertiesViewModel>
+    public class GraphStateVariablesWindow : Window, IView<GraphStateVariablesViewModel>
     {
-        public GraphPropertiesViewModel VM
+        public GraphStateVariablesViewModel VM
         {
             get
             {
-                return (GraphPropertiesViewModel)DataContext;
+                return (GraphStateVariablesViewModel)DataContext;
             }
             set
             {
@@ -47,7 +47,7 @@ namespace TEGS.UI.Views
             }
         }
 
-        public GraphPropertiesWindow()
+        public GraphStateVariablesWindow()
         {
             this.InitializeComponent();
 #if DEBUG

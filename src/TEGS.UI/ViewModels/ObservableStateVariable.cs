@@ -43,7 +43,7 @@ namespace TEGS.UI.ViewModels
             }
             set
             {
-                StateVariable = new StateVariable(value, StateVariable.Type);
+                StateVariable.Name = value;
                 RaisePropertyChanged();
             }
         }
@@ -56,7 +56,20 @@ namespace TEGS.UI.ViewModels
             }
             set
             {
-                StateVariable = new StateVariable(StateVariable.Name, Enum.Parse<VariableValueType>(value));
+                StateVariable.Type = Enum.Parse<VariableValueType>(value);
+                RaisePropertyChanged();
+            }
+        }
+
+        public string Description
+        {
+            get
+            {
+                return StateVariable.Description;
+            }
+            set
+            {
+                StateVariable.Description = value;
                 RaisePropertyChanged();
             }
         }
@@ -72,9 +85,9 @@ namespace TEGS.UI.ViewModels
             StateVariable = stateVariable ?? throw new ArgumentNullException(nameof(stateVariable));
         }
 
-        public static ObservableStateVariable CreateNew() => new ObservableStateVariable(new StateVariable(default, default));
+        public static ObservableStateVariable CreateNew() => new ObservableStateVariable(new StateVariable());
 
-        public static ObservableCollection<ObservableStateVariable> MakeObservableStateVariables(ObservableGraph graph)
+        public static ObservableCollection<ObservableStateVariable> MakeObservableStateVariables(ObservableGraph graph, bool clone)
         {
             if (null == graph)
             {
@@ -85,7 +98,7 @@ namespace TEGS.UI.ViewModels
 
             foreach (var stateVariable in graph.Graph.StateVariables)
             {
-                stateVariables.Add(new ObservableStateVariable(stateVariable));
+                stateVariables.Add(new ObservableStateVariable(clone ? stateVariable.Clone() : stateVariable));
             }
 
             return stateVariables;

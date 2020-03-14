@@ -116,4 +116,9 @@ namespace TEGS.UI.ViewModels
     {
         public ShowGraphPropertiesMessage(ObservableGraph graph, Action<GraphPropertiesViewModel> callback = null) : base(new GraphPropertiesViewModel(graph), callback) { }
     }
+
+    public class ShowGraphStateVariablesMessage : ShowAcceptRejectViewModelMessage<GraphStateVariablesViewModel>
+    {
+        public ShowGraphStateVariablesMessage(ObservableGraph graph, Action<GraphStateVariablesViewModel> callback = null) : base(new GraphStateVariablesViewModel(graph), callback) { }
+    }
 }

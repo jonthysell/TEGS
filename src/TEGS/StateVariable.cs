@@ -30,14 +30,44 @@ namespace TEGS
 {
     public class StateVariable : IComparable<StateVariable>
     {
-        public readonly string Name;
-
-        public readonly VariableValueType Type;
-
-        public StateVariable(string name, VariableValueType type)
+        public string Name
         {
-            Name = name?.Trim() ?? "";
-            Type = type;
+            get
+            {
+                return _name;
+            }
+            set
+            {
+                _name = value?.Trim() ?? "";
+            }
+        }
+        private string _name = "";
+
+        public string Description
+        {
+            get
+            {
+                return _description;
+            }
+            set
+            {
+                _description = value?.Trim() ?? "";
+            }
+        }
+        private string _description = "";
+
+        public VariableValueType Type { get; set; } = VariableValueType.Boolean;
+
+        public StateVariable() { }
+
+        public StateVariable Clone()
+        {
+            return new StateVariable()
+            {
+                Name = Name,
+                Type = Type,
+                Description = Description,
+            };
         }
 
         public int CompareTo(StateVariable other)

@@ -30,7 +30,7 @@
             <MenuItem Header="_Graph">
                 <MenuItem Command="{Binding Graph.ShowProperties}"
                           Header="_Properties..." />
-                <MenuItem Command="{Binding NotImplementedCommand}"
+                <MenuItem Command="{Binding Graph.ShowStateVariables}"
                           Header="_State Variables..." />
                 <MenuItem Command="{Binding NotImplementedCommand}"
                           Header="_Verticies..." />

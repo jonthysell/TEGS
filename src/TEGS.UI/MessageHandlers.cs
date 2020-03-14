@@ -49,6 +49,7 @@ namespace TEGS.UI
             Messenger.Default.Register<OpenFileMessage>(recipient, async (message) => await ShowOpenFileDialogAsync(message));
             Messenger.Default.Register<SaveFileMessage>(recipient, async (message) => await ShowSaveFileDialogAsync(message));
             Messenger.Default.Register<ShowGraphPropertiesMessage>(recipient, async (message) => await ShowAceptRejectDialogAsync<GraphPropertiesWindow, GraphPropertiesViewModel>(message));
+            Messenger.Default.Register<ShowGraphStateVariablesMessage>(recipient, async (message) => await ShowAceptRejectDialogAsync<GraphStateVariablesWindow, GraphStateVariablesViewModel>(message));
         }
 
         public static void UnregisterMessageHandlers(object recipient)
@@ -57,6 +58,7 @@ namespace TEGS.UI
             Messenger.Default.Unregister<OpenFileMessage>(recipient);
             Messenger.Default.Unregister<SaveFileMessage>(recipient);
             Messenger.Default.Unregister<ShowGraphPropertiesMessage>(recipient);
+            Messenger.Default.Unregister<ShowGraphStateVariablesMessage>(recipient);
         }
 
         private static async Task ShowExceptionDialogAsync(ExceptionMessage message)
@@ -167,8 +169,10 @@ namespace TEGS.UI
         {
             try
             {
-                var window = new TWindow();
-                window.VM = message.ViewModel;
+                var window = new TWindow
+                {
+                    VM = message.ViewModel
+                };
                 await window.ShowDialog(MainWindow);
             }
             catch (Exception ex)

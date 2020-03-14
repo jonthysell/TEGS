@@ -1,0 +1,66 @@
+<Window Height="480"
+        MinHeight="480"
+        MinWidth="640"
+        Title="{Binding Title}"
+        Width="640"
+        WindowStartupLocation="CenterOwner"
+        d:DesignHeight="480"
+        d:DesignWidth="640"
+        mc:Ignorable="d"
+        x:Class="TEGS.UI.Views.GraphStateVariablesWindow"
+        xmlns="https://github.com/avaloniaui"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <DockPanel>
+        <Grid DockPanel.Dock="Top"
+                    Margin="5" RowDefinitions="Auto,Auto" ColumnDefinitions="*,Auto,*">
+            <TextBlock Margin="5" Grid.Row="0" Grid.Column="0"
+                       Text="Name" />
+            <TextBox Margin="5" Grid.Row="1" Grid.Column="0"
+                     Padding="5"
+                     Text="{Binding SelectedStateVariable.Name}"
+                     Watermark="Name" />
+          <TextBlock Margin="5" Grid.Row="0" Grid.Column="1"
+                       Text="Type" />
+          <ComboBox Margin="5" Grid.Row="1" Grid.Column="1" MinWidth="100"
+                   Padding="5" Items="{Binding StateVariableTypes}" SelectedItem="{Binding SelectedStateVariable.Type}" >
+          </ComboBox>
+          <TextBlock Margin="5" Grid.Row="0" Grid.Column="2"
+                       Text="Description" />
+          <TextBox Margin="5" Grid.Row="1" Grid.Column="2"
+                   Padding="5"
+                   Text="{Binding SelectedStateVariable.Description}"
+                   Watermark="Description" />
+        </Grid>
+        <StackPanel DockPanel.Dock="Bottom"
+                    HorizontalAlignment="Right"
+                    Margin="5"
+                    Orientation="Horizontal">
+            <Button Command="{Binding Accept}"
+                    Content="OK"
+                    Margin="5"
+                    MinWidth="100"
+                    Padding="5" />
+            <Button Command="{Binding Reject}"
+                    Content="Cancel"
+                    Margin="5"
+                    MinWidth="100"
+                    Padding="5" />
+        </StackPanel>
+      <ListBox Margin="5" Items="{Binding StateVariables}" SelectedIndex="{Binding SelectedStateVariableIndex}">
+        <ListBox.ItemTemplate>
+          <DataTemplate>
+            <StackPanel Orientation="Horizontal">
+              <TextBlock Margin="5"
+                       Text="{Binding Name}" />
+              <TextBlock Margin="5"
+                       Text="{Binding Type}" />
+              <TextBlock Margin="5"
+                       Text="{Binding Description}" />
+            </StackPanel>
+          </DataTemplate>
+        </ListBox.ItemTemplate>
+      </ListBox>
+    </DockPanel>
+</Window>

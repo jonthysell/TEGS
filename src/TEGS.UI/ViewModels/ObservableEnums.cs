@@ -1,5 +1,5 @@
 ﻿// 
-// GraphPropertiesWindow.xaml.cs
+// ObservableEnums.cs
 //  
 // Author:
 //       Jon Thysell <thysell@gmail.com>
@@ -24,40 +24,24 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using Avalonia;
-using Avalonia.Controls;
-using Avalonia.Markup.Xaml;
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
-using TEGS.UI.ViewModels;
-
-namespace TEGS.UI.Views
+namespace TEGS.UI.ViewModels
 {
-    public class GraphPropertiesWindow : Window, IView<GraphPropertiesViewModel>
+    public static class ObservableEnums
     {
-        public GraphPropertiesViewModel VM
+        private static Dictionary<Type, ObservableCollection<string>> _typesCache = new Dictionary<Type, ObservableCollection<string>>();
+        public static ObservableCollection<string> GetCollection<TEnum>()
         {
-            get
+            if (!_typesCache.TryGetValue(typeof(TEnum), out var result))
             {
-                return (GraphPropertiesViewModel)DataContext;
+                result = new ObservableCollection<string>(Enum.GetNames(typeof(TEnum)));
+                _typesCache[typeof(TEnum)] = result;
             }
-            set
-            {
-                DataContext = value;
-                value.RequestClose = Close;
-            }
-        }
 
-        public GraphPropertiesWindow()
-        {
-            this.InitializeComponent();
-#if DEBUG
-            this.AttachDevTools();
-#endif
-        }
-
-        private void InitializeComponent()
-        {
-            AvaloniaXamlLoader.Load(this);
+            return result;
         }
     }
 }
