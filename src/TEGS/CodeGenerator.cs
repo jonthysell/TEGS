@@ -564,7 +564,7 @@ abstract class SimulationBase
 {
     private double _clock = 0.0;
 
-    private List<ScheduleEntry> _schedule = new List<ScheduleEntry>();
+    private readonly List<ScheduleEntry> _schedule = new List<ScheduleEntry>();
 
     protected Random Random;
 

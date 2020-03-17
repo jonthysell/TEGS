@@ -195,8 +195,8 @@ namespace TEGS.CLI
 
         private void ParseBuildArgs()
         {
-            Graph graph = null;
-            string graphFile = null;
+            Graph graph;
+            string graphFile;
 
             try
             {
@@ -314,8 +314,8 @@ namespace TEGS.CLI
 
         private void ParseRunArgs()
         {
-            Graph graph = null;
-            string graphFile = null;
+            Graph graph;
+            string graphFile;
 
             try
             {
@@ -496,8 +496,8 @@ namespace TEGS.CLI
 
         private void ParseValidateArgs()
         {
-            Graph graph = null;
-            string graphFile = null;
+            Graph graph;
+            string graphFile;
 
             try
             {

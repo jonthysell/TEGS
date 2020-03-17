@@ -32,7 +32,8 @@ namespace TEGS.UI.ViewModels
 {
     public static class ObservableEnums
     {
-        private static Dictionary<Type, ObservableCollection<string>> _typesCache = new Dictionary<Type, ObservableCollection<string>>();
+        private static readonly Dictionary<Type, ObservableCollection<string>> _typesCache = new Dictionary<Type, ObservableCollection<string>>();
+
         public static ObservableCollection<string> GetCollection<TEnum>()
         {
             if (!_typesCache.TryGetValue(typeof(TEnum), out var result))
