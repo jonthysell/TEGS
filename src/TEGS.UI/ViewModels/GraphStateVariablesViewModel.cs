@@ -80,7 +80,7 @@ namespace TEGS.UI.ViewModels
                 {
                     try
                     {
-                        StateVariables.SortedInsert(ObservableStateVariable.CreateNew());
+                        StateVariables.SortedInsert(ObservableStateVariable.CreateNew(ChildIsDirtyChanged));
                     }
                     catch (Exception ex)
                     {
@@ -99,7 +99,9 @@ namespace TEGS.UI.ViewModels
                 {
                     try
                     {
+                        var item = SelectedStateVariable;
                         StateVariables.RemoveAt(SelectedStateVariableIndex);
+                        item.IsDirtyChanged -= ChildIsDirtyChanged;
                     }
                     catch (Exception ex)
                     {
@@ -121,7 +123,7 @@ namespace TEGS.UI.ViewModels
         {
             Graph = graph ?? throw new ArgumentNullException(nameof(graph));
 
-            StateVariables = ObservableStateVariable.MakeObservableStateVariables(Graph, true);
+            StateVariables = ObservableStateVariable.MakeObservableStateVariables(Graph, true, ChildIsDirtyChanged);
             StateVariables.CollectionChanged += StateVariables_CollectionChanged;
         }
 

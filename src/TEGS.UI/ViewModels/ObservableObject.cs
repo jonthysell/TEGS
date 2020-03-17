@@ -1,5 +1,5 @@
 ﻿// 
-// EditorViewModelBase.cs
+// ObservableObject.cs
 //  
 // Author:
 //       Jon Thysell <thysell@gmail.com>
@@ -29,35 +29,45 @@ using System.ComponentModel;
 
 namespace TEGS.UI.ViewModels
 {
-    public abstract class EditorViewModelBase : AcceptRejectViewModelBase
+    public delegate void IsDirtyChangedEventHandler(object sender, EventArgs e);
+
+    public abstract class ObservableObject<T> : GalaSoft.MvvmLight.ObservableObject, IComparable<ObservableObject<T>>, IEquatable<ObservableObject<T>> where T : IComparable<T>, IEquatable<T>, ICloneable<T>
     {
         #region Properties
 
-        public override string Title => (IsDirty ? "*" : "") + _title;
-
-        private readonly string _title;
-
-        public virtual bool IsDirty => false;
+        public virtual bool IsDirty => !InternalObject.Equals(OriginalInternalObject);
 
         #endregion
 
-        protected EditorViewModelBase(string title) : base()
+        internal T InternalObject { get; private set; }
+
+        internal T OriginalInternalObject { get; private set; }
+
+        public event IsDirtyChangedEventHandler IsDirtyChanged;
+
+        #region Creation
+
+        protected ObservableObject(T @object)
         {
-            _title = !string.IsNullOrWhiteSpace(title) ? title.Trim() : throw new ArgumentNullException(nameof(title));
-            PropertyChanged += EditorViewModelBase_PropertyChanged;
+            OriginalInternalObject = @object ?? throw new ArgumentNullException(nameof(@object));
+            InternalObject = OriginalInternalObject.Clone();
+
+            PropertyChanged += ObservableObject_PropertyChanged;
         }
 
-        private void EditorViewModelBase_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        private void ObservableObject_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            switch (e.PropertyName)
+            if (e.PropertyName == nameof(IsDirty))
             {
-                case nameof(IsDirty):
-                    RaisePropertyChanged(nameof(Title));
-                    break;
+                IsDirtyChanged?.Invoke(this, null);
             }
         }
 
-        protected void ChildIsDirtyChanged(object sender, EventArgs e) => RaisePropertyChanged(nameof(IsDirty));
+        #endregion
+
+        public bool Equals(ObservableObject<T> other) => InternalObject.Equals(other.InternalObject);
+
+        public int CompareTo(ObservableObject<T> other) => InternalObject.CompareTo(other.InternalObject);
+
     }
 }
-

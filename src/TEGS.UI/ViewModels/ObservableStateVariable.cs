@@ -26,11 +26,10 @@
 
 using System;
 using System.Collections.ObjectModel;
-using GalaSoft.MvvmLight;
 
 namespace TEGS.UI.ViewModels
 {
-    public class ObservableStateVariable : ObservableObject, IComparable<ObservableStateVariable>, IEquatable<ObservableStateVariable>
+    public class ObservableStateVariable : ObservableObject<StateVariable>, IComparable<ObservableStateVariable>, IEquatable<ObservableStateVariable>
     {
         #region Properties
 
@@ -38,11 +37,11 @@ namespace TEGS.UI.ViewModels
         {
             get
             {
-                return StateVariable.Name;
+                return InternalObject.Name;
             }
             set
             {
-                StateVariable.Name = value;
+                InternalObject.Name = value;
                 RaisePropertyChanged();
                 RaisePropertyChanged(nameof(IsDirty));
             }
@@ -52,11 +51,11 @@ namespace TEGS.UI.ViewModels
         {
             get
             {
-                return StateVariable.Type.ToString();
+                return InternalObject.Type.ToString();
             }
             set
             {
-                StateVariable.Type = Enum.Parse<VariableValueType>(value);
+                InternalObject.Type = Enum.Parse<VariableValueType>(value);
                 RaisePropertyChanged();
                 RaisePropertyChanged(nameof(IsDirty));
             }
@@ -68,35 +67,35 @@ namespace TEGS.UI.ViewModels
         {
             get
             {
-                return StateVariable.Description;
+                return InternalObject.Description;
             }
             set
             {
-                StateVariable.Description = value;
+                InternalObject.Description = value;
                 RaisePropertyChanged();
                 RaisePropertyChanged(nameof(IsDirty));
             }
         }
 
-        public bool IsDirty => ! StateVariable.Equals(OriginalStateVariable);
-
         #endregion
-
-        internal StateVariable StateVariable { get; private set; }
-
-        internal StateVariable OriginalStateVariable { get; private set; }
 
         #region Creation
 
-        public ObservableStateVariable(StateVariable stateVariable)
+        public ObservableStateVariable(StateVariable stateVariable) : base(stateVariable) { }
+
+        public static ObservableStateVariable CreateNew(IsDirtyChangedEventHandler onIsDirtyChanged = null)
         {
-            OriginalStateVariable = stateVariable ?? throw new ArgumentNullException(nameof(stateVariable));
-            StateVariable = OriginalStateVariable.Clone();
+            var osv = new ObservableStateVariable(new StateVariable());
+
+            if (null != onIsDirtyChanged)
+            {
+                osv.IsDirtyChanged += onIsDirtyChanged;
+            }
+
+            return osv;
         }
 
-        public static ObservableStateVariable CreateNew() => new ObservableStateVariable(new StateVariable());
-
-        public static ObservableCollection<ObservableStateVariable> MakeObservableStateVariables(ObservableGraph graph, bool clone)
+        public static ObservableCollection<ObservableStateVariable> MakeObservableStateVariables(ObservableGraph graph, bool clone, IsDirtyChangedEventHandler onIsDirtyChanged = null)
         {
             if (null == graph)
             {
@@ -107,23 +106,22 @@ namespace TEGS.UI.ViewModels
 
             foreach (var stateVariable in graph.Graph.StateVariables)
             {
-                stateVariables.SortedInsert(new ObservableStateVariable(clone ? stateVariable.Clone() : stateVariable));
+                var osv = new ObservableStateVariable(clone ? stateVariable.Clone() : stateVariable);
+                stateVariables.SortedInsert(osv);
+
+                if (null != onIsDirtyChanged)
+                {
+                    osv.IsDirtyChanged += onIsDirtyChanged;
+                }
             }
 
             return stateVariables;
         }
 
+        public bool Equals(ObservableStateVariable other) => Equals(other as ObservableObject<StateVariable>);
+
+        public int CompareTo(ObservableStateVariable other) => CompareTo(other as ObservableObject<StateVariable>);
+
         #endregion
-
-
-        public int CompareTo(ObservableStateVariable other)
-        {
-            return StateVariable.CompareTo(other.StateVariable);
-        }
-
-        public bool Equals( ObservableStateVariable other)
-        {
-            return StateVariable.Equals(other.StateVariable);
-        }
     }
 }

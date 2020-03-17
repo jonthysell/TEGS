@@ -1,5 +1,5 @@
 ﻿// 
-// EditorViewModelBase.cs
+// ICloneable.cs
 //  
 // Author:
 //       Jon Thysell <thysell@gmail.com>
@@ -24,40 +24,10 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
-using System.ComponentModel;
-
-namespace TEGS.UI.ViewModels
+namespace TEGS
 {
-    public abstract class EditorViewModelBase : AcceptRejectViewModelBase
+    public interface ICloneable<T>
     {
-        #region Properties
-
-        public override string Title => (IsDirty ? "*" : "") + _title;
-
-        private readonly string _title;
-
-        public virtual bool IsDirty => false;
-
-        #endregion
-
-        protected EditorViewModelBase(string title) : base()
-        {
-            _title = !string.IsNullOrWhiteSpace(title) ? title.Trim() : throw new ArgumentNullException(nameof(title));
-            PropertyChanged += EditorViewModelBase_PropertyChanged;
-        }
-
-        private void EditorViewModelBase_PropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-            switch (e.PropertyName)
-            {
-                case nameof(IsDirty):
-                    RaisePropertyChanged(nameof(Title));
-                    break;
-            }
-        }
-
-        protected void ChildIsDirtyChanged(object sender, EventArgs e) => RaisePropertyChanged(nameof(IsDirty));
+        T Clone();
     }
 }
-

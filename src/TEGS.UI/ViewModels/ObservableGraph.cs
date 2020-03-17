@@ -251,7 +251,7 @@ namespace TEGS.UI.ViewModels
             Graph.StateVariables.Clear();
             foreach (var observableStateVariable in observableStateVariables)
             {
-                Graph.StateVariables.SortedInsert(observableStateVariable.StateVariable);
+                Graph.StateVariables.SortedInsert(observableStateVariable.InternalObject);
             }
 
             StateVariables = new ReadOnlyObservableCollection<ObservableStateVariable>(observableStateVariables);

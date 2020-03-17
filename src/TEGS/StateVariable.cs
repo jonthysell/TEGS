@@ -28,7 +28,7 @@ using System;
 
 namespace TEGS
 {
-    public class StateVariable : IComparable<StateVariable>, IEquatable<StateVariable>
+    public class StateVariable : IComparable<StateVariable>, IEquatable<StateVariable>, ICloneable<StateVariable>
     {
         public string Name
         {
