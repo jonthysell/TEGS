@@ -1,8 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
+<!-- Created with tegs v0.9.0.0. -->
 <graph name="Carwash" description="An automatic carwash">
   <variables>
-    <variable name="QUEUE" type="Integer" />
-    <variable name="SERVERS" type="Integer" />
+    <variable name="QUEUE" type="Integer" description="" />
+    <variable name="SERVERS" type="Integer" description="" />
   </variables>
   <verticies>
     <vertex id="0" name="RUN" description="The simulation run is started" code="" x="0" y="0" starting="True">

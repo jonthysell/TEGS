@@ -28,13 +28,12 @@ using System;
 using System.Collections.ObjectModel;
 using System.IO;
 
-using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using GalaSoft.MvvmLight.Messaging;
 
 namespace TEGS.UI.ViewModels
 {
-    public class ObservableGraph : ObservableObject
+    public class ObservableGraph : ObservableObject<Graph>
     {
         #region Properties
 
@@ -42,18 +41,13 @@ namespace TEGS.UI.ViewModels
         {
             get
             {
-                return Graph.Name;
+                return InternalObject.Name;
             }
             set
             {
-                value = value?.Trim() ?? "";
-
-                if (value != Graph.Name)
-                {
-                    Graph.Name = value;
-                    RaisePropertyChanged();
-                    IsDirty = true;
-                }
+                InternalObject.Name = value?.Trim() ?? "";
+                RaisePropertyChanged();
+                RaisePropertyChanged(nameof(IsDirty));
             }
         }
 
@@ -61,18 +55,13 @@ namespace TEGS.UI.ViewModels
         {
             get
             {
-                return Graph.Description;
+                return InternalObject.Description;
             }
             set
             {
-                value = value?.Trim() ?? "";
-
-                if (value != Graph.Description)
-                {
-                    Graph.Description = value;
-                    RaisePropertyChanged();
-                    IsDirty = true;
-                }
+                InternalObject.Description = value?.Trim() ?? "";
+                RaisePropertyChanged();
+                RaisePropertyChanged(nameof(IsDirty));
             }
         }
 
@@ -86,7 +75,7 @@ namespace TEGS.UI.ViewModels
             {
                 _stateVariables = value;
                 RaisePropertyChanged();
-                IsDirty = true;
+                RaisePropertyChanged(nameof(IsDirty));
             }
         }
         private ReadOnlyObservableCollection<ObservableStateVariable> _stateVariables;
@@ -101,24 +90,12 @@ namespace TEGS.UI.ViewModels
             {
                 _fileName = value?.Trim() ?? "";
                 RaisePropertyChanged();
+                RaisePropertyChanged(nameof(IsDirty));
             }
         }
         private string _fileName = "";
 
-        public bool IsDirty
-        {
-            get
-            {
-                return _isDirty;
-            }
-            private set
-            {
-                _isDirty = value;
-                RaisePropertyChanged();
-                Save.RaiseCanExecuteChanged();
-            }
-        }
-        private bool _isDirty = false;
+        public override bool IsDirty => _newGraphDirty || base.IsDirty;
 
         #endregion
 
@@ -138,18 +115,13 @@ namespace TEGS.UI.ViewModels
                         }
                         else
                         {
-                            using Stream outputStream = new FileStream(FileName, FileMode.Create);
-                            Graph.SaveXml(outputStream);
-                            IsDirty = false;
+                            TrySave();
                         }
                     }
                     catch (Exception ex)
                     {
                         ExceptionUtils.HandleException(ex);
                     }
-                }, () =>
-                {
-                    return IsDirty;
                 }));
             }
         }
@@ -214,16 +186,18 @@ namespace TEGS.UI.ViewModels
 
         #endregion
 
-        internal Graph Graph { get; private set; }
+        private bool _newGraphDirty = false;
 
         #region Creation
 
-        private ObservableGraph(Graph graph)
+        private ObservableGraph(): this(new Graph())
         {
-            Graph = graph ?? throw new ArgumentNullException(nameof(graph));
+            _newGraphDirty = true;
         }
 
-        public static ObservableGraph NewGraph() => new ObservableGraph(new Graph()) { IsDirty = true };
+        private ObservableGraph(Graph graph) : base(graph) { }
+
+        public static ObservableGraph NewGraph() => new ObservableGraph();
 
         public static ObservableGraph OpenGraph(string filename)
         {
@@ -248,10 +222,10 @@ namespace TEGS.UI.ViewModels
 
         public void ReplaceStateVariables(ObservableCollection<ObservableStateVariable> observableStateVariables)
         {
-            Graph.StateVariables.Clear();
+            InternalObject.StateVariables.Clear();
             foreach (var observableStateVariable in observableStateVariables)
             {
-                Graph.StateVariables.SortedInsert(observableStateVariable.InternalObject);
+                InternalObject.StateVariables.SortedInsert(observableStateVariable.InternalObject);
             }
 
             StateVariables = new ReadOnlyObservableCollection<ObservableStateVariable>(observableStateVariables);
@@ -267,11 +241,7 @@ namespace TEGS.UI.ViewModels
                 {
                     if (!string.IsNullOrWhiteSpace(filename))
                     {
-                        using Stream outputStream = new FileStream(filename, FileMode.Create);
-                        Graph.SaveXml(outputStream);
-
-                        FileName = filename;
-                        IsDirty = false;
+                        TrySave(filename);
                     }
                 }
                 catch (Exception ex)
@@ -279,6 +249,19 @@ namespace TEGS.UI.ViewModels
                     ExceptionUtils.HandleException(ex);
                 }
             }));
+        }
+
+        private void TrySave(string filename = null)
+        {
+            filename ??= FileName;
+
+            using Stream outputStream = new FileStream(filename, FileMode.Create);
+
+            InternalObject.SaveXml(outputStream);
+            _newGraphDirty = false;
+            FileName = filename;
+
+            SaveToOriginal();
         }
     }
 }

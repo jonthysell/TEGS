@@ -1,8 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
+<!-- Created with tegs v0.9.0.0. -->
 <graph name="Breakdown" description="A deterministic queue (M/D/1) with breakdowns">
   <variables>
-    <variable name="QUEUE" type="Integer" />
-    <variable name="SERVER" type="Integer" />
+    <variable name="QUEUE" type="Integer" description="" />
+    <variable name="SERVER" type="Integer" description="" />
   </variables>
   <verticies>
     <vertex id="0" name="RUN" description="The simulation has started" code="SERVER = 1" x="0" y="0" starting="True">

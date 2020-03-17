@@ -32,7 +32,7 @@ using System.Xml;
 
 namespace TEGS
 {
-    public class Graph
+    public class Graph : IComparable<Graph>, IEquatable<Graph>, ICloneable<Graph>
     {
         #region Properties
 
@@ -367,10 +367,13 @@ namespace TEGS
             XmlWriterSettings outputSettings = new XmlWriterSettings()
             {
                 Encoding = Encoding.UTF8,
-                NewLineHandling = NewLineHandling.Entitize
+                NewLineHandling = NewLineHandling.Entitize,
+                Indent = true,
             };
 
             using XmlWriter xmlWriter = XmlWriter.Create(outputStream, outputSettings);
+
+            xmlWriter.WriteComment($" Created with { AppInfo.Name } v{ AppInfo.Version }. ");
 
             xmlWriter.WriteStartElement("graph");
             xmlWriter.WriteAttributeString("name", Name);
@@ -462,6 +465,67 @@ namespace TEGS
         }
 
         #endregion
+
+        public Graph Clone()
+        {
+            Graph clone = new Graph()
+            {
+                Name = Name,
+                Description = Description,
+            };
+
+            foreach (var stateVariable in StateVariables)
+            {
+                clone.StateVariables.Add(stateVariable.Clone());
+            }
+
+            foreach (var vertex in Verticies)
+            {
+                var v = clone.AddVertex(vertex.Name, vertex.IsStartingVertex);
+
+                v.Description = vertex.Description;
+                v.SetCode(vertex.GetCode());
+                v.X = vertex.X;
+                v.Y = vertex.Y;
+
+                foreach (var param in vertex.ParameterNames)
+                {
+                    v.AddParameter(param);
+                }
+            }
+
+            foreach (var edge in Edges)
+            {
+                var e = clone.AddEdge(clone.Verticies[edge.Source.Id], clone.Verticies[edge.Target.Id]);
+
+                e.Action = edge.Action;
+                e.Description = edge.Description;
+                e.Condition = edge.Condition;
+                e.Delay = edge.Delay;
+                e.Priority = edge.Priority;
+
+                foreach (var paramExpression in edge.ParameterExpressions)
+                {
+                    e.AddParameter(paramExpression);
+                }
+            }
+
+            return clone;
+        }
+
+        public bool Equals(Graph other)
+        {
+            if (null == other)
+            {
+                throw new ArgumentNullException(nameof(other));
+            }
+
+            return Name == other.Name
+                && Description == other.Description
+                && StateVariables.EqualItems(other.StateVariables);
+        }
+
+        public int CompareTo(Graph other) => Name.CompareTo(other.Name);
 
         public override string ToString()
         {

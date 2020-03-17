@@ -63,6 +63,18 @@ namespace TEGS.UI.ViewModels
             }
         }
 
+        protected void SaveToOriginal()
+        {
+            OriginalInternalObject = InternalObject.Clone();
+            RaisePropertyChanged(nameof(IsDirty));
+        }
+
+        protected void ReloadFromOriginal()
+        {
+            InternalObject = OriginalInternalObject.Clone();
+            RaisePropertyChanged(nameof(IsDirty));
+        }
+
         #endregion
 
         public bool Equals(ObservableObject<T> other) => InternalObject.Equals(other.InternalObject);

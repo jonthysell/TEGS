@@ -70,6 +70,18 @@ namespace TEGS
             };
         }
 
+        public bool Equals(StateVariable other)
+        {
+            if (null == other)
+            {
+                throw new ArgumentNullException(nameof(other));
+            }
+
+            return Name == other.Name
+                && Type == other.Type
+                && Description == other.Description;
+        }
+
         public int CompareTo(StateVariable other)
         {
             int compareName = Name.CompareTo(other?.Name);
@@ -111,11 +123,6 @@ namespace TEGS
         public override string ToString()
         {
             return $"{Name} ({Type.ToString()})";
-        }
-
-        public bool Equals(StateVariable other)
-        {
-            return Name == other?.Name && Type == other?.Type && Description == other?.Description;
         }
     }
 

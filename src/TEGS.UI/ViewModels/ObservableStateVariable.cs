@@ -104,7 +104,7 @@ namespace TEGS.UI.ViewModels
 
             var stateVariables = new ObservableCollection<ObservableStateVariable>();
 
-            foreach (var stateVariable in graph.Graph.StateVariables)
+            foreach (var stateVariable in graph.InternalObject.StateVariables)
             {
                 var osv = new ObservableStateVariable(clone ? stateVariable.Clone() : stateVariable);
                 stateVariables.SortedInsert(osv);
