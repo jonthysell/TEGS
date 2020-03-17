@@ -30,7 +30,10 @@ namespace TEGS
 {
     public class StopCondition
     {
-        public bool ShouldStop(Simulation simulation) => _stopCondition(simulation);
+        public bool ShouldStop(Simulation simulation)
+        {
+            return _stopCondition(simulation);
+        }
 
         protected Func<Simulation, bool> _stopCondition;
 

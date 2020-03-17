@@ -79,9 +79,15 @@ namespace TEGS
 
         public string Name { get; protected set; } = "";
 
-        public IEnumerable<KeyValuePair<string, VariableValue>> GetConstants() => Constants;
+        public IEnumerable<KeyValuePair<string, VariableValue>> GetConstants()
+        {
+            return Constants;
+        }
 
-        public IEnumerable<KeyValuePair<string, CustomFunction>> GetCustomFunctions() => Functions;
+        public IEnumerable<KeyValuePair<string, CustomFunction>> GetCustomFunctions()
+        {
+            return Functions;
+        }
 
         #endregion
 
@@ -196,7 +202,10 @@ namespace TEGS
             return false;
         }
 
-        protected virtual VariableValue GetConstant(FieldInfo fieldInfo) => (VariableValue)fieldInfo.GetValue(Instance);
+        protected virtual VariableValue GetConstant(FieldInfo fieldInfo)
+        {
+            return (VariableValue)fieldInfo.GetValue(Instance);
+        }
 
         protected bool TryGetConstant(PropertyInfo propertyInfo, out VariableValue result)
         {
@@ -211,7 +220,10 @@ namespace TEGS
             return false;
         }
 
-        protected virtual VariableValue GetConstant(PropertyInfo propertyInfo) => (VariableValue)propertyInfo.GetMethod.Invoke(Instance, null);
+        protected virtual VariableValue GetConstant(PropertyInfo propertyInfo)
+        {
+            return (VariableValue)propertyInfo.GetMethod.Invoke(Instance, null);
+        }
 
         protected bool TryGetCustomFunction(MethodInfo methodInfo, out CustomFunction result)
         {

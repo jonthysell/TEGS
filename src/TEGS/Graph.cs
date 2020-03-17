@@ -525,7 +525,10 @@ namespace TEGS
                 && StateVariables.EqualItems(other.StateVariables);
         }
 
-        public int CompareTo(Graph other) => Name.CompareTo(other.Name);
+        public int CompareTo(Graph other)
+        {
+            return Name.CompareTo(other.Name);
+        }
 
         public override string ToString()
         {

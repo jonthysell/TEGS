@@ -34,10 +34,19 @@ namespace TEGS.Test
 
         public Dictionary<string, CustomFunction> Functions { get; private set; } = new Dictionary<string, CustomFunction>();
 
-        public VariableValue GetVariable(string name) => Variables[name];
+        public VariableValue GetVariable(string name)
+        {
+            return Variables[name];
+        }
 
-        public void SetVariable(string name, VariableValue value) => Variables[name] = value;
+        public void SetVariable(string name, VariableValue value)
+        {
+            Variables[name] = value;
+        }
 
-        public VariableValue CallFunction(string name, VariableValue[] args) => Functions[name](args);
+        public VariableValue CallFunction(string name, VariableValue[] args)
+        {
+            return Functions[name](args);
+        }
     }
 }

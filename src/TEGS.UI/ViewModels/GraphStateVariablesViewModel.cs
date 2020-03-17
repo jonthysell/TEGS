@@ -123,7 +123,7 @@ namespace TEGS.UI.ViewModels
         {
             Graph = graph ?? throw new ArgumentNullException(nameof(graph));
 
-            StateVariables = ObservableStateVariable.MakeObservableStateVariables(Graph, true, ChildIsDirtyChanged);
+            StateVariables = ObservableStateVariable.MakeObservableCollection(Graph, true, ChildIsDirtyChanged);
             StateVariables.CollectionChanged += StateVariables_CollectionChanged;
         }
 

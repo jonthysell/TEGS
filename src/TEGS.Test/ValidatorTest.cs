@@ -37,17 +37,29 @@ namespace TEGS.Test
     public class ValidatorTest
     {
         [TestMethod]
-        public void Validator_CarwashValidTest() => Validator_ValidTest(TestGraph.Carwash);
+        public void Validator_CarwashValidTest()
+        {
+            Validator_ValidTest(TestGraph.Carwash);
+        }
 
         [TestMethod]
-        public void Validator_BreakdownValidTest() => Validator_ValidTest(TestGraph.Breakdown);
+        public void Validator_BreakdownValidTest()
+        {
+            Validator_ValidTest(TestGraph.Breakdown);
+        }
 
         [TestMethod]
-        public void Validator_CarwashXMLValidTest() => Validator_ValidTest(TestGraph.LoadXml("carwash.xml"));
-        
+        public void Validator_CarwashXMLValidTest()
+        {
+            Validator_ValidTest(TestGraph.LoadXml("carwash.xml"));
+        }
+
         [TestMethod]
         [ExpectedException(typeof(ArgumentNullException))]
-        public void Validator_NullInvalidTest() => Validator_InvalidTest(null);
+        public void Validator_NullInvalidTest()
+        {
+            Validator_InvalidTest(null);
+        }
 
         [TestMethod]
         public void Validator_NewGraphInvalidTest()

@@ -69,7 +69,7 @@ namespace TEGS.UI.ViewModels
         {
             get
             {
-                return _stateVariables ?? (_stateVariables = new ReadOnlyObservableCollection<ObservableStateVariable>(ObservableStateVariable.MakeObservableStateVariables(this, false)));
+                return _stateVariables ?? (_stateVariables = new ReadOnlyObservableCollection<ObservableStateVariable>(ObservableStateVariable.MakeObservableCollection(this, false)));
             }
             private set
             {
@@ -197,7 +197,10 @@ namespace TEGS.UI.ViewModels
 
         private ObservableGraph(Graph graph) : base(graph) { }
 
-        public static ObservableGraph NewGraph() => new ObservableGraph();
+        public static ObservableGraph NewGraph()
+        {
+            return new ObservableGraph();
+        }
 
         public static ObservableGraph OpenGraph(string filename)
         {

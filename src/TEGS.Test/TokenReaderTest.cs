@@ -36,14 +36,23 @@ namespace TEGS.Test
     public class TokenReaderTest
     {
         [TestMethod]
-        public void TokenReader_EmptyValidTest() => TokenReader_ValidTest("", new[] { TokenType.End });
+        public void TokenReader_EmptyValidTest()
+        {
+            TokenReader_ValidTest("", new[] { TokenType.End });
+        }
 
         [TestMethod]
-        public void TokenReader_WhiteSpaceValidTest() => TokenReader_ValidTest(" ", new[] { TokenType.End });
+        public void TokenReader_WhiteSpaceValidTest()
+        {
+            TokenReader_ValidTest(" ", new[] { TokenType.End });
+        }
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentNullException))]
-        public void TokenReader_NullInvalidTest() => new TokenReader(null);
+        public void TokenReader_NullInvalidTest()
+        {
+            new TokenReader(null);
+        }
 
         [TestMethod]
         public void TokenReader_SpecialValidTest()

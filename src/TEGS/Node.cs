@@ -66,7 +66,10 @@ namespace TEGS
             }
         }
 
-        protected virtual Node ReduceInternal() => this;
+        protected virtual Node ReduceInternal()
+        {
+            return this;
+        }
     }
 
     public class NodeValue : Node
@@ -75,7 +78,10 @@ namespace TEGS
 
         public NodeValue(VariableValue value) => Value = value;
 
-        protected override VariableValue EvaluateInternal(IContext context) => Value;
+        protected override VariableValue EvaluateInternal(IContext context)
+        {
+            return Value;
+        }
     }
 
     #region Context Symbol Resolution
@@ -86,7 +92,10 @@ namespace TEGS
 
         public NodeVariable(string name) => Name = name;
 
-        protected override VariableValue EvaluateInternal(IContext context) => context.GetVariable(Name);
+        protected override VariableValue EvaluateInternal(IContext context)
+        {
+            return context.GetVariable(Name);
+        }
     }
 
     public class NodeFunctionCall : Node

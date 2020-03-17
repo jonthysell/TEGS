@@ -57,7 +57,10 @@ namespace TEGS.UI.ViewModels
             }
         }
 
-        protected void ChildIsDirtyChanged(object sender, EventArgs e) => RaisePropertyChanged(nameof(IsDirty));
+        protected void ChildIsDirtyChanged(object sender, EventArgs e)
+        {
+            RaisePropertyChanged(nameof(IsDirty));
+        }
     }
 }
 

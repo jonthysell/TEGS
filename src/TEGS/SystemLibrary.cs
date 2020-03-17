@@ -41,9 +41,15 @@ namespace TEGS
 
         #region ReflectionLibraryBase
 
-        protected override VariableValue GetConstant(FieldInfo fieldInfo) => VariableValue.Parse(fieldInfo.GetValue(Instance));
+        protected override VariableValue GetConstant(FieldInfo fieldInfo)
+        {
+            return VariableValue.Parse(fieldInfo.GetValue(Instance));
+        }
 
-        protected override VariableValue GetConstant(PropertyInfo propertyInfo) => VariableValue.Parse(propertyInfo.GetMethod.Invoke(Instance, null));
+        protected override VariableValue GetConstant(PropertyInfo propertyInfo)
+        {
+            return VariableValue.Parse(propertyInfo.GetMethod.Invoke(Instance, null));
+        }
 
         protected override CustomFunction GetCustomFunction(MethodInfo methodInfo)
         {

@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
 namespace TEGS.UI.ViewModels
@@ -81,46 +82,37 @@ namespace TEGS.UI.ViewModels
 
         #region Creation
 
-        public ObservableStateVariable(StateVariable stateVariable) : base(stateVariable) { }
+        protected ObservableStateVariable(StateVariable stateVariable) : base(stateVariable) { }
+
+        public static ObservableStateVariable Create(StateVariable item, IsDirtyChangedEventHandler onIsDirtyChanged = null)
+        {
+            return Create(item, item => new ObservableStateVariable(item), onIsDirtyChanged);
+        }
 
         public static ObservableStateVariable CreateNew(IsDirtyChangedEventHandler onIsDirtyChanged = null)
         {
-            var osv = new ObservableStateVariable(new StateVariable());
-
-            if (null != onIsDirtyChanged)
-            {
-                osv.IsDirtyChanged += onIsDirtyChanged;
-            }
-
-            return osv;
+            return CreateNew<ObservableStateVariable, StateVariable>(() => new ObservableStateVariable(new StateVariable()), onIsDirtyChanged);
         }
 
-        public static ObservableCollection<ObservableStateVariable> MakeObservableStateVariables(ObservableGraph graph, bool clone, IsDirtyChangedEventHandler onIsDirtyChanged = null)
+        public static ObservableCollection<ObservableStateVariable> MakeObservableCollection(ObservableGraph graph, bool clone, IsDirtyChangedEventHandler onIsDirtyChanged = null)
         {
             if (null == graph)
             {
                 throw new ArgumentNullException(nameof(graph));
             }
 
-            var stateVariables = new ObservableCollection<ObservableStateVariable>();
-
-            foreach (var stateVariable in graph.InternalObject.StateVariables)
-            {
-                var osv = new ObservableStateVariable(clone ? stateVariable.Clone() : stateVariable);
-                stateVariables.SortedInsert(osv);
-
-                if (null != onIsDirtyChanged)
-                {
-                    osv.IsDirtyChanged += onIsDirtyChanged;
-                }
-            }
-
-            return stateVariables;
+            return MakeObservableCollection(graph.InternalObject.StateVariables, item => new ObservableStateVariable(item), clone, onIsDirtyChanged);
         }
 
-        public bool Equals(ObservableStateVariable other) => Equals(other as ObservableObject<StateVariable>);
+        public bool Equals(ObservableStateVariable other)
+        {
+            return Equals(other as ObservableObject<StateVariable>);
+        }
 
-        public int CompareTo(ObservableStateVariable other) => CompareTo(other as ObservableObject<StateVariable>);
+        public int CompareTo(ObservableStateVariable other)
+        {
+            return CompareTo(other as ObservableObject<StateVariable>);
+        }
 
         #endregion
     }
