@@ -1,5 +1,5 @@
 ﻿// 
-// ViewModelBase.cs
+// EditorViewModelBase.cs
 //  
 // Author:
 //       Jon Thysell <thysell@gmail.com>
@@ -25,41 +25,37 @@
 // THE SOFTWARE.
 
 using System;
-
-using GalaSoft.MvvmLight.Command;
+using System.ComponentModel;
 
 namespace TEGS.UI.ViewModels
 {
-    public abstract class ViewModelBase : GalaSoft.MvvmLight.ViewModelBase
+    public abstract class EditorViewModelBase : AcceptRejectViewModelBase
     {
-        public AppViewModel AppVM => AppViewModel.Instance;
-
         #region Properties
 
-        public abstract string Title { get; }
+        public override string Title => (IsDirty ? "*" : "") + _title;
+
+        private readonly string _title;
+
+        public virtual bool IsDirty => false;
 
         #endregion
 
-        #region Commands
-
-        public RelayCommand NotImplementedCommand
+        protected EditorViewModelBase(string title) : base()
         {
-            get
+            _title = !string.IsNullOrWhiteSpace(title) ? title.Trim() : throw new ArgumentNullException(nameof(title));
+            PropertyChanged += EditorViewModelBase_PropertyChanged;
+        }
+
+        private void EditorViewModelBase_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            switch (e.PropertyName)
             {
-                return _notImplementedCommand ?? (_notImplementedCommand = new RelayCommand(() =>
-                {
-                    ExceptionUtils.HandleException(new NotImplementedException());
-                }, () => {
-                    return false;
-                }));
+                case nameof(IsDirty):
+                    RaisePropertyChanged(nameof(Title));
+                    break;
             }
         }
-        private RelayCommand _notImplementedCommand;
-
-        #endregion
-
-        public Action RequestClose;
-
-        protected ViewModelBase() : base() { }
     }
 }
+

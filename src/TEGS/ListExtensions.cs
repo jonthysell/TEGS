@@ -1,5 +1,5 @@
 ﻿// 
-// ViewModelBase.cs
+// ListExtensions.cs
 //  
 // Author:
 //       Jon Thysell <thysell@gmail.com>
@@ -25,41 +25,54 @@
 // THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
 
-using GalaSoft.MvvmLight.Command;
-
-namespace TEGS.UI.ViewModels
+namespace TEGS
 {
-    public abstract class ViewModelBase : GalaSoft.MvvmLight.ViewModelBase
+    public static class ListExtensions
     {
-        public AppViewModel AppVM => AppViewModel.Instance;
-
-        #region Properties
-
-        public abstract string Title { get; }
-
-        #endregion
-
-        #region Commands
-
-        public RelayCommand NotImplementedCommand
+        public static void SortedInsert<T>(this IList<T> collection, T item) where T : IComparable<T>
         {
-            get
+            if (null == item)
             {
-                return _notImplementedCommand ?? (_notImplementedCommand = new RelayCommand(() =>
-                {
-                    ExceptionUtils.HandleException(new NotImplementedException());
-                }, () => {
-                    return false;
-                }));
+                throw new ArgumentNullException(nameof(item));
+            }
+
+            List<T> tempList = new List<T>(collection);
+
+            int index = Array.BinarySearch(tempList.ToArray(), item);
+
+            if (index < 0)
+            {
+                index = ~index;
+            }
+
+            if (index == collection.Count)
+            {
+                collection.Add(item);
+            }
+            else
+            {
+                collection.Insert(index, item);
             }
         }
-        private RelayCommand _notImplementedCommand;
 
-        #endregion
+        public static bool EqualItems<T>(this IList<T> collection, IList<T> other) where T : IEquatable<T>
+        {
+            if (collection.Count != other.Count)
+            {
+                return false;
+            }
 
-        public Action RequestClose;
+            for (int i = 0; i < collection.Count; i++)
+            {
+                if (!collection[i].Equals(other[i]))
+                {
+                    return false;
+                }
+            }
 
-        protected ViewModelBase() : base() { }
+            return true;
+        }
     }
 }

@@ -28,7 +28,7 @@ using System;
 
 namespace TEGS
 {
-    public class StateVariable : IComparable<StateVariable>
+    public class StateVariable : IComparable<StateVariable>, IEquatable<StateVariable>
     {
         public string Name
         {
@@ -72,16 +72,28 @@ namespace TEGS
 
         public int CompareTo(StateVariable other)
         {
-            int compareName = Name.CompareTo(other.Name);
+            int compareName = Name.CompareTo(other?.Name);
 
-            return compareName == 0 ? Type.CompareTo(other.Type) : compareName;
+            if (compareName == 0)
+            {
+                int compareType = Type.CompareTo(other?.Type);
+
+                if (compareType == 0)
+                {
+                    return Description.CompareTo(other?.Description);
+                }
+
+                return compareType;
+            }
+
+            return compareName;
         }
 
         public override bool Equals(object obj)
         {
             if (obj is StateVariable other)
             {
-                return Name == other.Name && Type == other.Type;
+                return Equals(other);
             }
 
             return false;
@@ -92,12 +104,18 @@ namespace TEGS
             int hash = 17;
             hash = hash * 31 + Name.GetHashCode();
             hash = hash * 31 + Type.GetHashCode();
+            hash = hash * 31 + Description.GetHashCode();
             return hash;
         }
 
         public override string ToString()
         {
             return $"{Name} ({Type.ToString()})";
+        }
+
+        public bool Equals(StateVariable other)
+        {
+            return Name == other?.Name && Type == other?.Type && Description == other?.Description;
         }
     }
 

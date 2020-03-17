@@ -32,11 +32,9 @@ using GalaSoft.MvvmLight.Command;
 
 namespace TEGS.UI.ViewModels
 {
-    public class GraphStateVariablesViewModel : AcceptRejectViewModelBase
+    public class GraphStateVariablesViewModel : EditorViewModelBase
     {
         #region Properties
-
-        public override string Title => "State Variables";
 
         public ObservableCollection<ObservableStateVariable> StateVariables { get; private set; }
 
@@ -68,6 +66,8 @@ namespace TEGS.UI.ViewModels
         }
         private int _selectedStateVariableIndex = -1;
 
+        public override bool IsDirty => !StateVariables.EqualItems(Graph.StateVariables);
+
         #endregion
 
         #region Commands
@@ -80,7 +80,7 @@ namespace TEGS.UI.ViewModels
                 {
                     try
                     {
-                        StateVariables.Add(ObservableStateVariable.CreateNew());
+                        StateVariables.SortedInsert(ObservableStateVariable.CreateNew());
                     }
                     catch (Exception ex)
                     {
@@ -117,7 +117,7 @@ namespace TEGS.UI.ViewModels
 
         public ObservableGraph Graph { get; private set; }
 
-        public GraphStateVariablesViewModel(ObservableGraph graph) : base()
+        public GraphStateVariablesViewModel(ObservableGraph graph) : base("State Variables")
         {
             Graph = graph ?? throw new ArgumentNullException(nameof(graph));
 
@@ -135,6 +135,7 @@ namespace TEGS.UI.ViewModels
             {
                 SelectedStateVariableIndex = Math.Min(SelectedStateVariableIndex, StateVariables.Count - 1);
             }
+            RaisePropertyChanged(nameof(IsDirty));
         }
 
         protected override void ProcessAccept()

@@ -26,12 +26,11 @@
 
 using System;
 using System.Collections.ObjectModel;
-
 using GalaSoft.MvvmLight;
 
 namespace TEGS.UI.ViewModels
 {
-    public class ObservableStateVariable : ObservableObject
+    public class ObservableStateVariable : ObservableObject, IComparable<ObservableStateVariable>, IEquatable<ObservableStateVariable>
     {
         #region Properties
 
@@ -45,6 +44,7 @@ namespace TEGS.UI.ViewModels
             {
                 StateVariable.Name = value;
                 RaisePropertyChanged();
+                RaisePropertyChanged(nameof(IsDirty));
             }
         }
 
@@ -58,6 +58,7 @@ namespace TEGS.UI.ViewModels
             {
                 StateVariable.Type = Enum.Parse<VariableValueType>(value);
                 RaisePropertyChanged();
+                RaisePropertyChanged(nameof(IsDirty));
             }
         }
 
@@ -73,18 +74,24 @@ namespace TEGS.UI.ViewModels
             {
                 StateVariable.Description = value;
                 RaisePropertyChanged();
+                RaisePropertyChanged(nameof(IsDirty));
             }
         }
+
+        public bool IsDirty => ! StateVariable.Equals(OriginalStateVariable);
 
         #endregion
 
         internal StateVariable StateVariable { get; private set; }
 
+        internal StateVariable OriginalStateVariable { get; private set; }
+
         #region Creation
 
         public ObservableStateVariable(StateVariable stateVariable)
         {
-            StateVariable = stateVariable ?? throw new ArgumentNullException(nameof(stateVariable));
+            OriginalStateVariable = stateVariable ?? throw new ArgumentNullException(nameof(stateVariable));
+            StateVariable = OriginalStateVariable.Clone();
         }
 
         public static ObservableStateVariable CreateNew() => new ObservableStateVariable(new StateVariable());
@@ -100,12 +107,23 @@ namespace TEGS.UI.ViewModels
 
             foreach (var stateVariable in graph.Graph.StateVariables)
             {
-                stateVariables.Add(new ObservableStateVariable(clone ? stateVariable.Clone() : stateVariable));
+                stateVariables.SortedInsert(new ObservableStateVariable(clone ? stateVariable.Clone() : stateVariable));
             }
 
             return stateVariables;
         }
 
         #endregion
+
+
+        public int CompareTo(ObservableStateVariable other)
+        {
+            return StateVariable.CompareTo(other.StateVariable);
+        }
+
+        public bool Equals( ObservableStateVariable other)
+        {
+            return StateVariable.Equals(other.StateVariable);
+        }
     }
 }
