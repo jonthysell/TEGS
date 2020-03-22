@@ -29,26 +29,8 @@ using System.Collections.Generic;
 
 namespace TEGS
 {
-    public class Vertex
+    public class Vertex : ICloneable<Vertex>
     {
-        public readonly Graph Graph;
-
-        public int Id
-        {
-            get
-            {
-                for (int i = 0; i < Graph.Verticies.Count; i++)
-                {
-                    if (this == Graph.Verticies[i])
-                    {
-                        return i;
-                    }
-                }
-
-                return -1;
-            }
-        }
-
         public string Name
         {
             get
@@ -99,8 +81,7 @@ namespace TEGS
         }
         private string[] _code = null;
 
-        public IReadOnlyList<string> ParameterNames => _parameterNames;
-        private readonly List<string> _parameterNames = new List<string>();
+        public readonly List<string> ParameterNames = new List<string>();
 
         public bool IsStartingVertex { get; set; }
 
@@ -108,33 +89,7 @@ namespace TEGS
 
         public int Y { get; set; } = 0;
 
-        public Vertex(Graph graph, string name, bool isStartingVertex = false)
-        {
-            Graph = graph ?? throw new ArgumentNullException(nameof(graph));
-            Name = name;
-            IsStartingVertex = isStartingVertex;
-        }
-
-        public void AddParameter(string name)
-        {
-            name = name ?? throw new ArgumentNullException(name);
-
-            name = name.Trim();
-            _parameterNames.Add(name);
-        }
-
-        public void RemoveParameter(string name)
-        {
-            name = name ?? throw new ArgumentNullException(name);
-
-            name = name.Trim();
-            _parameterNames.Remove(name);
-        }
-
-        public void RemoveParameterAt(int index)
-        {
-            _parameterNames.RemoveAt(index);
-        }
+        public Vertex() { }
 
         public string GetCode()
         {
@@ -149,6 +104,27 @@ namespace TEGS
         public override string ToString()
         {
             return Name;
+        }
+
+        public Vertex Clone()
+        {
+            var clone = new Vertex()
+            {
+                Name = Name,
+                Description = Description,
+                IsStartingVertex = IsStartingVertex,
+                X = X,
+                Y = Y,
+            };
+
+            clone.SetCode(GetCode());
+
+            foreach (var param in ParameterNames)
+            {
+                clone.ParameterNames.Add(param);
+            }
+
+            return clone;
         }
 
         private readonly char[] LineSeparators = new char[] { '\r', '\n', ';' };

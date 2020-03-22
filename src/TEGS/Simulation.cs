@@ -219,7 +219,7 @@ namespace TEGS
 
             // Update internal variables
             Clock = nextEvent.Time;
-            EventCount[nextEvent.Target.Id]++;
+            EventCount[Graph.Verticies.IndexOf(nextEvent.Target)]++;
 
             // Assign parameters
             AssignParameters(nextEvent.Target, nextEvent.ParameterValues);
@@ -365,7 +365,7 @@ namespace TEGS
         {
             if (null == args || args.Length == 0)
             {
-                return new VariableValue(EventCount[CurrentVertex.Id]);
+                return new VariableValue(EventCount[Graph.Verticies.IndexOf(CurrentVertex)]);
             }
 
             throw new ArgumentOutOfRangeException(nameof(args));

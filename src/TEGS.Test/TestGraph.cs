@@ -47,8 +47,8 @@ namespace TEGS.Test
 
                     Vertex run = g.AddVertex("RUN", true);
                     run.Description = "The simulation run is started";
-                    run.AddParameter("QUEUE");
-                    run.AddParameter("SERVERS");
+                    run.ParameterNames.Add("QUEUE");
+                    run.ParameterNames.Add("SERVERS");
 
                     Vertex enter = g.AddVertex("ENTER");
                     enter.Description = "Cars enter the line";
@@ -111,7 +111,7 @@ namespace TEGS.Test
 
                     Vertex run = g.AddVertex("RUN", true);
                     run.Description = "The simulation has started";
-                    run.AddParameter("QUEUE");
+                    run.ParameterNames.Add("QUEUE");
                     run.Code = new[] { "SERVER = 1" };
 
                     Vertex enter = g.AddVertex("ENTER");

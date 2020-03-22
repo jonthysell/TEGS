@@ -29,29 +29,11 @@ using System.Collections.Generic;
 
 namespace TEGS
 {
-    public class Edge
+    public class Edge : ICloneable<Edge>
     {
-        public readonly Graph Graph;
+        public Vertex Source { get; set; }
 
-        public int Id
-        {
-            get
-            {
-                for (int i = 0; i < Graph.Edges.Count; i++)
-                {
-                    if (this == Graph.Edges[i])
-                    {
-                        return i;
-                    }
-                }
-
-                return -1;
-            }
-        }
-
-        public readonly Vertex Source;
-
-        public readonly Vertex Target;
+        public Vertex Target { get; set; }
 
         public EdgeAction Action { get; set; } = EdgeAction.Schedule;
 
@@ -107,36 +89,9 @@ namespace TEGS
         }
         private string _priority = "";
 
-        public IReadOnlyList<string> ParameterExpressions => _parameterExpressions;
-        private List<string> _parameterExpressions = new List<string>();
+        public readonly List<string> ParameterExpressions = new List<string>();
 
-        public Edge(Graph graph, Vertex source, Vertex target)
-        {
-            Graph = graph ?? throw new ArgumentNullException(nameof(graph));
-            Source = source ?? throw new ArgumentNullException(nameof(source));
-            Target = target ?? throw new ArgumentNullException(nameof(target));
-        }
-
-        public void AddParameter(string expression)
-        {
-            expression = expression ?? throw new ArgumentNullException(expression);
-
-            expression = expression.Trim();
-            _parameterExpressions.Add(expression);
-        }
-
-        public void RemoveParameter(string expression)
-        {
-            expression = expression ?? throw new ArgumentNullException(expression);
-
-            expression = expression.Trim();
-            _parameterExpressions.Remove(expression);
-        }
-
-        public void RemoveParameterAt(int index)
-        {
-            _parameterExpressions.RemoveAt(index);
-        }
+        public Edge() { }
 
         public override string ToString()
         {
@@ -146,6 +101,25 @@ namespace TEGS
             }
 
             return base.ToString();
+        }
+
+        public Edge Clone()
+        {
+            var clone = new Edge()
+            {
+                Action = Action,
+                Description = Description,
+                Condition = Condition,
+                Delay = Delay,
+                Priority = Priority,
+            };
+
+            foreach (var paramExpression in ParameterExpressions)
+            {
+                clone.ParameterExpressions.Add(paramExpression);
+            }
+
+            return clone;
         }
     }
 

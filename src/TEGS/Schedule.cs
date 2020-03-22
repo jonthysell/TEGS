@@ -67,11 +67,6 @@ namespace TEGS
                 throw new ArgumentNullException(nameof(target));
             }
 
-            if (target.Graph != Graph)
-            {
-                throw new GraphMismatchException();
-            }
-
             ScheduledEvent item = new ScheduledEvent(target, time, priority, parameterValues);
 
             int index = _events.BinarySearch(item);
@@ -100,11 +95,6 @@ namespace TEGS
                 throw new ArgumentNullException(nameof(target));
             }
 
-            if (target.Graph != Graph)
-            {
-                throw new GraphMismatchException();
-            }
-
             bool removed = false;
 
             for (int i = 0; i < _events.Count; i++)
@@ -128,11 +118,6 @@ namespace TEGS
             if (null == target)
             {
                 throw new ArgumentNullException(nameof(target));
-            }
-
-            if (target.Graph != Graph)
-            {
-                throw new GraphMismatchException();
             }
 
             int removed = _events.RemoveAll(evt => CancelPredicate(evt, target, parameterValues));
@@ -184,14 +169,4 @@ namespace TEGS
             EventCount = eventCount;
         }
     }
-
-    #region Exceptions
-
-    [Serializable]
-    public class GraphMismatchException : Exception
-    {
-        public GraphMismatchException() : base() { }
-    }
-
-    #endregion
 }

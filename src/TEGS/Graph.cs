@@ -80,11 +80,9 @@ namespace TEGS
             }
         }
 
-        public IReadOnlyList<Vertex> Verticies => _verticies;
-        private readonly List<Vertex> _verticies = new List<Vertex>();
+        public readonly List<Vertex> Verticies = new List<Vertex>();
 
-        public IReadOnlyList<Edge> Edges => _edges;
-        private readonly List<Edge> _edges = new List<Edge>();
+        public readonly List<Edge> Edges = new List<Edge>();
 
         #endregion
 
@@ -122,24 +120,6 @@ namespace TEGS
             return false;
         }
 
-        public bool HasStateVariable(string name, VariableValueType type)
-        {
-            if (string.IsNullOrEmpty(name))
-            {
-                throw new ArgumentNullException(nameof(name));
-            }
-
-            foreach (StateVariable sv in StateVariables)
-            {
-                if (sv.Name == name & sv.Type == type)
-                {
-                    return true;
-                }
-            }
-
-            return false;
-        }
-
         public StateVariable GetStateVariable(string name)
         {
             if (string.IsNullOrEmpty(name))
@@ -164,44 +144,15 @@ namespace TEGS
 
         public Vertex AddVertex(string name, bool isStarting = false)
         {
-            Vertex item = new Vertex(this, name, isStarting);
-            AddVertex(item);
+            Vertex item = new Vertex()
+            {
+                Name = name,
+                IsStartingVertex = isStarting,
+            };
+
+            Verticies.Add(item);
+
             return item;
-        }
-
-        private void AddVertex(Vertex item)
-        {
-            _verticies.Add(item);
-        }
-
-        public bool RemoveVertex(Vertex item)
-        {
-            if (null == item)
-            {
-                throw new ArgumentNullException(nameof(item));
-            }
-
-            _edges.RemoveAll(edge => (edge.Source == item || edge.Target == item));
-
-            return _verticies.Remove(item);
-        }
-
-        public bool HasVertex(string name)
-        {
-            if (string.IsNullOrEmpty(name))
-            {
-                throw new ArgumentNullException(nameof(name));
-            }
-
-            foreach (Vertex v in _verticies)
-            {
-                if (v.Name == name)
-                {
-                    return true;
-                }
-            }
-
-            return false;
         }
 
         #endregion
@@ -210,34 +161,13 @@ namespace TEGS
 
         public Edge AddEdge(Vertex source, Vertex target)
         {
-            if (null == source)
+            Edge item = new Edge()
             {
-                throw new ArgumentNullException(nameof(source));
-            }
-
-            if (null == target)
-            {
-                throw new ArgumentNullException(nameof(target));
-            }
-
-            Edge item = new Edge(this, source, target);
-            _edges.Add(item);
+                Source = source,
+                Target = target,
+            };
+            Edges.Add(item);
             return item;
-        }
-
-        private void AddEdge(Edge item)
-        {
-            _edges.Add(item);
-        }
-
-        public bool RemoveEdge(Edge item)
-        {
-            if (null == item)
-            {
-                throw new ArgumentNullException(nameof(item));
-            }
-
-            return _edges.Remove(item);
         }
 
         #endregion
@@ -284,8 +214,10 @@ namespace TEGS
 
                             bool.TryParse(xmlReader.GetAttribute("starting"), out bool isStartingVertex);
 
-                            Vertex vertex = new Vertex(graph, name, isStartingVertex)
+                            Vertex vertex = new Vertex()
                             {
+                                Name = name,
+                                IsStartingVertex = isStartingVertex,
                                 Description = xmlReader.GetAttribute("description"),
                             };
 
@@ -308,7 +240,7 @@ namespace TEGS
                         else if (xmlReader.Name == "parameter" && lastItem is Vertex lastVertex)
                         {
                             string name = xmlReader.GetAttribute("name");
-                            lastVertex.AddParameter(name);
+                            lastVertex.ParameterNames.Add(name);
                         }
                         else if (xmlReader.Name == "edge")
                         {
@@ -317,8 +249,10 @@ namespace TEGS
                             int sourceId = int.Parse(xmlReader.GetAttribute("source"));
                             int targetId = int.Parse(xmlReader.GetAttribute("target"));
 
-                            Edge edge = new Edge(graph, verticies[sourceId], verticies[targetId])
+                            Edge edge = new Edge()
                             {
+                                Source = verticies[sourceId],
+                                Target = verticies[targetId],
                                 Action = (EdgeAction)Enum.Parse(typeof(EdgeAction), xmlReader.GetAttribute("action")),
 
                                 Description = xmlReader.GetAttribute("description"),
@@ -334,7 +268,7 @@ namespace TEGS
                         else if (xmlReader.Name == "parameter" && lastItem is Edge lastEdge)
                         {
                             string expression = xmlReader.GetAttribute("expression");
-                            lastEdge.AddParameter(expression);
+                            lastEdge.ParameterExpressions.Add(expression);
                         }
                         else
                         {
@@ -346,12 +280,12 @@ namespace TEGS
 
             foreach (KeyValuePair<int, Vertex> kvp in verticies)
             {
-                graph.AddVertex(kvp.Value);
+                graph.Verticies.Add(kvp.Value);
             }
 
             foreach (Edge edge in edges.Values)
             {
-                graph.AddEdge(edge);
+                graph.Edges.Add(edge);
             }
 
             return graph;
@@ -396,29 +330,29 @@ namespace TEGS
 
             xmlWriter.WriteStartElement("verticies");
 
-            for (int i = 0; i < _verticies.Count; i++)
+            for (int i = 0; i < Verticies.Count; i++)
             {
                 xmlWriter.WriteStartElement("vertex");
 
                 xmlWriter.WriteAttributeString("id", i.ToString());
-                xmlWriter.WriteAttributeString("name", _verticies[i].Name);
-                xmlWriter.WriteAttributeString("description", _verticies[i].Description);
-                xmlWriter.WriteAttributeString("code", _verticies[i].GetCode());
+                xmlWriter.WriteAttributeString("name", Verticies[i].Name);
+                xmlWriter.WriteAttributeString("description", Verticies[i].Description);
+                xmlWriter.WriteAttributeString("code", Verticies[i].GetCode());
 
-                xmlWriter.WriteAttributeString("x", _verticies[i].X.ToString());
-                xmlWriter.WriteAttributeString("y", _verticies[i].Y.ToString());
+                xmlWriter.WriteAttributeString("x", Verticies[i].X.ToString());
+                xmlWriter.WriteAttributeString("y", Verticies[i].Y.ToString());
 
-                if (_verticies[i].IsStartingVertex)
+                if (Verticies[i].IsStartingVertex)
                 {
-                    xmlWriter.WriteAttributeString("starting", _verticies[i].IsStartingVertex.ToString());
+                    xmlWriter.WriteAttributeString("starting", Verticies[i].IsStartingVertex.ToString());
                 }
 
-                if (_verticies[i].ParameterNames.Count > 0)
+                if (Verticies[i].ParameterNames.Count > 0)
                 {
-                    for (int j = 0; j < _verticies[i].ParameterNames.Count; j++)
+                    for (int j = 0; j < Verticies[i].ParameterNames.Count; j++)
                     {
                         xmlWriter.WriteStartElement("parameter");
-                        xmlWriter.WriteAttributeString("name", _verticies[i].ParameterNames[j]);
+                        xmlWriter.WriteAttributeString("name", Verticies[i].ParameterNames[j]);
                         xmlWriter.WriteEndElement();
                     }
                 }
@@ -430,28 +364,28 @@ namespace TEGS
 
             xmlWriter.WriteStartElement("edges");
 
-            for (int i = 0; i < _edges.Count; i++)
+            for (int i = 0; i < Edges.Count; i++)
             {
                 xmlWriter.WriteStartElement("edge");
 
                 xmlWriter.WriteAttributeString("id", i.ToString());
 
-                xmlWriter.WriteAttributeString("source", _verticies.IndexOf(_edges[i].Source).ToString());
-                xmlWriter.WriteAttributeString("target", _verticies.IndexOf(_edges[i].Target).ToString());
+                xmlWriter.WriteAttributeString("source", Verticies.IndexOf(Edges[i].Source).ToString());
+                xmlWriter.WriteAttributeString("target", Verticies.IndexOf(Edges[i].Target).ToString());
 
-                xmlWriter.WriteAttributeString("action", _edges[i].Action.ToString());
+                xmlWriter.WriteAttributeString("action", Edges[i].Action.ToString());
 
-                xmlWriter.WriteAttributeString("description", _edges[i].Description);
-                xmlWriter.WriteAttributeString("condition", _edges[i].Condition);
-                xmlWriter.WriteAttributeString("delay", _edges[i].Delay);
-                xmlWriter.WriteAttributeString("priority", _edges[i].Priority);
+                xmlWriter.WriteAttributeString("description", Edges[i].Description);
+                xmlWriter.WriteAttributeString("condition", Edges[i].Condition);
+                xmlWriter.WriteAttributeString("delay", Edges[i].Delay);
+                xmlWriter.WriteAttributeString("priority", Edges[i].Priority);
 
-                if (_edges[i].ParameterExpressions.Count > 0)
+                if (Edges[i].ParameterExpressions.Count > 0)
                 {
-                    for (int j = 0; j < _edges[i].ParameterExpressions.Count; j++)
+                    for (int j = 0; j < Edges[i].ParameterExpressions.Count; j++)
                     {
                         xmlWriter.WriteStartElement("parameter");
-                        xmlWriter.WriteAttributeString("expression", _edges[i].ParameterExpressions[j]);
+                        xmlWriter.WriteAttributeString("expression", Edges[i].ParameterExpressions[j]);
                         xmlWriter.WriteEndElement();
                     }
                 }
@@ -481,33 +415,20 @@ namespace TEGS
 
             foreach (var vertex in Verticies)
             {
-                var v = clone.AddVertex(vertex.Name, vertex.IsStartingVertex);
-
-                v.Description = vertex.Description;
-                v.SetCode(vertex.GetCode());
-                v.X = vertex.X;
-                v.Y = vertex.Y;
-
-                foreach (var param in vertex.ParameterNames)
-                {
-                    v.AddParameter(param);
-                }
+                clone.Verticies.Add(vertex.Clone());
             }
 
             foreach (var edge in Edges)
             {
-                var e = clone.AddEdge(clone.Verticies[edge.Source.Id], clone.Verticies[edge.Target.Id]);
+                var clonedEdge = edge.Clone();
 
-                e.Action = edge.Action;
-                e.Description = edge.Description;
-                e.Condition = edge.Condition;
-                e.Delay = edge.Delay;
-                e.Priority = edge.Priority;
+                int sourceId = Verticies.IndexOf(edge.Source);
+                clonedEdge.Source = sourceId > 0 ? clone.Verticies[sourceId] : null;
 
-                foreach (var paramExpression in edge.ParameterExpressions)
-                {
-                    e.AddParameter(paramExpression);
-                }
+                int targetId = Verticies.IndexOf(edge.Target);
+                clonedEdge.Target = targetId > 0 ? clone.Verticies[targetId] : null;
+
+                clone.Edges.Add(clonedEdge);
             }
 
             return clone;

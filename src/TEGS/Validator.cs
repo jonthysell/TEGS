@@ -51,7 +51,7 @@ namespace TEGS
                 // Verify name
                 if (string.IsNullOrWhiteSpace(sv.Name))
                 {
-                    errors.Add(new BlankStateVariableNameValidationError(sv));
+                    errors.Add(new BlankStateVariableNameValidationError(graph, sv));
                     badStateVariables.Add(sv);
                 }
                 else
@@ -65,12 +65,12 @@ namespace TEGS
 
                     if (ScriptingHost.ReservedKeywords.Contains(sv.Name))
                     {
-                        errors.Add(new ReservedKeywordStateVariableValidationError(sv));
+                        errors.Add(new ReservedKeywordStateVariableValidationError(graph, sv));
                         badStateVariables.Add(sv);
                     }
                     else if (!ScriptingHost.IsValidSymbolName(sv.Name, false))
                     {
-                        errors.Add(new InvalidStateVariableNameValidationError(sv));
+                        errors.Add(new InvalidStateVariableNameValidationError(graph, sv));
                         badStateVariables.Add(sv);
                     }
                 }
@@ -80,7 +80,7 @@ namespace TEGS
             {
                 if (kvp.Value.Count > 1)
                 {
-                    errors.Add(new DuplicateStateVariableNamesValidationError(kvp.Value));
+                    errors.Add(new DuplicateStateVariableNamesValidationError(graph, kvp.Value));
                     foreach (StateVariable sv in kvp.Value)
                     {
                         badStateVariables.Add(sv);
@@ -113,7 +113,7 @@ namespace TEGS
                 // Verify name
                 if (string.IsNullOrWhiteSpace(v.Name))
                 {
-                    errors.Add(new BlankVertexNameValidationError(v));
+                    errors.Add(new BlankVertexNameValidationError(graph, v));
                 }
                 else
                 {
@@ -134,7 +134,7 @@ namespace TEGS
                     {
                         if (!graph.HasStateVariable(parameterName))
                         {
-                            errors.Add(new InvalidParameterNameVertexValidationError(v, parameterName));
+                            errors.Add(new InvalidParameterNameVertexValidationError(graph, v, parameterName));
                         }
                     }
                 }
@@ -151,7 +151,7 @@ namespace TEGS
                         }
                         catch (Exception ex)
                         {
-                            errors.Add(new InvalidCodeVertexValidationError(v, code[i], ex.Message));
+                            errors.Add(new InvalidCodeVertexValidationError(graph, v, code[i], ex.Message));
                         }
                     }
                 }
@@ -159,18 +159,18 @@ namespace TEGS
 
             if (startingVerticies.Count == 0)
             {
-                errors.Add(new NoStartingVertexValidationError());
+                errors.Add(new NoStartingVertexValidationError(graph));
             }
             else if (startingVerticies.Count > 1)
             {
-                errors.Add(new MultipleStartingVertexValidationError(startingVerticies));
+                errors.Add(new MultipleStartingVertexValidationError(graph, startingVerticies));
             }
 
             foreach (var kvp in uniqueVertexNames)
             {
                 if (kvp.Value.Count > 1)
                 {
-                    errors.Add(new DuplicateVertexNamesValidationError(kvp.Value));
+                    errors.Add(new DuplicateVertexNamesValidationError(graph, kvp.Value));
                 }
             }
 
@@ -186,11 +186,11 @@ namespace TEGS
                     {
                         if (parameterExpressions.Count == 0)
                         {
-                            errors.Add(new ParametersRequiredEdgeValidationError(e));
+                            errors.Add(new ParametersRequiredEdgeValidationError(graph, e));
                         }
                         else if (parameterExpressions.Count != e.Target.ParameterNames.Count)
                         {
-                            errors.Add(new InvalidParametersEdgeValidationError(e));
+                            errors.Add(new InvalidParametersEdgeValidationError(graph, e));
                         }
                     }
 
@@ -205,7 +205,7 @@ namespace TEGS
                             }
                             catch (Exception ex)
                             {
-                                errors.Add(new InvalidParameterEdgeValidationError(e, parameterExpressions[i], ex.Message));
+                                errors.Add(new InvalidParameterEdgeValidationError(graph, e, parameterExpressions[i], ex.Message));
                             }
                         }
                     }
@@ -218,7 +218,7 @@ namespace TEGS
                 }
                 catch (Exception ex)
                 {
-                    errors.Add(new InvalidConditionEdgeValidationError(e, ex.Message));
+                    errors.Add(new InvalidConditionEdgeValidationError(graph, e, ex.Message));
                 }
 
                 // Verify delay
@@ -228,7 +228,7 @@ namespace TEGS
                 }
                 catch (Exception ex)
                 {
-                    errors.Add(new InvalidDelayEdgeValidationError(e, ex.Message));
+                    errors.Add(new InvalidDelayEdgeValidationError(graph, e, ex.Message));
                 }
 
                 // Verify priority
@@ -238,7 +238,7 @@ namespace TEGS
                 }
                 catch (Exception ex)
                 {
-                    errors.Add(new InvalidPriorityEdgeValidationError(e, ex.Message));
+                    errors.Add(new InvalidPriorityEdgeValidationError(graph, e, ex.Message));
                 }
             }
 

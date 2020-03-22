@@ -68,7 +68,7 @@ namespace TEGS.Test
 
             List<ValidationError> expectedErrors = new List<ValidationError>
             {
-                new NoStartingVertexValidationError()
+                new NoStartingVertexValidationError(graph)
             };
 
             Validator_InvalidTest(graph, expectedErrors);
@@ -82,7 +82,7 @@ namespace TEGS.Test
 
             List<ValidationError> expectedErrors = new List<ValidationError>
             {
-                new NoStartingVertexValidationError()
+                new NoStartingVertexValidationError(graph)
             };
 
             Validator_InvalidTest(graph, expectedErrors);
@@ -96,7 +96,7 @@ namespace TEGS.Test
 
             List<ValidationError> expectedErrors = new List<ValidationError>
             {
-                new BlankVertexNameValidationError(vertex)
+                new BlankVertexNameValidationError(graph, vertex)
             };
 
             Validator_InvalidTest(graph, expectedErrors);
@@ -107,11 +107,11 @@ namespace TEGS.Test
         {
             Graph graph = new Graph();
             Vertex vertex = graph.AddVertex("RUN", true);
-            vertex.AddParameter("test");
+            vertex.ParameterNames.Add("test");
 
             List<ValidationError> expectedErrors = new List<ValidationError>
             {
-                new InvalidParameterNameVertexValidationError(vertex, "test")
+                new InvalidParameterNameVertexValidationError(graph, vertex, "test")
             };
 
             Validator_InvalidTest(graph, expectedErrors);
@@ -126,7 +126,7 @@ namespace TEGS.Test
 
             List<ValidationError> expectedErrors = new List<ValidationError>
             {
-                new DuplicateVertexNamesValidationError(new List<Vertex>() { vertex1, vertex2 })
+                new DuplicateVertexNamesValidationError(graph, new List<Vertex>() { vertex1, vertex2 })
             };
 
             Validator_InvalidTest(graph, expectedErrors);
@@ -141,7 +141,7 @@ namespace TEGS.Test
 
             List<ValidationError> expectedErrors = new List<ValidationError>
             {
-                new MultipleStartingVertexValidationError(new List<Vertex>() { vertex1, vertex2 })
+                new MultipleStartingVertexValidationError(graph, new List<Vertex>() { vertex1, vertex2 })
             };
 
             Validator_InvalidTest(graph, expectedErrors);
@@ -156,7 +156,7 @@ namespace TEGS.Test
 
             List<ValidationError> expectedErrors = new List<ValidationError>
             {
-                new BlankStateVariableNameValidationError(stateVariable)
+                new BlankStateVariableNameValidationError(graph, stateVariable)
             };
 
             Validator_InvalidTest(graph, expectedErrors);
@@ -171,7 +171,7 @@ namespace TEGS.Test
 
             List<ValidationError> expectedErrors = new List<ValidationError>
             {
-                new InvalidStateVariableNameValidationError(stateVariable)
+                new InvalidStateVariableNameValidationError(graph, stateVariable)
             };
 
             Validator_InvalidTest(graph, expectedErrors);
@@ -186,7 +186,7 @@ namespace TEGS.Test
 
             List<ValidationError> expectedErrors = new List<ValidationError>
             {
-                new ReservedKeywordStateVariableValidationError(stateVariable)
+                new ReservedKeywordStateVariableValidationError(graph, stateVariable)
             };
 
             Validator_InvalidTest(graph, expectedErrors);
@@ -202,7 +202,7 @@ namespace TEGS.Test
 
             List<ValidationError> expectedErrors = new List<ValidationError>
             {
-                new DuplicateStateVariableNamesValidationError(new List<StateVariable>(){ stateVariable1, stateVariable2 })
+                new DuplicateStateVariableNamesValidationError(graph, new List<StateVariable>(){ stateVariable1, stateVariable2 })
             };
 
             Validator_InvalidTest(graph, expectedErrors);
@@ -216,13 +216,13 @@ namespace TEGS.Test
             Vertex vertex1 = graph.AddVertex("RUN1", true);
             Vertex vertex2 = graph.AddVertex("RUN2");
 
-            vertex2.AddParameter("test");
+            vertex2.ParameterNames.Add("test");
 
             Edge edge = graph.AddEdge(vertex1, vertex2);
 
             List<ValidationError> expectedErrors = new List<ValidationError>
             {
-                new ParametersRequiredEdgeValidationError(edge)
+                new ParametersRequiredEdgeValidationError(graph, edge)
             };
 
             Validator_InvalidTest(graph, expectedErrors);
@@ -237,15 +237,15 @@ namespace TEGS.Test
             Vertex vertex1 = graph.AddVertex("RUN1", true);
             Vertex vertex2 = graph.AddVertex("RUN2");
 
-            vertex2.AddParameter("test1");
-            vertex2.AddParameter("test2");
+            vertex2.ParameterNames.Add("test1");
+            vertex2.ParameterNames.Add("test2");
 
             Edge edge = graph.AddEdge(vertex1, vertex2);
-            edge.AddParameter("0");
+            edge.ParameterExpressions.Add("0");
 
             List<ValidationError> expectedErrors = new List<ValidationError>
             {
-                new InvalidParametersEdgeValidationError(edge)
+                new InvalidParametersEdgeValidationError(graph, edge)
             };
 
             Validator_InvalidTest(graph, expectedErrors);

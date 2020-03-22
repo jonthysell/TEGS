@@ -31,12 +31,20 @@ namespace TEGS
 {
     public abstract class ValidationError
     {
+        public readonly Graph Graph;
         public abstract string Message { get; }
+
+        public ValidationError(Graph graph)
+        {
+            Graph = graph ?? throw new ArgumentNullException(nameof(graph));
+        }
     }
 
     public class NoStartingVertexValidationError : ValidationError
     {
         public override string Message => "Graph has no starting vertex.";
+
+        public NoStartingVertexValidationError(Graph graph) : base(graph) { }
     }
 
     #region State Variable Validation Errors
@@ -45,7 +53,7 @@ namespace TEGS
     {
         public readonly StateVariable StateVariable;
 
-        public StateVariableValidationError(StateVariable stateVariable)
+        public StateVariableValidationError(Graph graph, StateVariable stateVariable) : base(graph)
         {
             StateVariable = stateVariable ?? throw new ArgumentNullException(nameof(stateVariable));
         }
@@ -55,21 +63,21 @@ namespace TEGS
     {
         public override string Message => $"StateVariable has a blank name.";
 
-        public BlankStateVariableNameValidationError(StateVariable stateVariable) : base(stateVariable) { }
+        public BlankStateVariableNameValidationError(Graph graph, StateVariable stateVariable) : base(graph, stateVariable) { }
     }
 
     public class InvalidStateVariableNameValidationError : StateVariableValidationError
     {
         public override string Message => $"StateVariable cannot be named \"{StateVariable.Name}\".";
 
-        public InvalidStateVariableNameValidationError(StateVariable stateVariable) : base(stateVariable) { }
+        public InvalidStateVariableNameValidationError(Graph graph, StateVariable stateVariable) : base(graph, stateVariable) { }
     }
 
     public class ReservedKeywordStateVariableValidationError : StateVariableValidationError
     {
         public override string Message => $"StateVariable cannot be named after reserved keyword \"{StateVariable.Name}\".";
 
-        public ReservedKeywordStateVariableValidationError(StateVariable stateVariable) : base(stateVariable) { }
+        public ReservedKeywordStateVariableValidationError(Graph graph, StateVariable stateVariable) : base(graph, stateVariable) { }
     }
 
     #endregion
@@ -80,7 +88,7 @@ namespace TEGS
     {
         public readonly IReadOnlyList<StateVariable> StateVariables;
 
-        public StateVariablesValidationError(IReadOnlyList<StateVariable> stateVariables)
+        public StateVariablesValidationError(Graph graph, IReadOnlyList<StateVariable> stateVariables) : base(graph)
         {
             StateVariables = stateVariables ?? throw new ArgumentNullException(nameof(stateVariables));
         }
@@ -110,7 +118,7 @@ namespace TEGS
             }
         }
 
-        public DuplicateStateVariableNamesValidationError(IReadOnlyList<StateVariable> stateVariables) : base(stateVariables) { }
+        public DuplicateStateVariableNamesValidationError(Graph graph, IReadOnlyList<StateVariable> stateVariables) : base(graph, stateVariables) { }
     }
 
     #endregion
@@ -121,7 +129,7 @@ namespace TEGS
     {
         public readonly Vertex Vertex;
 
-        public VertexValidationError(Vertex vertex)
+        public VertexValidationError(Graph graph, Vertex vertex) : base(graph)
         {
             Vertex = vertex ?? throw new ArgumentNullException(nameof(vertex));
         }
@@ -129,18 +137,18 @@ namespace TEGS
 
     public class BlankVertexNameValidationError : VertexValidationError
     {
-        public override string Message => $"Vertex #{Vertex.Id} has a blank name.";
+        public override string Message => $"Vertex #{Graph.Verticies.IndexOf(Vertex)} has a blank name.";
 
-        public BlankVertexNameValidationError(Vertex vertex) : base(vertex) { }
+        public BlankVertexNameValidationError(Graph graph, Vertex vertex) : base(graph, vertex) { }
     }
 
     public class InvalidParameterNameVertexValidationError : VertexValidationError
     {
-        public override string Message => $"Vertex #{Vertex.Id} has invalid parameter name \"{ParameterName}\".";
+        public override string Message => $"Vertex #{Graph.Verticies.IndexOf(Vertex)} has invalid parameter name \"{ParameterName}\".";
 
         public readonly string ParameterName;
 
-        public InvalidParameterNameVertexValidationError(Vertex vertex, string parameterName) : base(vertex)
+        public InvalidParameterNameVertexValidationError(Graph graph, Vertex vertex, string parameterName) : base(graph, vertex)
         {
             ParameterName = parameterName;
         }
@@ -148,13 +156,13 @@ namespace TEGS
 
     public class InvalidCodeVertexValidationError : VertexValidationError
     {
-        public override string Message => $"Vertex #{Vertex.Id} has invalid code \"{Code}\": {Error}";
+        public override string Message => $"Vertex #{Graph.Verticies.IndexOf(Vertex)} has invalid code \"{Code}\": {Error}";
 
         public readonly string Code;
 
         public readonly string Error;
 
-        public InvalidCodeVertexValidationError(Vertex vertex, string code, string error) : base(vertex)
+        public InvalidCodeVertexValidationError(Graph graph, Vertex vertex, string code, string error) : base(graph, vertex)
         {
             Code = code;
             Error = error;
@@ -169,7 +177,7 @@ namespace TEGS
     {
         public readonly IReadOnlyList<Vertex> Verticies;
 
-        public VerticiesValidationError(IReadOnlyList<Vertex> verticies)
+        public VerticiesValidationError(Graph graph, IReadOnlyList<Vertex> verticies) : base(graph)
         {
             Verticies = verticies ?? throw new ArgumentNullException(nameof(verticies));
         }
@@ -199,7 +207,7 @@ namespace TEGS
             }
         }
 
-        public DuplicateVertexNamesValidationError(IReadOnlyList<Vertex> verticies) : base(verticies) { }
+        public DuplicateVertexNamesValidationError(Graph graph, IReadOnlyList<Vertex> verticies) : base(graph, verticies) { }
     }
 
     public class MultipleStartingVertexValidationError : VerticiesValidationError
@@ -214,7 +222,7 @@ namespace TEGS
             }
         }
 
-        public MultipleStartingVertexValidationError(IReadOnlyList<Vertex> verticies) : base(verticies) { }
+        public MultipleStartingVertexValidationError(Graph graph, IReadOnlyList<Vertex> verticies) : base(graph, verticies) { }
     }
 
     #endregion
@@ -225,7 +233,7 @@ namespace TEGS
     {
         public readonly Edge Edge;
 
-        public EdgeValidationError(Edge edge)
+        public EdgeValidationError(Graph graph, Edge edge) : base(graph)
         {
             Edge = edge ?? throw new ArgumentNullException(nameof(edge));
         }
@@ -233,27 +241,27 @@ namespace TEGS
 
     public class ParametersRequiredEdgeValidationError : EdgeValidationError
     {
-        public override string Message => $"Edge #{Edge.Id} from \"{Edge.Source.Name}\" to \"{Edge.Target.Name}\" requires parameters.";
+        public override string Message => $"Edge #{Graph.Edges.IndexOf(Edge)} from \"{Edge.Source.Name}\" to \"{Edge.Target.Name}\" requires parameters.";
 
-        public ParametersRequiredEdgeValidationError(Edge edge) : base(edge) { }
+        public ParametersRequiredEdgeValidationError(Graph graph, Edge edge) : base(graph, edge) { }
     }
 
     public class InvalidParametersEdgeValidationError : EdgeValidationError
     {
-        public override string Message => $"Edge #{Edge.Id} from \"{Edge.Source.Name}\" to \"{Edge.Target.Name}\" has invalid parameters.";
+        public override string Message => $"Edge #{Graph.Edges.IndexOf(Edge)} from \"{Edge.Source.Name}\" to \"{Edge.Target.Name}\" has invalid parameters.";
 
-        public InvalidParametersEdgeValidationError(Edge edge) : base(edge) { }
+        public InvalidParametersEdgeValidationError(Graph graph, Edge edge) : base(graph, edge) { }
     }
 
     public class InvalidParameterEdgeValidationError : EdgeValidationError
     {
-        public override string Message => $"Edge #{Edge.Id} from \"{Edge.Source.Name}\" to \"{Edge.Target.Name}\" has invalid parameter  \"{Parameter}\": {Error}";
+        public override string Message => $"Edge #{Graph.Edges.IndexOf(Edge)} from \"{Edge.Source.Name}\" to \"{Edge.Target.Name}\" has invalid parameter  \"{Parameter}\": {Error}";
 
         public readonly string Parameter;
 
         public readonly string Error;
 
-        public InvalidParameterEdgeValidationError(Edge edge, string parameter, string error) : base(edge)
+        public InvalidParameterEdgeValidationError(Graph graph, Edge edge, string parameter, string error) : base(graph, edge)
         {
             Parameter = parameter;
             Error = error;
@@ -262,11 +270,11 @@ namespace TEGS
 
     public class InvalidConditionEdgeValidationError : EdgeValidationError
     {
-        public override string Message => $"Edge #{Edge.Id} from \"{Edge.Source.Name}\" to \"{Edge.Target.Name}\" has invalid condition \"{Edge.Condition}\": {Error}";
+        public override string Message => $"Edge #{Graph.Edges.IndexOf(Edge)} from \"{Edge.Source.Name}\" to \"{Edge.Target.Name}\" has invalid condition \"{Edge.Condition}\": {Error}";
 
         public readonly string Error;
 
-        public InvalidConditionEdgeValidationError(Edge edge, string error) : base(edge)
+        public InvalidConditionEdgeValidationError(Graph graph, Edge edge, string error) : base(graph, edge)
         {
             Error = error;
         }
@@ -274,11 +282,11 @@ namespace TEGS
 
     public class InvalidDelayEdgeValidationError : EdgeValidationError
     {
-        public override string Message => $"Edge #{Edge.Id} from \"{Edge.Source.Name}\" to \"{Edge.Target.Name}\" has invalid delay \"{Edge.Delay}\": {Error}";
+        public override string Message => $"Edge #{Graph.Edges.IndexOf(Edge)} from \"{Edge.Source.Name}\" to \"{Edge.Target.Name}\" has invalid delay \"{Edge.Delay}\": {Error}";
 
         public readonly string Error;
 
-        public InvalidDelayEdgeValidationError(Edge edge, string error) : base(edge)
+        public InvalidDelayEdgeValidationError(Graph graph, Edge edge, string error) : base(graph, edge)
         {
             Error = error;
         }
@@ -286,11 +294,11 @@ namespace TEGS
 
     public class InvalidPriorityEdgeValidationError : EdgeValidationError
     {
-        public override string Message => $"Edge #{Edge.Id} from \"{Edge.Source.Name}\" to \"{Edge.Target.Name}\" has invalid priority \"{Edge.Priority}\": {Error}";
+        public override string Message => $"Edge #{Graph.Edges.IndexOf(Edge)} from \"{Edge.Source.Name}\" to \"{Edge.Target.Name}\" has invalid priority \"{Edge.Priority}\": {Error}";
 
         public readonly string Error;
 
-        public InvalidPriorityEdgeValidationError(Edge edge, string error) : base(edge)
+        public InvalidPriorityEdgeValidationError(Graph graph, Edge edge, string error) : base(graph, edge)
         {
             Error = error;
         }
