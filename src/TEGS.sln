@@ -28,10 +28,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Breakdown", "NativeExamples\Breakdown\Breakdown.csproj", "{CF3E35C0-346B-43F1-8C88-97724D2AE5C0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TEGS.UI", "TEGS.UI\TEGS.UI.csproj", "{19946854-D4FF-44DC-AB7A-A8AD019DE9CD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TEGS.UI", "TEGS.UI\TEGS.UI.csproj", "{19946854-D4FF-44DC-AB7A-A8AD019DE9CD}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		TEGS\TEGS.projitems*{0c3b897b-dd3e-437e-94e9-adf113fda360}*SharedItemsImports = 5
+		TEGS\TEGS.projitems*{19946854-d4ff-44dc-ab7a-a8ad019de9cd}*SharedItemsImports = 5
+		TEGS\TEGS.projitems*{5897f2c0-9f57-4e15-9eea-6d0444a1965f}*SharedItemsImports = 5
 		TEGS\TEGS.projitems*{ce581cf7-25a3-461f-b5b3-691086b847ca}*SharedItemsImports = 13
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

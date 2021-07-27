@@ -47,7 +47,7 @@ namespace TEGS
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>net5.0</TargetFramework>
     <StartupObject>{0}.Program</StartupObject>
   </PropertyGroup>
 

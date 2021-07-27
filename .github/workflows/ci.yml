@@ -3,10 +3,10 @@ name: TEGS CI
 on:
   push:
     branches:
-      - develop
+      - main
   pull_request:
     branches:
-      - develop
+      - main
 
 jobs:
   build_and_test:
@@ -20,7 +20,7 @@ jobs:
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: 3.1.101
+        dotnet-version: '5.0.x'
     - name: Checkout TEGS
       uses: actions/checkout@v2
     - name: Build TEGS.sln

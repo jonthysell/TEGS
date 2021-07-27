@@ -4,4 +4,4 @@ TEGS is an application for modeling discrete-event simulations using event graph
 
 TEGS is open-source under the MIT license.
 
-Copyright (c) 2019-2020 Jon Thysell
+Copyright (c) 2019-2021 Jon Thysell

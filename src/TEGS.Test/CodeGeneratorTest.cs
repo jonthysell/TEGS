@@ -25,9 +25,11 @@
 // THE SOFTWARE.
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.IO;
+using System.Reflection;
 
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -86,12 +88,15 @@ namespace TEGS.Test
 
             var parsedSyntaxTree = SyntaxFactory.ParseSyntaxTree(code, options);
 
-            var references = new MetadataReference[]
+            var references = new List<MetadataReference>
             {
                 MetadataReference.CreateFromFile(typeof(object).Assembly.Location),
                 MetadataReference.CreateFromFile(typeof(Console).Assembly.Location),
-                MetadataReference.CreateFromFile(typeof(System.Runtime.AssemblyTargetedPatchBandAttribute).Assembly.Location),
             };
+
+            Assembly.GetEntryAssembly().GetReferencedAssemblies()
+            .ToList()
+            .ForEach(a => references.Add(MetadataReference.CreateFromFile(Assembly.Load(a).Location)));
 
             var compilation = CSharpCompilation.Create(assemblyName,
                 new[] { parsedSyntaxTree },
