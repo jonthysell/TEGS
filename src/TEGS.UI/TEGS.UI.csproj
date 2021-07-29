@@ -43,11 +43,13 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\TEGS\TEGS.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Compile Update="Views\GraphStateVariablesWindow.xaml.cs">
       <DependentUpon>GraphStateVariablesWindow.xaml</DependentUpon>
     </Compile>
   </ItemGroup>
-
-  <Import Project="..\TEGS\TEGS.projitems" Label="Shared" />
 
 </Project>

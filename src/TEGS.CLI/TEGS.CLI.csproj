@@ -7,6 +7,8 @@
     <AssemblyName>tegs-cli</AssemblyName>
   </PropertyGroup>
 
-  <Import Project="..\TEGS\TEGS.projitems" Label="Shared" />
+  <ItemGroup>
+    <ProjectReference Include="..\TEGS\TEGS.csproj" />
+  </ItemGroup>
 
 </Project>

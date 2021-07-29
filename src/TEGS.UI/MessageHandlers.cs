@@ -41,6 +41,7 @@ namespace TEGS.UI
         private static async Task ShowExceptionDialogAsync(ExceptionMessage message)
         {
             Trace.TraceError($"Exception: { message.Exception.Message }");
+            await Task.Yield();
         }
 
         private static async Task ShowOpenFileDialogAsync(OpenFileMessage message)
