@@ -21,7 +21,7 @@ namespace TEGS.UI.ViewModels
         {
             get
             {
-                return _accept ?? (_accept = new RelayCommand(() =>
+                return _accept ??= new RelayCommand(() =>
                 {
                     try
                     {
@@ -34,7 +34,7 @@ namespace TEGS.UI.ViewModels
                     {
                         ExceptionUtils.HandleException(ex);
                     }
-                }));
+                });
             }
         }
         private RelayCommand _accept;
@@ -43,7 +43,7 @@ namespace TEGS.UI.ViewModels
         {
             get
             {
-                return _reject ?? (_reject = new RelayCommand(() =>
+                return _reject ??= new RelayCommand(() =>
                 {
                     try
                     {
@@ -56,7 +56,7 @@ namespace TEGS.UI.ViewModels
                     {
                         ExceptionUtils.HandleException(ex);
                     }
-                }));
+                });
             }
         }
         private RelayCommand _reject;

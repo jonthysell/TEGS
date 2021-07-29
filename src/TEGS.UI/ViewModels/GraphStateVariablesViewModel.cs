@@ -53,7 +53,7 @@ namespace TEGS.UI.ViewModels
         {
             get
             {
-                return _addStateVariable ?? (_addStateVariable = new RelayCommand(() =>
+                return _addStateVariable ??= new RelayCommand(() =>
                 {
                     try
                     {
@@ -63,7 +63,7 @@ namespace TEGS.UI.ViewModels
                     {
                         ExceptionUtils.HandleException(ex);
                     }
-                }));
+                });
             }
         }
         private RelayCommand _addStateVariable;
@@ -72,7 +72,7 @@ namespace TEGS.UI.ViewModels
         {
             get
             {
-                return _removeStateVariable ?? (_removeStateVariable = new RelayCommand(() =>
+                return _removeStateVariable ??= new RelayCommand(() =>
                 {
                     try
                     {
@@ -87,7 +87,7 @@ namespace TEGS.UI.ViewModels
                 }, () =>
                 {
                     return SelectedStateVariableIndex != -1;
-                }));
+                });
             }
         }
         private RelayCommand _removeStateVariable;

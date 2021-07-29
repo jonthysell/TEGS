@@ -512,7 +512,7 @@ namespace TEGS.CLI
 
         #region Version
 
-        private void ShowVersion()
+        private static void ShowVersion()
         {
             Console.WriteLine($"{ AppInfo.Name } v{ AppInfo.Version }");
             Console.WriteLine();
@@ -522,7 +522,7 @@ namespace TEGS.CLI
 
         #region Help
 
-        private void ShowHelp(string command = null)
+        private static void ShowHelp(string command = null)
         {
             switch (command)
             {

@@ -221,7 +221,7 @@ namespace TEGS
                 (null != Instance && parameterInfos.Length == 3 && parameterInfos[0].ParameterType == TypeInfo && parameterInfos[1].ParameterType == typeof(TArg0) && parameterInfos[2].ParameterType == typeof(TArg1));
         }
 
-        private CustomFunction MakeFunction(Func<bool> func)
+        private static CustomFunction MakeFunction(Func<bool> func)
         {
             return (args) =>
             {
@@ -234,7 +234,7 @@ namespace TEGS
             };
         }
 
-        private CustomFunction MakeFunction(Func<bool, bool> func)
+        private static CustomFunction MakeFunction(Func<bool, bool> func)
         {
             return (args) =>
             {
@@ -247,7 +247,7 @@ namespace TEGS
             };
         }
 
-        private CustomFunction MakeFunction(Func<int> func)
+        private static CustomFunction MakeFunction(Func<int> func)
         {
             return (args) =>
             {
@@ -260,7 +260,7 @@ namespace TEGS
             };
         }
 
-        private CustomFunction MakeFunction(Func<int, int> func)
+        private static CustomFunction MakeFunction(Func<int, int> func)
         {
             return (args) =>
             {
@@ -273,7 +273,7 @@ namespace TEGS
             };
         }
 
-        private CustomFunction MakeFunction(Func<int, int, int> func)
+        private static CustomFunction MakeFunction(Func<int, int, int> func)
         {
             return (args) =>
             {
@@ -286,7 +286,7 @@ namespace TEGS
             };
         }
 
-        private CustomFunction MakeFunction(Func<double> func)
+        private static CustomFunction MakeFunction(Func<double> func)
         {
             return (args) =>
             {
@@ -299,7 +299,7 @@ namespace TEGS
             };
         }
 
-        private CustomFunction MakeFunction(Func<double, double> func)
+        private static CustomFunction MakeFunction(Func<double, double> func)
         {
             return (args) =>
             {
@@ -312,7 +312,7 @@ namespace TEGS
             };
         }
 
-        private CustomFunction MakeFunction(Func<double, double, double> func)
+        private static CustomFunction MakeFunction(Func<double, double, double> func)
         {
             return (args) =>
             {
@@ -325,7 +325,7 @@ namespace TEGS
             };
         }
 
-        private CustomFunction MakeFunction(Func<int, int> intFunc, Func<double, double> doubleFunc)
+        private static CustomFunction MakeFunction(Func<int, int> intFunc, Func<double, double> doubleFunc)
         {
             return (args) =>
             {
@@ -345,7 +345,7 @@ namespace TEGS
             };
         }
 
-        private CustomFunction MakeFunction(Func<int, int, int> intFunc, Func<double, double, double> doubleFunc)
+        private static CustomFunction MakeFunction(Func<int, int, int> intFunc, Func<double, double, double> doubleFunc)
         {
             return (args) =>
             {
@@ -365,7 +365,7 @@ namespace TEGS
             };
         }
 
-        private CustomFunction MakeFunction(Func<string> func)
+        private static CustomFunction MakeFunction(Func<string> func)
         {
             return (args) =>
             {
@@ -378,7 +378,7 @@ namespace TEGS
             };
         }
 
-        private CustomFunction MakeFunction(Func<string, string> func)
+        private static CustomFunction MakeFunction(Func<string, string> func)
         {
             return (args) =>
             {
@@ -391,7 +391,7 @@ namespace TEGS
             };
         }
 
-        private CustomFunction MakeFunction(Func<string, string, string> func)
+        private static CustomFunction MakeFunction(Func<string, string, string> func)
         {
             return (args) =>
             {

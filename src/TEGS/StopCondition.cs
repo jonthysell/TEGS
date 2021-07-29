@@ -19,8 +19,7 @@ namespace TEGS
             _stopCondition = stopCondition ?? throw new ArgumentNullException(nameof(stopCondition));
         }
 
-        public static StopCondition Never = _never ?? (_never = new StopCondition(sim => false));
-        private static StopCondition _never;
+        public readonly static StopCondition Never = new StopCondition(sim => false);
 
         public static StopCondition StopAfterMaxTime(double maxTime)
         {

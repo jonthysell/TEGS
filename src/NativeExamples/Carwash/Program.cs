@@ -1,4 +1,4 @@
-﻿// Generated with tegs-cli v0.9.0.0
+﻿// Generated with tegs-cli v0.9
 //
 // Name: Carwash
 // Description: An automatic carwash
@@ -268,7 +268,7 @@ namespace Carwash
     
         protected double Clock() => _clock;
     
-        protected int String_Length(string str) => str.Length;
+        protected static int String_Length(string str) => str.Length;
     }
     
     public static class RandomExtensions
@@ -285,8 +285,7 @@ namespace Carwash
     
         public static double NormalVariate(this Random random, double mu, double sigma)
         {
-            double z = 0.0;
-    
+            double z;
             while (true)
             {
                 double u1 = random.NextDouble();

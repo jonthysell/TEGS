@@ -19,8 +19,7 @@ namespace TEGS
 
         public static double NormalVariate(this Random random, double mu, double sigma)
         {
-            double z = 0.0;
-
+            double z;
             while (true)
             {
                 double u1 = random.NextDouble();

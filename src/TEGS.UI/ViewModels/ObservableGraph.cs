@@ -46,7 +46,7 @@ namespace TEGS.UI.ViewModels
         {
             get
             {
-                return _stateVariables ?? (_stateVariables = new ReadOnlyObservableCollection<ObservableStateVariable>(ObservableStateVariable.MakeObservableCollection(this, false)));
+                return _stateVariables ??= new ReadOnlyObservableCollection<ObservableStateVariable>(ObservableStateVariable.MakeObservableCollection(this, false));
             }
             private set
             {
@@ -82,7 +82,7 @@ namespace TEGS.UI.ViewModels
         {
             get
             {
-                return _save ?? (_save = new RelayCommand(() =>
+                return _save ??= new RelayCommand(() =>
                 {
                     try
                     {
@@ -99,7 +99,7 @@ namespace TEGS.UI.ViewModels
                     {
                         ExceptionUtils.HandleException(ex);
                     }
-                }));
+                });
             }
         }
         private RelayCommand _save;
@@ -108,7 +108,7 @@ namespace TEGS.UI.ViewModels
         {
             get
             {
-                return _saveAs ?? (_saveAs = new RelayCommand(() =>
+                return _saveAs ??= new RelayCommand(() =>
                 {
                     try
                     {
@@ -118,7 +118,7 @@ namespace TEGS.UI.ViewModels
                     {
                         ExceptionUtils.HandleException(ex);
                     }
-                }));
+                });
             }
         }
         private RelayCommand _saveAs;
@@ -127,7 +127,7 @@ namespace TEGS.UI.ViewModels
         {
             get
             {
-                return _showProperties ?? (_showProperties = new RelayCommand(() =>
+                return _showProperties ??= new RelayCommand(() =>
                 {
                     try
                     {
@@ -137,7 +137,7 @@ namespace TEGS.UI.ViewModels
                     {
                         ExceptionUtils.HandleException(ex);
                     }
-                }));
+                });
             }
         }
         private RelayCommand _showProperties;
@@ -146,7 +146,7 @@ namespace TEGS.UI.ViewModels
         {
             get
             {
-                return _showStateVariables ?? (_showStateVariables = new RelayCommand(() =>
+                return _showStateVariables ??= new RelayCommand(() =>
                 {
                     try
                     {
@@ -156,7 +156,7 @@ namespace TEGS.UI.ViewModels
                     {
                         ExceptionUtils.HandleException(ex);
                     }
-                }));
+                });
             }
         }
         private RelayCommand _showStateVariables;

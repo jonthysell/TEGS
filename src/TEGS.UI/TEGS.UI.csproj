@@ -4,7 +4,7 @@
     <OutputType>WinExe</OutputType>
     <TargetFramework>net5.0</TargetFramework>
     <StartupObject>TEGS.UI.Program</StartupObject>
-    <AssemblyName>tegs</AssemblyName>
+    <AssemblyName>tegs-ui</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>

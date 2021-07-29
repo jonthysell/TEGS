@@ -34,7 +34,7 @@ namespace TEGS.UI.ViewModels
             _instance = new AppViewModel();
             if (null != args && args.Length > 0)
             {
-                _instance.ParseArgs(args);
+                ParseArgs(args);
             }
         }
 
@@ -42,6 +42,6 @@ namespace TEGS.UI.ViewModels
 
         private AppViewModel() { }
 
-        private void ParseArgs(string[] args) { }
+        private static void ParseArgs(string[] _) { }
     }
 }

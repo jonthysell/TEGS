@@ -103,12 +103,12 @@ namespace TEGS.Test
             TokenReader_ValidTest(tests);
         }
 
-        private void TokenReader_ValidTest(string expression, IEnumerable<TokenType> expectedTokens)
+        private static void TokenReader_ValidTest(string expression, IEnumerable<TokenType> expectedTokens)
         {
             TokenReader_ValidTest(new[] { new TokenizeTestCase(expression, expectedTokens) });
         }
 
-        private void TokenReader_ValidTest(IEnumerable<TokenizeTestCase> tests)
+        private static void TokenReader_ValidTest(IEnumerable<TokenizeTestCase> tests)
         {
             bool allPass = true;
 
@@ -120,7 +120,7 @@ namespace TEGS.Test
             Assert.IsTrue(allPass, "All tests did not pass.");
         }
 
-        private bool TryTokenizeTestCase(TokenizeTestCase test)
+        private static bool TryTokenizeTestCase(TokenizeTestCase test)
         {
             Trace.Write($"Tokenize \"{ test.Expression }\": ");
 

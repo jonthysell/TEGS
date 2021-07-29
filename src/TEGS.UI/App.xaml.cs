@@ -12,7 +12,7 @@ namespace TEGS.UI
 {
     public class App : Application
     {
-        public AppViewModel AppVM => AppViewModel.Instance;
+        public static AppViewModel AppVM => AppViewModel.Instance;
 
         public override void Initialize()
         {

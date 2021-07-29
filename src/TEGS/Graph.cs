@@ -189,12 +189,10 @@ namespace TEGS
                             int id = int.Parse(xmlReader.GetAttribute("id"));
                             string name = xmlReader.GetAttribute("name");
 
-                            bool.TryParse(xmlReader.GetAttribute("starting"), out bool isStartingVertex);
-
                             Vertex vertex = new Vertex()
                             {
                                 Name = name,
-                                IsStartingVertex = isStartingVertex,
+                                IsStartingVertex = bool.TryParse(xmlReader.GetAttribute("starting"), out bool isStartingVertex) && isStartingVertex,
                                 Description = xmlReader.GetAttribute("description"),
                             };
 
@@ -426,6 +424,16 @@ namespace TEGS
         public int CompareTo(Graph other)
         {
             return Name.CompareTo(other.Name);
+        }
+
+        public override bool Equals(object obj)
+        {
+            return Equals(obj as Graph);
+        }
+
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
         }
 
         public override string ToString()

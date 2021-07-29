@@ -50,7 +50,7 @@ namespace TEGS.UI.ViewModels
                 {
                     if (Graph.IsDirty)
                     {
-                        sb.Append("*");
+                        sb.Append('*');
                     }
 
                     if (!string.IsNullOrWhiteSpace(Graph.FileName))
@@ -79,7 +79,7 @@ namespace TEGS.UI.ViewModels
         {
             get
             {
-                return _newGraph ?? (_newGraph = new RelayCommand(() =>
+                return _newGraph ??= new RelayCommand(() =>
                 {
                     try
                     {
@@ -89,7 +89,7 @@ namespace TEGS.UI.ViewModels
                     {
                         ExceptionUtils.HandleException(ex);
                     }
-                }));
+                });
             }
         }
         private RelayCommand _newGraph;
@@ -98,7 +98,7 @@ namespace TEGS.UI.ViewModels
         {
             get
             {
-                return _openGraph ?? (_openGraph = new RelayCommand(() =>
+                return _openGraph ??= new RelayCommand(() =>
                 {
                     Messenger.Default.Send(new OpenFileMessage("Open Graph", FileType.Graph, (filename) =>
                     {
@@ -114,7 +114,7 @@ namespace TEGS.UI.ViewModels
                             ExceptionUtils.HandleException(ex);
                         }
                     }));
-                }));
+                });
             }
         }
         private RelayCommand _openGraph;
@@ -123,7 +123,7 @@ namespace TEGS.UI.ViewModels
         {
             get
             {
-                return _close ?? (_close = new RelayCommand(() =>
+                return _close ??= new RelayCommand(() =>
                 {
                     try
                     {
@@ -133,7 +133,7 @@ namespace TEGS.UI.ViewModels
                     {
                         ExceptionUtils.HandleException(ex);
                     }
-                }));
+                });
             }
         }
         private RelayCommand _close;

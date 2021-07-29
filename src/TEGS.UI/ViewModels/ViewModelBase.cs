@@ -9,7 +9,7 @@ namespace TEGS.UI.ViewModels
 {
     public abstract class ViewModelBase : GalaSoft.MvvmLight.ViewModelBase
     {
-        public AppViewModel AppVM => AppViewModel.Instance;
+        public static AppViewModel AppVM => AppViewModel.Instance;
 
         #region Properties
 
@@ -23,12 +23,12 @@ namespace TEGS.UI.ViewModels
         {
             get
             {
-                return _notImplementedCommand ?? (_notImplementedCommand = new RelayCommand(() =>
+                return _notImplementedCommand ??= new RelayCommand(() =>
                 {
                     ExceptionUtils.HandleException(new NotImplementedException());
                 }, () => {
                     return false;
-                }));
+                });
             }
         }
         private RelayCommand _notImplementedCommand;

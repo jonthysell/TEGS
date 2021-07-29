@@ -204,7 +204,7 @@ namespace TEGS
                     ReadChar();
                 }
 
-                string value = Expression.Substring(startIndex, CurrentIndex - startIndex);
+                string value = Expression[startIndex..CurrentIndex];
 
                 result = hasDecimalPoint ? new VariableValue(double.Parse(value, CultureInfo.InvariantCulture)) : new VariableValue(int.Parse(value, CultureInfo.InvariantCulture));
                 literal = value;
@@ -212,7 +212,7 @@ namespace TEGS
             }
             else if (CurrentChar == 't' || CurrentChar == 'f') // Boolean
             {
-                string remaining = Expression.Substring(CurrentIndex);
+                string remaining = Expression[CurrentIndex..];
 
                 if (remaining.StartsWith("true"))
                 {
@@ -265,7 +265,7 @@ namespace TEGS
                     ReadChar();
 
                     result = new VariableValue(sb.ToString());
-                    literal = Expression.Substring(startIndex, CurrentIndex - startIndex);
+                    literal = Expression[startIndex..CurrentIndex];
                     return true;
                 }
             }
@@ -286,7 +286,7 @@ namespace TEGS
                     ReadChar();
                 }
 
-                result = Expression.Substring(startIndex, CurrentIndex - startIndex);
+                result = Expression[startIndex..CurrentIndex];
                 return true;
             }
 

@@ -350,7 +350,7 @@ namespace TEGS.Test
             Assert.IsTrue(allPass, "All tests did not pass.");
         }
 
-        private bool TryParseAndEvaluate_ValidTest(ParseAndEvaluateTestCase test, IContext context)
+        private static bool TryParseAndEvaluate_ValidTest(ParseAndEvaluateTestCase test, IContext context)
         {
             Trace.Write($"ParseAndEvaluate \"{ test.Expression }\" => { test.ExpectedValue } : ");
 
@@ -372,7 +372,7 @@ namespace TEGS.Test
 
             if (test.ExpectedValue.Type != actualValue.Type)
             {
-                Trace.WriteLine($"FAIL, Wrong type: { actualValue.Type.ToString() }");
+                Trace.WriteLine($"FAIL, Wrong type: { actualValue.Type}");
                 return false;
             }
 
@@ -388,7 +388,7 @@ namespace TEGS.Test
 
             if (test.ExpectedValue.Type != reducedValue.Type)
             {
-                Trace.WriteLine($"FAIL, Wrong reduced type: { actualValue.Type.ToString() }");
+                Trace.WriteLine($"FAIL, Wrong reduced type: { actualValue.Type}");
                 return false;
             }
 

@@ -903,7 +903,7 @@ namespace TEGS.Test
             }
         }
 
-        protected void Evaluate_ValidTest(VariableValue expectedValue, Node node, IContext context)
+        protected static void Evaluate_ValidTest(VariableValue expectedValue, Node node, IContext context)
         {
             var actualValue = node.Evaluate(context);
             Assert.AreEqual(expectedValue, actualValue);
@@ -913,7 +913,7 @@ namespace TEGS.Test
             Assert.AreEqual(expectedValue, reducedValue);
         }
 
-        protected void Evaluate_ValidTest(bool expectedValue, Node node, IContext context)
+        protected static void Evaluate_ValidTest(bool expectedValue, Node node, IContext context)
         {
             var actualValue = node.Evaluate(context);
             Assert.AreEqual(VariableValueType.Boolean, actualValue.Type);

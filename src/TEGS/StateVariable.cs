@@ -90,16 +90,12 @@ namespace TEGS
 
         public override int GetHashCode()
         {
-            int hash = 17;
-            hash = hash * 31 + Name.GetHashCode();
-            hash = hash * 31 + Type.GetHashCode();
-            hash = hash * 31 + Description.GetHashCode();
-            return hash;
+            return HashCode.Combine(Name, Type, Description);
         }
 
         public override string ToString()
         {
-            return $"{Name} ({Type.ToString()})";
+            return $"{Name} ({Type})";
         }
     }
 

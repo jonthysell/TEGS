@@ -218,7 +218,7 @@ namespace TEGS
                         tupleTypesSB.Append(GetStateVariableType(graph.GetStateVariable(vertex.ParameterNames[i])));
                     }
 
-                    tupleTypesSB.Append(">");
+                    tupleTypesSB.Append('>');
 
                     eventParameterTypes[vertex] = tupleTypesSB.ToString();
                 }
@@ -288,7 +288,7 @@ namespace TEGS
                     }
                 }
 
-                WriteCode(sb, $"protected override object ParseStartParameters(string[] startParameters) => Tuple.Create({ tupleValuesSB.ToString() });", ref indent);
+                WriteCode(sb, $"protected override object ParseStartParameters(string[] startParameters) => Tuple.Create({ tupleValuesSB});", ref indent);
             }
 
             sb.AppendLine();
@@ -369,7 +369,7 @@ namespace TEGS
                         {
                             sb.AppendLine();
 
-                            WriteComment(sb, $"Edge #{ j }: { edge.Action.ToString() } { edge.Source.Name } to { edge.Target.Name }", ref indent);
+                            WriteComment(sb, $"Edge #{ j }: { edge.Action} { edge.Source.Name } to { edge.Target.Name }", ref indent);
 
                             if (!string.IsNullOrWhiteSpace(edge.Description))
                             {
@@ -401,19 +401,19 @@ namespace TEGS
 
                                 parameterValuesSB.Append(RewriteExpression(graph, edge.ParameterExpressions[k]));
                             }
-                            parameterValuesSB.Append(")");
+                            parameterValuesSB.Append(')');
                         }
 
                         switch(edge.Action)
                         {
                             case EdgeAction.Schedule:
-                                WriteCode(sb, $"ScheduleEvent(EventType.{ eventNames[edge.Target] }, { (string.IsNullOrEmpty(edge.Delay) ? "0" : RewriteExpression(graph, edge.Delay)) }, { (string.IsNullOrEmpty(edge.Priority) ? "0" : RewriteExpression(graph, edge.Priority)) }, { parameterValuesSB.ToString() });", ref indent);
+                                WriteCode(sb, $"ScheduleEvent(EventType.{ eventNames[edge.Target] }, { (string.IsNullOrEmpty(edge.Delay) ? "0" : RewriteExpression(graph, edge.Delay)) }, { (string.IsNullOrEmpty(edge.Priority) ? "0" : RewriteExpression(graph, edge.Priority)) }, { parameterValuesSB});", ref indent);
                                 break;
                             case EdgeAction.CancelNext:
-                                WriteCode(sb, $"CancelNextEvent(EventType.{ eventNames[edge.Target] }, { parameterValuesSB.ToString() });", ref indent);
+                                WriteCode(sb, $"CancelNextEvent(EventType.{ eventNames[edge.Target] }, { parameterValuesSB});", ref indent);
                                 break;
                             case EdgeAction.CancelAll:
-                                WriteCode(sb, $"CancelAllEvents(EventType.{ eventNames[edge.Target] }, { parameterValuesSB.ToString() });", ref indent);
+                                WriteCode(sb, $"CancelAllEvents(EventType.{ eventNames[edge.Target] }, { parameterValuesSB});", ref indent);
                                 break;
                         }
 
@@ -620,7 +620,7 @@ abstract class SimulationBase
 
     protected double Clock() => _clock;
 
-    protected int String_Length(string str) => str.Length;
+    protected static int String_Length(string str) => str.Length;
 }
 
 public static class RandomExtensions
@@ -637,8 +637,7 @@ public static class RandomExtensions
 
     public static double NormalVariate(this Random random, double mu, double sigma)
     {
-        double z = 0.0;
-
+        double z;
         while (true)
         {
             double u1 = random.NextDouble();

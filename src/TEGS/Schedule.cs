@@ -104,7 +104,7 @@ namespace TEGS
             }
         }
 
-        private bool CancelPredicate(ScheduledEvent match, Vertex target, IReadOnlyList<VariableValue> parameterValues)
+        private static bool CancelPredicate(ScheduledEvent match, Vertex target, IReadOnlyList<VariableValue> parameterValues)
         {
             if (match.Target == target)
             {
