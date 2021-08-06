@@ -186,6 +186,40 @@ namespace TEGS.Test
         }
 
         [TestMethod]
+        public void Validator_SourceMissingEdgeInvalidTest()
+        {
+            Graph graph = new Graph();
+            Vertex vertex1 = graph.AddVertex("RUN1", true);
+            Vertex vertex2 = graph.AddVertex("RUN2");
+
+            Edge edge = graph.AddEdge(null, vertex2);
+
+            List<ValidationError> expectedErrors = new List<ValidationError>
+            {
+                new SourceMissingEdgeValidationError(graph, edge)
+            };
+
+            Validator_InvalidTest(graph, expectedErrors);
+        }
+
+        [TestMethod]
+        public void Validator_TargetMissingEdgeInvalidTest()
+        {
+            Graph graph = new Graph();
+            Vertex vertex1 = graph.AddVertex("RUN1", true);
+            Vertex vertex2 = graph.AddVertex("RUN2");
+
+            Edge edge = graph.AddEdge(vertex1, null);
+
+            List<ValidationError> expectedErrors = new List<ValidationError>
+            {
+                new TargetMissingEdgeValidationError(graph, edge)
+            };
+
+            Validator_InvalidTest(graph, expectedErrors);
+        }
+
+        [TestMethod]
         public void Validator_ParametersRequiredEdgeInvalidTest()
         {
             Graph graph = new Graph();

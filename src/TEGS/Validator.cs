@@ -154,68 +154,84 @@ namespace TEGS
             // Verify edges
             foreach (Edge e in graph.Edges)
             {
-                if (e.Action == EdgeAction.Schedule)
+                bool validVerticies = true;
+                if (e.Source is null)
                 {
-                    var parameterNames = e.Target.ParameterNames;
-                    var parameterExpressions = e.ParameterExpressions;
+                    errors.Add(new SourceMissingEdgeValidationError(graph, e));
+                    validVerticies = false;
+                }
 
-                    if (parameterNames.Count > 0)
+                if (e.Target is null)
+                {
+                    errors.Add(new TargetMissingEdgeValidationError(graph, e));
+                    validVerticies = false;
+                }
+
+                if (validVerticies)
+                {
+                    if (e.Action == EdgeAction.Schedule)
                     {
-                        if (parameterExpressions.Count == 0)
+                        var parameterNames = e.Target.ParameterNames;
+                        var parameterExpressions = e.ParameterExpressions;
+
+                        if (parameterNames.Count > 0)
                         {
-                            errors.Add(new ParametersRequiredEdgeValidationError(graph, e));
+                            if (parameterExpressions.Count == 0)
+                            {
+                                errors.Add(new ParametersRequiredEdgeValidationError(graph, e));
+                            }
+                            else if (parameterExpressions.Count != e.Target.ParameterNames.Count)
+                            {
+                                errors.Add(new InvalidParametersEdgeValidationError(graph, e));
+                            }
                         }
-                        else if (parameterExpressions.Count != e.Target.ParameterNames.Count)
+
+                        if (parameterExpressions.Count > 0)
                         {
-                            errors.Add(new InvalidParametersEdgeValidationError(graph, e));
+                            for (int i = 0; i < parameterExpressions.Count; i++)
+                            {
+                                try
+                                {
+                                    var result = scriptingHost.Evaluate(parameterExpressions[i]);
+                                    scriptingHost.SetVariable(parameterNames[i], result);
+                                }
+                                catch (Exception ex)
+                                {
+                                    errors.Add(new InvalidParameterEdgeValidationError(graph, e, parameterExpressions[i], ex.Message));
+                                }
+                            }
                         }
                     }
 
-                    if (parameterExpressions.Count > 0)
+                    // Verify condition
+                    try
                     {
-                        for (int i = 0; i < parameterExpressions.Count; i++)
-                        {
-                            try
-                            {
-                                var result = scriptingHost.Evaluate(parameterExpressions[i]);
-                                scriptingHost.SetVariable(parameterNames[i], result);
-                            }
-                            catch (Exception ex)
-                            {
-                                errors.Add(new InvalidParameterEdgeValidationError(graph, e, parameterExpressions[i], ex.Message));
-                            }
-                        }
+                        scriptingHost.Evaluate(e.Condition, VariableValue.True).AsBoolean();
                     }
-                }
+                    catch (Exception ex)
+                    {
+                        errors.Add(new InvalidConditionEdgeValidationError(graph, e, ex.Message));
+                    }
 
-                // Verify condition
-                try
-                {
-                    scriptingHost.Evaluate(e.Condition, VariableValue.True).AsBoolean();
-                }
-                catch (Exception ex)
-                {
-                    errors.Add(new InvalidConditionEdgeValidationError(graph, e, ex.Message));
-                }
+                    // Verify delay
+                    try
+                    {
+                        scriptingHost.Evaluate(e.Delay, new VariableValue(Schedule.DefaultDelay)).AsNumber();
+                    }
+                    catch (Exception ex)
+                    {
+                        errors.Add(new InvalidDelayEdgeValidationError(graph, e, ex.Message));
+                    }
 
-                // Verify delay
-                try
-                {
-                    scriptingHost.Evaluate(e.Delay, new VariableValue(Schedule.DefaultDelay)).AsNumber();
-                }
-                catch (Exception ex)
-                {
-                    errors.Add(new InvalidDelayEdgeValidationError(graph, e, ex.Message));
-                }
-
-                // Verify priority
-                try
-                {
-                    scriptingHost.Evaluate(e.Priority, new VariableValue(Schedule.DefaultPriority)).AsNumber();
-                }
-                catch (Exception ex)
-                {
-                    errors.Add(new InvalidPriorityEdgeValidationError(graph, e, ex.Message));
+                    // Verify priority
+                    try
+                    {
+                        scriptingHost.Evaluate(e.Priority, new VariableValue(Schedule.DefaultPriority)).AsNumber();
+                    }
+                    catch (Exception ex)
+                    {
+                        errors.Add(new InvalidPriorityEdgeValidationError(graph, e, ex.Message));
+                    }
                 }
             }
 

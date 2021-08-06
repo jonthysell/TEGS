@@ -216,23 +216,37 @@ namespace TEGS
         }
     }
 
+    public class SourceMissingEdgeValidationError : EdgeValidationError
+    {
+        public override string Message => $"Edge #{Graph.Edges.IndexOf(Edge)} is missing a source vertex.";
+
+        public SourceMissingEdgeValidationError(Graph graph, Edge edge) : base(graph, edge) { }
+    }
+
+    public class TargetMissingEdgeValidationError : EdgeValidationError
+    {
+        public override string Message => $"Edge #{Graph.Edges.IndexOf(Edge)} is missing a target vertex.";
+
+        public TargetMissingEdgeValidationError(Graph graph, Edge edge) : base(graph, edge) { }
+    }
+
     public class ParametersRequiredEdgeValidationError : EdgeValidationError
     {
-        public override string Message => $"Edge #{Graph.Edges.IndexOf(Edge)} from \"{Edge.Source.Name}\" to \"{Edge.Target.Name}\" requires parameters.";
+        public override string Message => $"Edge #{Graph.Edges.IndexOf(Edge)} from \"{Edge.Source?.Name}\" to \"{Edge.Target?.Name}\" requires parameters.";
 
         public ParametersRequiredEdgeValidationError(Graph graph, Edge edge) : base(graph, edge) { }
     }
 
     public class InvalidParametersEdgeValidationError : EdgeValidationError
     {
-        public override string Message => $"Edge #{Graph.Edges.IndexOf(Edge)} from \"{Edge.Source.Name}\" to \"{Edge.Target.Name}\" has invalid parameters.";
+        public override string Message => $"Edge #{Graph.Edges.IndexOf(Edge)} from \"{Edge.Source?.Name}\" to \"{Edge.Target?.Name}\" has invalid parameters.";
 
         public InvalidParametersEdgeValidationError(Graph graph, Edge edge) : base(graph, edge) { }
     }
 
     public class InvalidParameterEdgeValidationError : EdgeValidationError
     {
-        public override string Message => $"Edge #{Graph.Edges.IndexOf(Edge)} from \"{Edge.Source.Name}\" to \"{Edge.Target.Name}\" has invalid parameter  \"{Parameter}\": {Error}";
+        public override string Message => $"Edge #{Graph.Edges.IndexOf(Edge)} from \"{Edge.Source?.Name}\" to \"{Edge.Target?.Name}\" has invalid parameter  \"{Parameter}\": {Error}";
 
         public readonly string Parameter;
 
@@ -247,7 +261,7 @@ namespace TEGS
 
     public class InvalidConditionEdgeValidationError : EdgeValidationError
     {
-        public override string Message => $"Edge #{Graph.Edges.IndexOf(Edge)} from \"{Edge.Source.Name}\" to \"{Edge.Target.Name}\" has invalid condition \"{Edge.Condition}\": {Error}";
+        public override string Message => $"Edge #{Graph.Edges.IndexOf(Edge)} from \"{Edge.Source?.Name}\" to \"{Edge.Target?.Name}\" has invalid condition \"{Edge.Condition}\": {Error}";
 
         public readonly string Error;
 
@@ -259,7 +273,7 @@ namespace TEGS
 
     public class InvalidDelayEdgeValidationError : EdgeValidationError
     {
-        public override string Message => $"Edge #{Graph.Edges.IndexOf(Edge)} from \"{Edge.Source.Name}\" to \"{Edge.Target.Name}\" has invalid delay \"{Edge.Delay}\": {Error}";
+        public override string Message => $"Edge #{Graph.Edges.IndexOf(Edge)} from \"{Edge.Source?.Name}\" to \"{Edge.Target?.Name}\" has invalid delay \"{Edge.Delay}\": {Error}";
 
         public readonly string Error;
 
@@ -271,7 +285,7 @@ namespace TEGS
 
     public class InvalidPriorityEdgeValidationError : EdgeValidationError
     {
-        public override string Message => $"Edge #{Graph.Edges.IndexOf(Edge)} from \"{Edge.Source.Name}\" to \"{Edge.Target.Name}\" has invalid priority \"{Edge.Priority}\": {Error}";
+        public override string Message => $"Edge #{Graph.Edges.IndexOf(Edge)} from \"{Edge.Source?.Name}\" to \"{Edge.Target?.Name}\" has invalid priority \"{Edge.Priority}\": {Error}";
 
         public readonly string Error;
 

@@ -134,5 +134,15 @@ namespace TEGS.UI.ViewModels
         {
             return InternalObject.CompareTo(other.InternalObject);
         }
+
+        public override bool Equals(object obj)
+        {
+            return Equals(obj as ObservableObject<T>);
+        }
+
+        public override int GetHashCode()
+        {
+            return InternalObject.GetHashCode();
+        }
     }
 }

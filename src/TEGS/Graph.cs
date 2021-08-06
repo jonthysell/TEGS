@@ -4,6 +4,7 @@
 using System;
 using System.IO;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Xml;
 
@@ -162,6 +163,7 @@ namespace TEGS
 
             Dictionary<int, Vertex> verticies = new Dictionary<int, Vertex>();
             Dictionary<int, Edge> edges = new Dictionary<int, Edge>();
+            Dictionary<int, Tuple<int, int>> edgeToVerticies = new Dictionary<int, Tuple<int, int>>();
 
             object lastItem = null;
 
@@ -226,8 +228,6 @@ namespace TEGS
 
                             Edge edge = new Edge()
                             {
-                                Source = verticies[sourceId],
-                                Target = verticies[targetId],
                                 Action = (EdgeAction)Enum.Parse(typeof(EdgeAction), xmlReader.GetAttribute("action")),
 
                                 Description = xmlReader.GetAttribute("description"),
@@ -237,6 +237,7 @@ namespace TEGS
                             };
 
                             edges.Add(id, edge);
+                            edgeToVerticies.Add(id, new Tuple<int, int>(sourceId, targetId));
 
                             lastItem = edge;
                         }
@@ -253,14 +254,21 @@ namespace TEGS
                 }
             }
 
-            foreach (KeyValuePair<int, Vertex> kvp in verticies)
+            // Set the sources and targets if possible
+            foreach (var kvp in edgeToVerticies)
+            {
+                edges[kvp.Key].Source = verticies.TryGetValue(kvp.Value.Item1, out Vertex source) ? source : null;
+                edges[kvp.Key].Target = verticies.TryGetValue(kvp.Value.Item2, out Vertex target) ? target : null;
+            }
+
+            foreach (var kvp in verticies.OrderBy(kvp => kvp.Key))
             {
                 graph.Verticies.Add(kvp.Value);
             }
 
-            foreach (Edge edge in edges.Values)
+            foreach (var kvp in edges.OrderBy(kvp => kvp.Key))
             {
-                graph.Edges.Add(edge);
+                graph.Edges.Add(kvp.Value);
             }
 
             return graph;
