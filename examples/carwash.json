@@ -1,0 +1,114 @@
+{
+    "name": "Carwash",
+    "description": "An automatic carwash",
+    "variables": [
+      {
+        "name": "QUEUE",
+        "type": "Integer",
+        "description": ""
+      },
+      {
+        "name": "SERVERS",
+        "type": "Integer",
+        "description": ""
+      }
+    ],
+    "verticies": [
+      {
+        "id": 0,
+        "name": "RUN",
+        "description": "The simulation run is started",
+        "code": null,
+        "x": 0,
+        "y": 0,
+        "starting": true,
+        "parameters": [
+          "QUEUE",
+          "SERVERS"
+        ]
+      },
+      {
+        "id": 1,
+        "name": "ENTER",
+        "description": "Cars enter the line",
+        "code": [
+          "QUEUE = QUEUE + 1"
+        ],
+        "x": 0,
+        "y": 0
+      },
+      {
+        "id": 2,
+        "name": "START",
+        "description": "Service starts",
+        "code": [
+          "SERVERS = SERVERS - 1",
+          "QUEUE = QUEUE - 1"
+        ],
+        "x": 0,
+        "y": 0
+      },
+      {
+        "id": 3,
+        "name": "LEAVE",
+        "description": "Cars leave",
+        "code": [
+          "SERVERS = SERVERS + 1"
+        ],
+        "x": 0,
+        "y": 0
+      }
+    ],
+    "edges": [
+      {
+        "id": 0,
+        "source": 0,
+        "target": 1,
+        "action": "Schedule",
+        "description": "The car will enter the line",
+        "condition": "",
+        "delay": "",
+        "priority": "5"
+      },
+      {
+        "id": 1,
+        "source": 1,
+        "target": 1,
+        "action": "Schedule",
+        "description": "The next customer enters in 3 to 8 minutes",
+        "condition": "",
+        "delay": "Random.UniformVariate(3, 8)",
+        "priority": "6"
+      },
+      {
+        "id": 2,
+        "source": 1,
+        "target": 2,
+        "action": "Schedule",
+        "description": "There are available servers to start washing the car",
+        "condition": "SERVERS > 0",
+        "delay": "",
+        "priority": "5"
+      },
+      {
+        "id": 3,
+        "source": 2,
+        "target": 3,
+        "action": "Schedule",
+        "description": "The car will be in service for at least 5 minutes",
+        "condition": "",
+        "delay": "Random.UniformVariate(5, 20)",
+        "priority": "6"
+      },
+      {
+        "id": 4,
+        "source": 3,
+        "target": 2,
+        "action": "Schedule",
+        "description": "There are cars in queue, start service for the next car in line",
+        "condition": "QUEUE > 0",
+        "delay": "",
+        "priority": "5"
+      }
+    ]
+  }

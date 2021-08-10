@@ -104,7 +104,7 @@ namespace TEGS.UI
             switch (fileType)
             {
                 case FileType.Graph:
-                    return "xml";
+                    return "json";
                 case FileType.SimulationOutput:
                     return "txt";
                 default:
@@ -121,7 +121,7 @@ namespace TEGS.UI
                 filters.Add(new FileDialogFilter()
                 {
                     Name = "Graph Files",
-                    Extensions = new List<string>() { "xml" }
+                    Extensions = new List<string>() { "json" }
                 });
             }
 

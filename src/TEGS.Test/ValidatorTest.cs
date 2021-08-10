@@ -26,9 +26,9 @@ namespace TEGS.Test
         }
 
         [TestMethod]
-        public void Validator_CarwashXMLValidTest()
+        public void Validator_CarwashFileValidTest()
         {
-            Validator_ValidTest(TestGraph.LoadXml("carwash.xml"));
+            Validator_ValidTest(TestGraph.Load("carwash.json"));
         }
 
         [TestMethod]
@@ -189,7 +189,7 @@ namespace TEGS.Test
         public void Validator_SourceMissingEdgeInvalidTest()
         {
             Graph graph = new Graph();
-            Vertex vertex1 = graph.AddVertex("RUN1", true);
+            _ = graph.AddVertex("RUN1", true);
             Vertex vertex2 = graph.AddVertex("RUN2");
 
             Edge edge = graph.AddEdge(null, vertex2);
@@ -207,7 +207,7 @@ namespace TEGS.Test
         {
             Graph graph = new Graph();
             Vertex vertex1 = graph.AddVertex("RUN1", true);
-            Vertex vertex2 = graph.AddVertex("RUN2");
+            _ = graph.AddVertex("RUN2");
 
             Edge edge = graph.AddEdge(vertex1, null);
 

@@ -166,13 +166,13 @@ namespace TEGS.Test
         }
         private static Graph _breakdown;
 
-        public static Graph LoadXml(string fileName)
+        public static Graph Load(string fileName)
         {
             Graph graph = null;
 
             using (FileStream fs = new FileStream(fileName, FileMode.Open))
             {
-                graph = Graph.LoadXml(fs);
+                graph = Graph.Load(fs);
             }
 
             return graph;

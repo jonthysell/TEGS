@@ -6,11 +6,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="TestGraphs\carwash.xml" />
+    <None Remove="TestGraphs\**" />
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="TestGraphs\carwash.xml">
+    <Content Include="TestGraphs\**">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

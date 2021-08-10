@@ -5,27 +5,27 @@
     },
     "Build Carwash": {
       "commandName": "Project",
-      "commandLineArgs": "build --output-path $(ProjectDir)\\..\\..\\src\\NativeExamples\\Carwash  $(ProjectDir)\\..\\..\\examples\\carwash.xml"
+      "commandLineArgs": "build --output-path $(ProjectDir)\\..\\..\\src\\NativeExamples\\Carwash  $(ProjectDir)\\..\\..\\examples\\carwash.json"
     },
     "Run Carwash (Perf)": {
       "commandName": "Project",
-      "commandLineArgs": "run --seed 12345 --start-parameter 5 --start-parameter 3 --stop-time 10000 --skip-validation $(ProjectDir)\\..\\..\\examples\\carwash.xml"
+      "commandLineArgs": "run --seed 12345 --start-parameter 5 --start-parameter 3 --stop-time 10000 --skip-validation $(ProjectDir)\\..\\..\\examples\\carwash.json"
     },
     "Run Carwash (Console Out)": {
       "commandName": "Project",
-      "commandLineArgs": "run --seed 12345 --show-output --start-parameter 5 --start-parameter 3 --stop-time 10000 --trace-variable QUEUE --trace-variable SERVERS $(ProjectDir)\\..\\..\\examples\\carwash.xml"
+      "commandLineArgs": "run --seed 12345 --show-output --start-parameter 5 --start-parameter 3 --stop-time 10000 --trace-variable QUEUE --trace-variable SERVERS $(ProjectDir)\\..\\..\\examples\\carwash.json"
     },
     "Run Carwash (Text Out)": {
       "commandName": "Project",
-      "commandLineArgs": "run --output-file carwash.csv --seed 12345 --start-parameter 5 --start-parameter 3 --stop-time 10000 --trace-variable QUEUE --trace-variable SERVERS $(ProjectDir)\\..\\..\\examples\\carwash.xml"
+      "commandLineArgs": "run --output-file carwash.csv --seed 12345 --start-parameter 5 --start-parameter 3 --stop-time 10000 --trace-variable QUEUE --trace-variable SERVERS $(ProjectDir)\\..\\..\\examples\\carwash.json"
     },
     "Validate Carwash ": {
       "commandName": "Project",
-      "commandLineArgs": "validate $(ProjectDir)\\..\\..\\examples\\carwash.xml"
+      "commandLineArgs": "validate $(ProjectDir)\\..\\..\\examples\\carwash.json"
     },
     "Build Breakdown": {
       "commandName": "Project",
-      "commandLineArgs": "build --output-path $(ProjectDir)\\..\\..\\src\\NativeExamples\\Breakdown  $(ProjectDir)\\..\\..\\examples\\breakdown.xml"
+      "commandLineArgs": "build --output-path $(ProjectDir)\\..\\..\\src\\NativeExamples\\Breakdown  $(ProjectDir)\\..\\..\\examples\\breakdown.json"
     },
   }
 }

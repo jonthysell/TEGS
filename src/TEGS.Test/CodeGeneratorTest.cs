@@ -31,9 +31,9 @@ namespace TEGS.Test
         }
 
         [TestMethod]
-        public void CodeGenerator_CarwashXMLGenerateSourceValidTest()
+        public void CodeGenerator_CarwashFileGenerateSourceValidTest()
         {
-            CodeGenerator_GenerateSourceValidTest(TestGraph.LoadXml("carwash.xml"));
+            CodeGenerator_GenerateSourceValidTest(TestGraph.Load("carwash.json"));
         }
 
         [TestMethod]

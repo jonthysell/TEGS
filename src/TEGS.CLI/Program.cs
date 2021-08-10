@@ -159,7 +159,7 @@ namespace TEGS.CLI
 
         private static void ShowBuildHelp()
         {
-            Console.WriteLine("Usage: tegs-cli build [<options>] graph.xml");
+            Console.WriteLine("Usage: tegs-cli build [<options>] graph.json");
             Console.WriteLine();
 
             Console.WriteLine("Options:");
@@ -180,7 +180,7 @@ namespace TEGS.CLI
                 graphFile = Arguments[^1];
 
                 using FileStream fs = new FileStream(graphFile, FileMode.Open);
-                graph = Graph.LoadXml(fs);
+                graph = Graph.Load(fs);
             }
             catch (Exception ex)
             {
@@ -273,7 +273,7 @@ namespace TEGS.CLI
 
         private static void ShowRunHelp()
         {
-            Console.WriteLine("Usage: tegs-cli run [<options>] graph.xml");
+            Console.WriteLine("Usage: tegs-cli run [<options>] graph.json");
             Console.WriteLine();
 
             Console.WriteLine("Options:");
@@ -298,7 +298,7 @@ namespace TEGS.CLI
             {
                 graphFile = Arguments[^1];
                 using FileStream fs = new FileStream(graphFile, FileMode.Open);
-                graph = Graph.LoadXml(fs);
+                graph = Graph.Load(fs);
             }
             catch (Exception ex)
             {
@@ -467,7 +467,7 @@ namespace TEGS.CLI
 
         private static void ShowValidateHelp()
         {
-            Console.WriteLine("Usage: tegs-cli validate graph.xml");
+            Console.WriteLine("Usage: tegs-cli validate graph.json");
             Console.WriteLine();
         }
 
@@ -481,7 +481,7 @@ namespace TEGS.CLI
                 graphFile = Arguments[^1];
 
                 using FileStream fs = new FileStream(graphFile, FileMode.Open);
-                graph = Graph.LoadXml(fs);
+                graph = Graph.Load(fs);
             }
             catch (Exception ex)
             {

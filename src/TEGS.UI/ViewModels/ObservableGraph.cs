@@ -190,7 +190,7 @@ namespace TEGS.UI.ViewModels
 
             using var fs = new FileStream(filename, FileMode.Open);
 
-            return new ObservableGraph(Graph.LoadXml(fs))
+            return new ObservableGraph(Graph.Load(fs))
             {
                 FileName = filename
             };
@@ -237,7 +237,7 @@ namespace TEGS.UI.ViewModels
 
             using Stream outputStream = new FileStream(filename, FileMode.Create);
 
-            InternalObject.SaveXml(outputStream);
+            InternalObject.Save(outputStream);
             _newGraphDirty = false;
             FileName = filename;
 

@@ -5,8 +5,8 @@ using System;
 using System.IO;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Xml;
+using System.Text.Encodings.Web;
+using System.Text.Json;
 
 namespace TEGS
 {
@@ -150,123 +150,161 @@ namespace TEGS
 
         #endregion
 
-        #region XML
+        #region Load / Save
 
-        public static Graph LoadXml(Stream inputStream)
+        public static Graph Load(Stream inputStream)
         {
-            if (null == inputStream)
+            if (inputStream is null)
             {
                 throw new ArgumentNullException(nameof(inputStream));
             }
 
             Graph graph = new Graph();
 
-            Dictionary<int, Vertex> verticies = new Dictionary<int, Vertex>();
-            Dictionary<int, Edge> edges = new Dictionary<int, Edge>();
-            Dictionary<int, Tuple<int, int>> edgeToVerticies = new Dictionary<int, Tuple<int, int>>();
+            Dictionary<int, Vertex> verticiesMap = new Dictionary<int, Vertex>();
+            Dictionary<int, Edge> edgesMap = new Dictionary<int, Edge>();
+            Dictionary<int, Tuple<int, int>> edgeToVerticiesMap = new Dictionary<int, Tuple<int, int>>();
 
-            object lastItem = null;
-
-            using (XmlReader xmlReader = XmlReader.Create(inputStream))
+            var options = new JsonDocumentOptions()
             {
-                while (xmlReader.Read())
+                AllowTrailingCommas = true,
+                CommentHandling = JsonCommentHandling.Skip,
+            };
+
+            var doc = JsonDocument.Parse(inputStream, options);
+
+            graph.Name = doc.RootElement.TryGetProperty("name", out var graphName) ? graphName.GetString() : "";
+
+            graph.Description = doc.RootElement.TryGetProperty("description", out var graphDescription) ? graphDescription.GetString() : "";
+
+            if (doc.RootElement.TryGetProperty("variables", out var variableArray) && variableArray.ValueKind != JsonValueKind.Null)
+            {
+                foreach (var variable in variableArray.EnumerateArray())
                 {
-                    if (xmlReader.IsStartElement())
+                    var name = variable.GetProperty("name").GetString();
+                    var type = Enum.Parse<VariableValueType>(variable.GetProperty("type").GetString());
+                    var description = variable.TryGetProperty("description", out var varDescription) ? varDescription.GetString() : "";
+                    graph.AddStateVariable(name, type, description);
+                }
+            }
+
+            if (doc.RootElement.TryGetProperty("verticies", out var vertexArray) && vertexArray.ValueKind != JsonValueKind.Null)
+            {
+                foreach (var vertex in vertexArray.EnumerateArray())
+                {
+                    var id = vertex.GetProperty("id").GetInt32();
+
+                    var v = new Vertex();
+
+                    if (vertex.TryGetProperty("name", out var vertexName))
                     {
-                        if (xmlReader.Name == "graph")
+                        v.Name = vertexName.GetString();
+                    }
+
+                    if (vertex.TryGetProperty("description", out var vertexDescription))
+                    {
+                        v.Description = vertexDescription.GetString();
+                    }
+
+                    if (vertex.TryGetProperty("starting", out var vertexStarting))
+                    {
+                        v.IsStartingVertex = vertexStarting.GetBoolean();
+                    }
+
+                    if (vertex.TryGetProperty("x", out var vertexX))
+                    {
+                        v.X = vertexX.GetInt32();
+                    }
+
+                    if (vertex.TryGetProperty("y", out var vertexY))
+                    {
+                        v.Y = vertexY.GetInt32();
+                    }
+
+                    if (vertex.TryGetProperty("code", out var vertexCodeArray) && vertexCodeArray.ValueKind != JsonValueKind.Null)
+                    {
+                        var code = new List<string>();
+                        foreach (var codeLine in vertexCodeArray.EnumerateArray())
                         {
-                            graph.Name = xmlReader.GetAttribute("name");
-                            graph.Description = xmlReader.GetAttribute("description");
+                            code.Add(codeLine.GetString());
                         }
-                        else if (xmlReader.Name == "variable")
+                        v.Code = code.ToArray();
+                    }
+
+                    if (vertex.TryGetProperty("parameters", out var parametersArray) && parametersArray.ValueKind != JsonValueKind.Null)
+                    {
+                        foreach (var parameter in parametersArray.EnumerateArray())
                         {
-                            string name = xmlReader.GetAttribute("name");
-                            VariableValueType type = (VariableValueType)Enum.Parse(typeof(VariableValueType), xmlReader.GetAttribute("type"));
-                            string description = xmlReader.GetAttribute("description");
-
-                            graph.AddStateVariable(name, type, description);
-                        }
-                        else if (xmlReader.Name == "vertex")
-                        {
-                            int id = int.Parse(xmlReader.GetAttribute("id"));
-                            string name = xmlReader.GetAttribute("name");
-
-                            Vertex vertex = new Vertex()
-                            {
-                                Name = name,
-                                IsStartingVertex = bool.TryParse(xmlReader.GetAttribute("starting"), out bool isStartingVertex) && isStartingVertex,
-                                Description = xmlReader.GetAttribute("description"),
-                            };
-
-                            vertex.SetCode(xmlReader.GetAttribute("code"));
-
-                            if (int.TryParse(xmlReader.GetAttribute("x"), out int x))
-                            {
-                                vertex.X = x;
-                            }
-
-                            if (int.TryParse(xmlReader.GetAttribute("y"), out int y))
-                            {
-                                vertex.Y = y;
-                            }
-
-                            verticies.Add(id, vertex);
-
-                            lastItem = vertex;
-                        }
-                        else if (xmlReader.Name == "parameter" && lastItem is Vertex lastVertex)
-                        {
-                            string name = xmlReader.GetAttribute("name");
-                            lastVertex.ParameterNames.Add(name);
-                        }
-                        else if (xmlReader.Name == "edge")
-                        {
-                            int id = int.Parse(xmlReader.GetAttribute("id"));
-
-                            int sourceId = int.Parse(xmlReader.GetAttribute("source"));
-                            int targetId = int.Parse(xmlReader.GetAttribute("target"));
-
-                            Edge edge = new Edge()
-                            {
-                                Action = (EdgeAction)Enum.Parse(typeof(EdgeAction), xmlReader.GetAttribute("action")),
-
-                                Description = xmlReader.GetAttribute("description"),
-                                Condition = xmlReader.GetAttribute("condition"),
-                                Delay = xmlReader.GetAttribute("delay"),
-                                Priority = xmlReader.GetAttribute("priority")
-                            };
-
-                            edges.Add(id, edge);
-                            edgeToVerticies.Add(id, new Tuple<int, int>(sourceId, targetId));
-
-                            lastItem = edge;
-                        }
-                        else if (xmlReader.Name == "parameter" && lastItem is Edge lastEdge)
-                        {
-                            string expression = xmlReader.GetAttribute("expression");
-                            lastEdge.ParameterExpressions.Add(expression);
-                        }
-                        else
-                        {
-                            lastItem = null;
+                            v.ParameterNames.Add(parameter.GetString());
                         }
                     }
+
+                    verticiesMap.Add(id, v);
+                }
+            }
+
+            if (doc.RootElement.TryGetProperty("edges", out var edgeArray) && edgeArray.ValueKind != JsonValueKind.Null)
+            {
+                foreach (var edge in edgeArray.EnumerateArray())
+                {
+                    var id = edge.GetProperty("id").GetInt32();
+
+                    var e = new Edge();
+
+                    var sourceId = edge.TryGetProperty("source", out var edgeSource) ? edgeSource.GetInt32() : -1;
+                    var targetId = edge.TryGetProperty("target", out var edgeTarget) ? edgeTarget.GetInt32() : -1;
+
+                    if (edge.TryGetProperty("action", out var edgeAction))
+                    {
+                        e.Action = Enum.Parse<EdgeAction>(edgeAction.GetString());
+                    }
+
+                    if (edge.TryGetProperty("description", out var edgeDescription))
+                    {
+                        e.Description = edgeDescription.GetString();
+                    }
+
+                    if (edge.TryGetProperty("condition", out var edgeCondition))
+                    {
+                        e.Condition = edgeCondition.GetString();
+                    }
+
+                    if (edge.TryGetProperty("delay", out var edgeDelay))
+                    {
+                        e.Delay = edgeDelay.GetString();
+                    }
+
+                    if (edge.TryGetProperty("priority", out var edgePriority))
+                    {
+                        e.Priority = edgePriority.GetString();
+                    }
+
+                    if (edge.TryGetProperty("parameters", out var parametersArray) && parametersArray.ValueKind != JsonValueKind.Null)
+                    {
+                        foreach (var parameter in parametersArray.EnumerateArray())
+                        {
+                            e.ParameterExpressions.Add(parameter.GetString());
+                        }
+                    }
+
+                    edgesMap.Add(id, e);
+                    edgeToVerticiesMap.Add(id, new Tuple<int, int>(sourceId, targetId));
                 }
             }
 
             // Set the sources and targets if possible
-            foreach (var kvp in edgeToVerticies)
+            foreach (var kvp in edgeToVerticiesMap)
             {
-                edges[kvp.Key].Source = verticies.TryGetValue(kvp.Value.Item1, out Vertex source) ? source : null;
-                edges[kvp.Key].Target = verticies.TryGetValue(kvp.Value.Item2, out Vertex target) ? target : null;
+                edgesMap[kvp.Key].Source = verticiesMap.TryGetValue(kvp.Value.Item1, out Vertex source) ? source : null;
+                edgesMap[kvp.Key].Target = verticiesMap.TryGetValue(kvp.Value.Item2, out Vertex target) ? target : null;
             }
 
-            foreach (var kvp in verticies.OrderBy(kvp => kvp.Key))
+            foreach (var kvp in verticiesMap.OrderBy(kvp => kvp.Key))
             {
                 graph.Verticies.Add(kvp.Value);
             }
 
-            foreach (var kvp in edges.OrderBy(kvp => kvp.Key))
+            foreach (var kvp in edgesMap.OrderBy(kvp => kvp.Key))
             {
                 graph.Edges.Add(kvp.Value);
             }
@@ -274,111 +312,123 @@ namespace TEGS
             return graph;
         }
 
-        public void SaveXml(Stream outputStream)
+        public void Save(Stream outputStream)
         {
-            if (null == outputStream)
+            if (outputStream is null)
             {
                 throw new ArgumentNullException(nameof(outputStream));
             }
 
-            XmlWriterSettings outputSettings = new XmlWriterSettings()
+            var options = new JsonWriterOptions()
             {
-                Encoding = Encoding.UTF8,
-                NewLineHandling = NewLineHandling.Entitize,
-                Indent = true,
+                Indented = true,
+                Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
             };
 
-            using XmlWriter xmlWriter = XmlWriter.Create(outputStream, outputSettings);
+            using var jsonWriter = new Utf8JsonWriter(outputStream, options);
 
-            xmlWriter.WriteComment($" Created with { AppInfo.Name } v{ AppInfo.Version }. ");
+            jsonWriter.WriteStartObject();
 
-            xmlWriter.WriteStartElement("graph");
-            xmlWriter.WriteAttributeString("name", Name);
-            xmlWriter.WriteAttributeString("description", Description);
+            jsonWriter.WriteString("name", Name);
+            jsonWriter.WriteString("description", Description);
 
-            xmlWriter.WriteStartElement("variables");
+            jsonWriter.WriteStartArray("variables");
 
-            foreach (StateVariable stateVariable in StateVariables)
+            for (int i = 0; i < StateVariables.Count; i++)
             {
-                xmlWriter.WriteStartElement("variable");
+                jsonWriter.WriteStartObject();
 
-                xmlWriter.WriteAttributeString("name", stateVariable.Name);
-                xmlWriter.WriteAttributeString("type", stateVariable.Type.ToString());
-                xmlWriter.WriteAttributeString("description", stateVariable.Description.ToString());
+                jsonWriter.WriteString("name", StateVariables[i].Name);
+                jsonWriter.WriteString("type", StateVariables[i].Type.ToString());
+                jsonWriter.WriteString("description", StateVariables[i].Description);
 
-                xmlWriter.WriteEndElement();
+                jsonWriter.WriteEndObject();
             }
 
-            xmlWriter.WriteEndElement(); // variables
+            jsonWriter.WriteEndArray(); // variables
 
-            xmlWriter.WriteStartElement("verticies");
+            jsonWriter.WriteStartArray("verticies");
 
             for (int i = 0; i < Verticies.Count; i++)
             {
-                xmlWriter.WriteStartElement("vertex");
+                jsonWriter.WriteStartObject();
 
-                xmlWriter.WriteAttributeString("id", i.ToString());
-                xmlWriter.WriteAttributeString("name", Verticies[i].Name);
-                xmlWriter.WriteAttributeString("description", Verticies[i].Description);
-                xmlWriter.WriteAttributeString("code", Verticies[i].GetCode());
+                jsonWriter.WriteNumber("id", i);
+                jsonWriter.WriteString("name", Verticies[i].Name);
+                jsonWriter.WriteString("description", Verticies[i].Description);
 
-                xmlWriter.WriteAttributeString("x", Verticies[i].X.ToString());
-                xmlWriter.WriteAttributeString("y", Verticies[i].Y.ToString());
+                if (Verticies[i].Code is null)
+                {
+                    jsonWriter.WriteNull("code");
+                }
+                else
+                {
+                    jsonWriter.WriteStartArray("code");
+
+                    for (int j = 0; j < Verticies[i].Code.Length; j++)
+                    {
+                        jsonWriter.WriteStringValue(Verticies[i].Code[j]);
+                    }
+                    jsonWriter.WriteEndArray();
+                }
+
+                jsonWriter.WriteNumber("x", Verticies[i].X);
+                jsonWriter.WriteNumber("y", Verticies[i].Y);
 
                 if (Verticies[i].IsStartingVertex)
                 {
-                    xmlWriter.WriteAttributeString("starting", Verticies[i].IsStartingVertex.ToString());
+                    jsonWriter.WriteBoolean("starting", Verticies[i].IsStartingVertex);
                 }
 
                 if (Verticies[i].ParameterNames.Count > 0)
                 {
+                    jsonWriter.WriteStartArray("parameters");
                     for (int j = 0; j < Verticies[i].ParameterNames.Count; j++)
                     {
-                        xmlWriter.WriteStartElement("parameter");
-                        xmlWriter.WriteAttributeString("name", Verticies[i].ParameterNames[j]);
-                        xmlWriter.WriteEndElement();
+                        jsonWriter.WriteStringValue(Verticies[i].ParameterNames[j]);
                     }
+                    jsonWriter.WriteEndArray();
                 }
 
-                xmlWriter.WriteEndElement();
+                jsonWriter.WriteEndObject();
             }
 
-            xmlWriter.WriteEndElement(); // verticies
+            jsonWriter.WriteEndArray();
 
-            xmlWriter.WriteStartElement("edges");
+            jsonWriter.WriteStartArray("edges");
 
             for (int i = 0; i < Edges.Count; i++)
             {
-                xmlWriter.WriteStartElement("edge");
+                jsonWriter.WriteStartObject();
 
-                xmlWriter.WriteAttributeString("id", i.ToString());
+                jsonWriter.WriteNumber("id", i);
 
-                xmlWriter.WriteAttributeString("source", Verticies.IndexOf(Edges[i].Source).ToString());
-                xmlWriter.WriteAttributeString("target", Verticies.IndexOf(Edges[i].Target).ToString());
+                jsonWriter.WriteNumber("source", Verticies.IndexOf(Edges[i].Source));
+                jsonWriter.WriteNumber("target", Verticies.IndexOf(Edges[i].Target));
 
-                xmlWriter.WriteAttributeString("action", Edges[i].Action.ToString());
+                jsonWriter.WriteString("action", Edges[i].Action.ToString());
 
-                xmlWriter.WriteAttributeString("description", Edges[i].Description);
-                xmlWriter.WriteAttributeString("condition", Edges[i].Condition);
-                xmlWriter.WriteAttributeString("delay", Edges[i].Delay);
-                xmlWriter.WriteAttributeString("priority", Edges[i].Priority);
+                jsonWriter.WriteString("description", Edges[i].Description);
+                jsonWriter.WriteString("condition", Edges[i].Condition);
+                jsonWriter.WriteString("delay", Edges[i].Delay);
+                jsonWriter.WriteString("priority", Edges[i].Priority);
 
                 if (Edges[i].ParameterExpressions.Count > 0)
                 {
+                    jsonWriter.WriteStartArray("parameters");
                     for (int j = 0; j < Edges[i].ParameterExpressions.Count; j++)
                     {
-                        xmlWriter.WriteStartElement("parameter");
-                        xmlWriter.WriteAttributeString("expression", Edges[i].ParameterExpressions[j]);
-                        xmlWriter.WriteEndElement();
+                        jsonWriter.WriteStringValue(Edges[i].ParameterExpressions[j]);
                     }
+                    jsonWriter.WriteEndArray();
                 }
 
-                xmlWriter.WriteEndElement();
+                jsonWriter.WriteEndObject();
             }
 
-            xmlWriter.WriteEndElement(); // edges
+            jsonWriter.WriteEndArray(); // edges
 
-            xmlWriter.WriteEndElement(); // graph
+            jsonWriter.WriteEndObject(); // graph
         }
 
         #endregion

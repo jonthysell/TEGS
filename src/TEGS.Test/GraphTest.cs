@@ -26,7 +26,7 @@ namespace TEGS.Test
         [TestMethod]
         public void Graph_LoadTest()
         {
-            Graph graph = TestGraph.LoadXml("carwash.xml");
+            Graph graph = TestGraph.Load("carwash.json");
             Assert.IsNotNull(graph);
 
             Assert.AreEqual(2, graph.StateVariables.Count);
@@ -37,16 +37,16 @@ namespace TEGS.Test
         [TestMethod]
         public void Graph_SaveTest()
         {
-            Graph graph = TestGraph.LoadXml("carwash.xml");
+            Graph graph = TestGraph.Load("carwash.json");
             Assert.IsNotNull(graph);
 
             MemoryStream ms = new MemoryStream();
-            graph.SaveXml(ms);
+            graph.Save(ms);
 
             Assert.IsNotNull(ms);
-            string graphXml = Encoding.UTF8.GetString(ms.ToArray());
+            string graphOutput = Encoding.UTF8.GetString(ms.ToArray());
 
-            Assert.IsFalse(string.IsNullOrWhiteSpace(graphXml));
+            Assert.IsFalse(string.IsNullOrWhiteSpace(graphOutput));
         }
 
         [TestMethod]
