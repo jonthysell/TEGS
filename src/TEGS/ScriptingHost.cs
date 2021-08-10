@@ -430,8 +430,8 @@ namespace TEGS
             "struct", "switch", "this", "throw",
             "true", "try", "typeof", "uint",
             "ulong", "unchecked", "unsafe", "ushort",
-            "using", "using", "static", "virtual", "void",
-            "volatile", "while",
+            "using", "virtual", "void", "volatile",
+            "while",
         };
 
         #endregion
