@@ -6,9 +6,7 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Example Graphs", "Example Graphs", "{D68F037F-7248-4A42-B63D-341D94EBF7EA}"
 	ProjectSection(SolutionItems) = preProject
 		..\examples\breakdown.json = ..\examples\breakdown.json
-		..\examples\breakdown.xml = ..\examples\breakdown.xml
 		..\examples\carwash.json = ..\examples\carwash.json
-		..\examples\carwash.xml = ..\examples\carwash.xml
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "NativeExamples", "NativeExamples", "{7A230B6C-BC82-4778-BAEF-ABF790363088}"
