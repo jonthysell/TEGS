@@ -137,7 +137,12 @@ namespace TEGS.UI.ViewModels
 
         public override bool Equals(object obj)
         {
-            return Equals(obj as ObservableObject<T>);
+            if (obj is ObservableObject<T> other)
+            {
+                return Equals(other);
+            }
+
+            return false;
         }
 
         public override int GetHashCode()

@@ -486,7 +486,12 @@ namespace TEGS
 
         public override bool Equals(object obj)
         {
-            return Equals(obj as Graph);
+            if (obj is Graph other)
+            {
+                return Equals(other);
+            }
+
+            return false;
         }
 
         public override int GetHashCode()
