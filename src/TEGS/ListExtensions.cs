@@ -10,7 +10,7 @@ namespace TEGS
     {
         public static void SortedInsert<T>(this IList<T> collection, T item) where T : IComparable<T>
         {
-            if (null == item)
+            if (item is null)
             {
                 throw new ArgumentNullException(nameof(item));
             }

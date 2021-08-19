@@ -11,7 +11,7 @@ namespace TEGS
         [LibraryFunction]
         public static VariableValue Length(VariableValue[] args)
         {
-            if (args != null && args.Length == 1 && args[0].Type == VariableValueType.String)
+            if (args is not null && args.Length == 1 && args[0].Type == VariableValueType.String)
             {
                 return new VariableValue(args[0].StringValue.Length);
             }

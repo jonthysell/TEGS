@@ -150,7 +150,7 @@ namespace TEGS
             int hash = 17;
             hash = hash * 31 + Type.GetHashCode();
             hash = hash * 31 + _value.GetHashCode();
-            if (null != _objectValue)
+            if (_objectValue is not null)
             {
                 hash = hash * 31 + _objectValue.GetHashCode();
             }

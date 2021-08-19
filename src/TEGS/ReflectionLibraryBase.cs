@@ -84,7 +84,7 @@ namespace TEGS
                 LoadMethods(TypeInfo);
             }
 
-            if (null != ExtensionsTypeInfo)
+            if (ExtensionsTypeInfo is not null)
             {
                 if (ReflectionType.HasFlag(ReflectionType.ExtensionConstants))
                 {
@@ -115,7 +115,7 @@ namespace TEGS
 
             foreach (var propertyInfo in GetProperties(typeInfo))
             {
-                if (null != propertyInfo.GetGetMethod() && TryGetConstant(propertyInfo, out VariableValue constantValue))
+                if (propertyInfo.GetGetMethod() is not null && TryGetConstant(propertyInfo, out VariableValue constantValue))
                 {
                     Constants.Add(propertyInfo.Name, constantValue);
                 }
@@ -207,7 +207,7 @@ namespace TEGS
             try
             {
                 result = GetCustomFunction(methodInfo);
-                return (null != result);
+                return (result is not null);
             }
             catch (Exception) { }
 
@@ -233,7 +233,7 @@ namespace TEGS
 
         protected TDelegate MakeDelegate<TDelegate>(MethodInfo methodInfo) where TDelegate: Delegate
         {
-            if (null == Instance)
+            if (Instance is null)
             {
                 return (TDelegate)Delegate.CreateDelegate(typeof(TDelegate), methodInfo);
             }

@@ -49,7 +49,7 @@ namespace TEGS
 
         public bool Equals(StateVariable other)
         {
-            if (null == other)
+            if (other is null)
             {
                 throw new ArgumentNullException(nameof(other));
             }

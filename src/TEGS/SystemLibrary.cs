@@ -206,26 +206,26 @@ namespace TEGS
         private bool CheckParams(ParameterInfo[] parameterInfos)
         {
             return parameterInfos.Length == 0 ||
-                (null != Instance && parameterInfos.Length == 1 && parameterInfos[0].ParameterType == TypeInfo);
+                (Instance is not null && parameterInfos.Length == 1 && parameterInfos[0].ParameterType == TypeInfo);
         }
 
         private bool CheckParams<TArg>(ParameterInfo[] parameterInfos)
         {
             return (parameterInfos.Length == 1 && parameterInfos[0].ParameterType == typeof(TArg)) ||
-                (null != Instance && parameterInfos.Length == 2 && parameterInfos[0].ParameterType == TypeInfo && parameterInfos[1].ParameterType == typeof(TArg));
+                (Instance is not null && parameterInfos.Length == 2 && parameterInfos[0].ParameterType == TypeInfo && parameterInfos[1].ParameterType == typeof(TArg));
         }
 
         private bool CheckParams<TArg0, TArg1>(ParameterInfo[] parameterInfos)
         {
             return (parameterInfos.Length == 2 && parameterInfos[0].ParameterType == typeof(TArg0) && parameterInfos[1].ParameterType == typeof(TArg1)) ||
-                (null != Instance && parameterInfos.Length == 3 && parameterInfos[0].ParameterType == TypeInfo && parameterInfos[1].ParameterType == typeof(TArg0) && parameterInfos[2].ParameterType == typeof(TArg1));
+                (Instance is not null && parameterInfos.Length == 3 && parameterInfos[0].ParameterType == TypeInfo && parameterInfos[1].ParameterType == typeof(TArg0) && parameterInfos[2].ParameterType == typeof(TArg1));
         }
 
         private static CustomFunction MakeFunction(Func<bool> func)
         {
             return (args) =>
             {
-                if (args == null || args.Length == 0)
+                if (args is null || args.Length == 0)
                 {
                     return new VariableValue(func());
                 }
@@ -238,7 +238,7 @@ namespace TEGS
         {
             return (args) =>
             {
-                if (args != null && args.Length == 1 && args[0].Type == VariableValueType.Boolean)
+                if (args is not null && args.Length == 1 && args[0].Type == VariableValueType.Boolean)
                 {
                     return new VariableValue(func(args[0].BooleanValue));
                 }
@@ -251,7 +251,7 @@ namespace TEGS
         {
             return (args) =>
             {
-                if (args == null || args.Length == 0)
+                if (args is null || args.Length == 0)
                 {
                     return new VariableValue(func());
                 }
@@ -264,7 +264,7 @@ namespace TEGS
         {
             return (args) =>
             {
-                if (args != null && args.Length == 1 && args[0].Type == VariableValueType.Integer)
+                if (args is not null && args.Length == 1 && args[0].Type == VariableValueType.Integer)
                 {
                     return new VariableValue(func(args[0].IntegerValue));
                 }
@@ -277,7 +277,7 @@ namespace TEGS
         {
             return (args) =>
             {
-                if (args != null && args.Length == 2 && args[0].Type == VariableValueType.Integer && args[1].Type == VariableValueType.Integer)
+                if (args is not null && args.Length == 2 && args[0].Type == VariableValueType.Integer && args[1].Type == VariableValueType.Integer)
                 {
                     return new VariableValue(func(args[0].IntegerValue, args[1].IntegerValue));
                 }
@@ -290,7 +290,7 @@ namespace TEGS
         {
             return (args) =>
             {
-                if (args == null || args.Length == 0)
+                if (args is null || args.Length == 0)
                 {
                     return new VariableValue(func());
                 }
@@ -303,7 +303,7 @@ namespace TEGS
         {
             return (args) =>
             {
-                if (args != null && args.Length == 1 && args[0].IsNumber)
+                if (args is not null && args.Length == 1 && args[0].IsNumber)
                 {
                     return new VariableValue(func(args[0].AsNumber()));
                 }
@@ -316,7 +316,7 @@ namespace TEGS
         {
             return (args) =>
             {
-                if (args != null && args.Length == 2 && args[0].IsNumber && args[1].IsNumber)
+                if (args is not null && args.Length == 2 && args[0].IsNumber && args[1].IsNumber)
                 {
                     return new VariableValue(func(args[0].AsNumber(), args[1].AsNumber()));
                 }
@@ -329,7 +329,7 @@ namespace TEGS
         {
             return (args) =>
             {
-                if (args != null && args.Length == 1)
+                if (args is not null && args.Length == 1)
                 {
                     if (args[0].Type == VariableValueType.Integer)
                     {
@@ -349,7 +349,7 @@ namespace TEGS
         {
             return (args) =>
             {
-                if (args != null && args.Length == 2)
+                if (args is not null && args.Length == 2)
                 {
                     if (args[0].Type == VariableValueType.Integer && args[1].Type == VariableValueType.Integer)
                     {
@@ -369,7 +369,7 @@ namespace TEGS
         {
             return (args) =>
             {
-                if (args == null || args.Length == 0)
+                if (args is null || args.Length == 0)
                 {
                     return new VariableValue(func());
                 }
@@ -382,7 +382,7 @@ namespace TEGS
         {
             return (args) =>
             {
-                if (args != null && args.Length == 1 && args[0].Type == VariableValueType.String)
+                if (args is not null && args.Length == 1 && args[0].Type == VariableValueType.String)
                 {
                     return new VariableValue(func(args[0].StringValue));
                 }
@@ -395,7 +395,7 @@ namespace TEGS
         {
             return (args) =>
             {
-                if (args != null && args.Length == 2 && args[0].Type == VariableValueType.String && args[1].Type == VariableValueType.String)
+                if (args is not null && args.Length == 2 && args[0].Type == VariableValueType.String && args[1].Type == VariableValueType.String)
                 {
                     return new VariableValue(func(args[0].StringValue, args[1].StringValue));
                 }

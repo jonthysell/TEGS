@@ -42,7 +42,7 @@ namespace TEGS
             }
             set
             {
-                if (null == value)
+                if (value is null)
                 {
                     _code = null;
                 }
@@ -70,7 +70,7 @@ namespace TEGS
 
         public string GetCode()
         {
-            return null != Code ? string.Join(Environment.NewLine, Code) : null;
+            return Code is not null ? string.Join(Environment.NewLine, Code) : null;
         }
 
         public void SetCode(string code)

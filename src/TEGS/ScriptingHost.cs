@@ -51,7 +51,7 @@ namespace TEGS
 
         public void Execute(string[] code)
         {
-            if (null != code)
+            if (code is not null)
             {
                 if (!_parsedCode.TryGetValue(code, out Node[] nodes))
                 {
@@ -111,7 +111,7 @@ namespace TEGS
 
         public void Create(StateVariable stateVariable)
         {
-            if (null == stateVariable)
+            if (stateVariable is null)
             {
                 throw new ArgumentNullException(nameof(stateVariable));
             }
@@ -136,7 +136,7 @@ namespace TEGS
 
         public void Assign(StateVariable stateVariable, VariableValue value)
         {
-            if (null == stateVariable)
+            if (stateVariable is null)
             {
                 throw new ArgumentNullException(nameof(stateVariable));
             }
@@ -156,7 +156,7 @@ namespace TEGS
 
         public VariableValue Get(StateVariable stateVariable)
         {
-            if (null == stateVariable)
+            if (stateVariable is null)
             {
                 throw new ArgumentNullException(nameof(stateVariable));
             }
@@ -175,7 +175,7 @@ namespace TEGS
 
         public void LoadLibrary(ILibrary library)
         {
-            if (null == library)
+            if (library is null)
             {
                 throw new ArgumentNullException(nameof(library));
             }
@@ -236,7 +236,7 @@ namespace TEGS
                 throw new CustomFunctionInvalidNameException(name);
             }
 
-            if (null == function && _customFunctions.ContainsKey(name))
+            if (function is null && _customFunctions.ContainsKey(name))
             {
                 _customFunctions.Remove(name);
             }

@@ -77,7 +77,7 @@ namespace TEGS.Test
 
             foreach (var expectedValue in ValidStringValues)
             {
-                if (null != expectedValue)
+                if (expectedValue is not null)
                 {
                     var actualValue = VariableValue.Parse(expectedValue);
                     Assert.IsTrue(actualValue.IsString);

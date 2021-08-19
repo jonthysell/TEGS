@@ -15,7 +15,7 @@ namespace TEGS.UI.ViewModels
         {
             get
             {
-                if (null == _instance)
+                if (_instance is null)
                 {
                     Initialize();
                 }
@@ -26,13 +26,13 @@ namespace TEGS.UI.ViewModels
 
         public static void Initialize(string[] args = null)
         {
-            if (null != _instance)
+            if (_instance is not null)
             {
                 throw new InvalidOperationException($"{ nameof(Instance) } is already initialized.");
             }
 
             _instance = new AppViewModel();
-            if (null != args && args.Length > 0)
+            if (args is not null && args.Length > 0)
             {
                 ParseArgs(args);
             }

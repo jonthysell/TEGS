@@ -45,7 +45,7 @@ namespace TEGS
         protected override void LoadName(TypeInfo typeInfo)
         {
             var libraryAttribute = TypeInfo.GetCustomAttribute<LibraryAttribute>();
-            if (null != libraryAttribute)
+            if (libraryAttribute is not null)
             {
                 Name = libraryAttribute.Name?.Trim() ?? "";
             }
@@ -56,7 +56,7 @@ namespace TEGS
             foreach (var fieldInfo in GetFields(typeInfo))
             {
                 var constantAttribute = fieldInfo.GetCustomAttribute<LibraryConstantAttribute>();
-                if (null != constantAttribute && fieldInfo.IsPublic && TryGetConstant(fieldInfo, out VariableValue constantValue))
+                if (constantAttribute is not null && fieldInfo.IsPublic && TryGetConstant(fieldInfo, out VariableValue constantValue))
                 {
                     Constants.Add(constantAttribute.Name ?? fieldInfo.Name, constantValue);
                 }
@@ -65,7 +65,7 @@ namespace TEGS
             foreach (var propertyInfo in GetProperties(typeInfo))
             {
                 var constantAttribute = propertyInfo.GetCustomAttribute<LibraryConstantAttribute>();
-                if (null != constantAttribute && null != propertyInfo.GetGetMethod() && TryGetConstant(propertyInfo, out VariableValue constantValue))
+                if (constantAttribute is not null && propertyInfo.GetGetMethod() is not null && TryGetConstant(propertyInfo, out VariableValue constantValue))
                 {
                     Constants.Add(constantAttribute.Name ?? propertyInfo.Name, constantValue);
                 }
@@ -77,7 +77,7 @@ namespace TEGS
             foreach (var methodInfo in GetMethods(typeInfo))
             {
                 var functionAttribute = methodInfo.GetCustomAttribute<LibraryFunctionAttribute>();
-                if (null != functionAttribute && methodInfo.IsPublic && TryGetCustomFunction(methodInfo, out CustomFunction customFunction))
+                if (functionAttribute is not null && methodInfo.IsPublic && TryGetCustomFunction(methodInfo, out CustomFunction customFunction))
                 {
                     Functions.Add(functionAttribute.Name ?? methodInfo.Name, customFunction);
                 }

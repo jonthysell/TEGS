@@ -356,7 +356,7 @@ namespace TEGS.Test
 
             Node node = Parser.Parse(test.Expression);
 
-            if (null == node)
+            if (node is null)
             {
                 Trace.WriteLine("FAIL, Node is null.");
                 return false;

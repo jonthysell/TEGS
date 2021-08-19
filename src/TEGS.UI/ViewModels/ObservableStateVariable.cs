@@ -73,7 +73,7 @@ namespace TEGS.UI.ViewModels
 
         public static ObservableCollection<ObservableStateVariable> MakeObservableCollection(ObservableGraph graph, bool clone, IsDirtyChangedEventHandler onIsDirtyChanged = null)
         {
-            if (null == graph)
+            if (graph is null)
             {
                 throw new ArgumentNullException(nameof(graph));
             }

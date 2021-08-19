@@ -469,7 +469,7 @@ namespace TEGS
 
         public bool Equals(Graph other)
         {
-            if (null == other)
+            if (other is null)
             {
                 throw new ArgumentNullException(nameof(other));
             }

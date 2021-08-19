@@ -87,12 +87,12 @@ namespace TEGS
         {
             Name = name;
             Arguments = arguments;
-            EvaluatedArgs = arguments != null ? new VariableValue[arguments.Length] : null;
+            EvaluatedArgs = arguments is not null ? new VariableValue[arguments.Length] : null;
         }
 
         protected override VariableValue EvaluateInternal(IContext context)
         {
-            if (null != Arguments)
+            if (Arguments is not null)
             {
                 for (int i = 0; i < Arguments.Length; i++)
                 {
@@ -105,7 +105,7 @@ namespace TEGS
 
         protected override Node ReduceInternal()
         {
-            if (null != Arguments && Arguments.Length > 0)
+            if (Arguments is not null && Arguments.Length > 0)
             {
                 for (int i = 0; i < Arguments.Length; i++)
                 {

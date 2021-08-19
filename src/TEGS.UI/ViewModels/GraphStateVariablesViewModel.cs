@@ -23,7 +23,7 @@ namespace TEGS.UI.ViewModels
             }
             set
             {
-                SelectedStateVariableIndex = value != null ? StateVariables.IndexOf(value) : -1;
+                SelectedStateVariableIndex = value is not null ? StateVariables.IndexOf(value) : -1;
             }
         }
 

@@ -39,7 +39,7 @@ namespace TEGS
 
         public void Insert(Vertex target, double time, double priority, IReadOnlyList<VariableValue> parameterValues)
         {
-            if (null == target)
+            if (target is null)
             {
                 throw new ArgumentNullException(nameof(target));
             }
@@ -67,7 +67,7 @@ namespace TEGS
 
         public void CancelNext(Vertex target, IReadOnlyList<VariableValue> parameterValues = null)
         {
-            if (null == target)
+            if (target is null)
             {
                 throw new ArgumentNullException(nameof(target));
             }
@@ -92,7 +92,7 @@ namespace TEGS
 
         public void CancelAll(Vertex target, IReadOnlyList<VariableValue> parameterValues = null)
         {
-            if (null == target)
+            if (target is null)
             {
                 throw new ArgumentNullException(nameof(target));
             }
@@ -108,7 +108,7 @@ namespace TEGS
         {
             if (match.Target == target)
             {
-                if (null == parameterValues)
+                if (parameterValues is null)
                 {
                     return true;
                 }

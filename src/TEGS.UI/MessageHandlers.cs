@@ -59,7 +59,7 @@ namespace TEGS.UI
 
                 string[] filenames = await dialog.ShowAsync(MainWindow);
 
-                if (null != filenames && filenames.Length > 0 && !string.IsNullOrWhiteSpace(filenames[0]))
+                if (filenames is not null && filenames.Length > 0 && !string.IsNullOrWhiteSpace(filenames[0]))
                 {
                     filename = filenames[0];
                 }

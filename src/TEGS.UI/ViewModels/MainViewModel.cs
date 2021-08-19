@@ -22,12 +22,12 @@ namespace TEGS.UI.ViewModels
             }
             private set
             {
-                if (_graph != null)
+                if (_graph is not null)
                 {
                     _graph.PropertyChanged -= Graph_PropertyChanged;
                 }
 
-                if (value != null)
+                if (value is not null)
                 {
                     value.PropertyChanged += Graph_PropertyChanged;
                 }
@@ -46,7 +46,7 @@ namespace TEGS.UI.ViewModels
             {
                 StringBuilder sb = new StringBuilder();
 
-                if (null != Graph)
+                if (Graph is not null)
                 {
                     if (Graph.IsDirty)
                     {

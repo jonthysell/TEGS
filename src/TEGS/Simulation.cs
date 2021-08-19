@@ -252,7 +252,7 @@ namespace TEGS
 
         private bool KeepGoing()
         {
-            return Schedule.EventCount > 0 && (null == Args.StopCondition || !Args.StopCondition.ShouldStop(this));
+            return Schedule.EventCount > 0 && (Args.StopCondition is null || !Args.StopCondition.ShouldStop(this));
         }
 
         private void EvaluateTraces()
@@ -265,7 +265,7 @@ namespace TEGS
 
         private void AssignParameters(Vertex target, IReadOnlyList<VariableValue> parameterValues)
         {
-            if (null != parameterValues && parameterValues.Count > 0)
+            if (parameterValues is not null && parameterValues.Count > 0)
             {
                 var parameterNames = target.ParameterNames;
 
@@ -278,7 +278,7 @@ namespace TEGS
 
         private IReadOnlyList<VariableValue> EvaluateParameters(IReadOnlyList<string> parameterExpressions)
         {
-            if (null != parameterExpressions && parameterExpressions.Count > 0)
+            if (parameterExpressions is not null && parameterExpressions.Count > 0)
             {
                 List<VariableValue> values = new List<VariableValue>(parameterExpressions.Count);
 
@@ -330,7 +330,7 @@ namespace TEGS
 
         private VariableValue GetClock(VariableValue[] args)
         {
-            if (null == args || args.Length == 0)
+            if (args is null || args.Length == 0)
             {
                 return new VariableValue(Clock);
             }
@@ -340,7 +340,7 @@ namespace TEGS
 
         private VariableValue GetCurrentEventCount(VariableValue[] args)
         {
-            if (null == args || args.Length == 0)
+            if (args is null || args.Length == 0)
             {
                 return new VariableValue(EventCount[Graph.Verticies.IndexOf(CurrentVertex)]);
             }

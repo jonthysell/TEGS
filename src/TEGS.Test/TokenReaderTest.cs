@@ -126,7 +126,7 @@ namespace TEGS.Test
 
             TokenReader tr = new TokenReader(test.Expression);
 
-            if (null == tr)
+            if (tr is null)
             {
                 Trace.WriteLine("FAIL, TokenReader is null.");
                 return false;

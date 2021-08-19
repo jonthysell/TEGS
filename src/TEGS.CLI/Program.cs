@@ -59,7 +59,7 @@ namespace TEGS.CLI
 
                 EndConsoleError(oldColor);
 
-                if (null != ex.InnerException)
+                if (ex.InnerException is not null)
                 {
                     PrintException(ex.InnerException);
                 }
@@ -384,7 +384,7 @@ namespace TEGS.CLI
                 ValidateLoadedGraph();
             }
 
-            using StreamWriter outputWriter = null != args.OutputFile ? new StreamWriter(new FileStream(args.OutputFile, FileMode.Create), Encoding.UTF8) : null;
+            using StreamWriter outputWriter = args.OutputFile is not null ? new StreamWriter(new FileStream(args.OutputFile, FileMode.Create), Encoding.UTF8) : null;
 
             Simulation simulation = new Simulation(args.SimulationArgs);
 
@@ -397,7 +397,7 @@ namespace TEGS.CLI
                 simulation.VertexFired += MakeOutputEventHandler(Console.Write, " ", columnWidth);
             }
 
-            if (null != outputWriter)
+            if (outputWriter is not null)
             {
                 simulation.VertexFired += MakeOutputEventHandler(outputWriter.Write);
             }

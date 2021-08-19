@@ -273,7 +273,7 @@ namespace TEGS.Test
 
         private static void Validator_InvalidTest(Graph graph, IReadOnlyList<ValidationError> expectedErrors = null)
         {
-            if (null != expectedErrors)
+            if (expectedErrors is not null)
             {
                 Trace.WriteLine($"Expected errors:");
                 TraceValidationErrors(expectedErrors);
@@ -284,7 +284,7 @@ namespace TEGS.Test
             Trace.WriteLine($"Actual errors:");
             TraceValidationErrors(validationErrors);
 
-            if (null == expectedErrors)
+            if (expectedErrors is null)
             {
                 Assert.AreNotEqual(0, validationErrors.Count);
             }

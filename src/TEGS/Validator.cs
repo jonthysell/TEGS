@@ -10,7 +10,7 @@ namespace TEGS
     {
         public static IReadOnlyList<ValidationError> Validate(Graph graph)
         {
-            if (null == graph)
+            if (graph is null)
             {
                 throw new ArgumentNullException(nameof(graph));
             }
@@ -105,7 +105,7 @@ namespace TEGS
                 // Verify parameters
                 IReadOnlyList<string> parameterNames = v.ParameterNames;
 
-                if (null != parameterNames)
+                if (parameterNames is not null)
                 {
                     foreach (string parameterName in parameterNames)
                     {
@@ -118,7 +118,7 @@ namespace TEGS
 
                 // Verify code
                 string[] code = v.Code;
-                if (null != code && code.Length > 0)
+                if (code is not null && code.Length > 0)
                 {
                     for (int i = 0; i < code.Length; i++)
                     {

@@ -44,13 +44,13 @@ namespace TEGS.UI.ViewModels
 
         protected static ObservableType Create<ObservableType, InternalType>(InternalType item, Func<InternalType, ObservableType> create, IsDirtyChangedEventHandler onIsDirtyChanged) where ObservableType : ObservableObject<InternalType>, IComparable<ObservableObject<InternalType>>, IEquatable<ObservableObject<InternalType>> where InternalType : IComparable<InternalType>, IEquatable<InternalType>, ICloneable<InternalType>
         {
-            if (null == item)
+            if (item is null)
             {
                 throw new ArgumentNullException(nameof(item));
 
             }
 
-            if (null == create)
+            if (create is null)
             {
                 throw new ArgumentNullException(nameof(create));
 
@@ -58,7 +58,7 @@ namespace TEGS.UI.ViewModels
 
             var observableItem = create(item);
 
-            if (null != onIsDirtyChanged)
+            if (onIsDirtyChanged is not null)
             {
                 observableItem.IsDirtyChanged += onIsDirtyChanged;
             }
@@ -68,14 +68,14 @@ namespace TEGS.UI.ViewModels
 
         protected static ObservableType CreateNew<ObservableType, InternalType>(Func<ObservableType> createNew, IsDirtyChangedEventHandler onIsDirtyChanged) where ObservableType : ObservableObject<InternalType>, IComparable<ObservableObject<InternalType>>, IEquatable<ObservableObject<InternalType>> where InternalType : IComparable<InternalType>, IEquatable<InternalType>, ICloneable<InternalType>
         {
-            if (null == createNew)
+            if (createNew is null)
             {
                 throw new ArgumentNullException(nameof(createNew));
             }
 
             var observableItem = createNew();
 
-            if (null != onIsDirtyChanged)
+            if (onIsDirtyChanged is not null)
             {
                 observableItem.IsDirtyChanged += onIsDirtyChanged;
             }
@@ -85,12 +85,12 @@ namespace TEGS.UI.ViewModels
 
         protected static ObservableCollection<ObservableType> MakeObservableCollection<ObservableType, InternalType>(ICollection<InternalType> source, Func<InternalType, ObservableType> create, bool clone, IsDirtyChangedEventHandler onIsDirtyChanged) where ObservableType : ObservableObject<T>, IComparable<ObservableType>, IEquatable<ObservableType> where InternalType : IComparable<InternalType>, IEquatable<InternalType>, ICloneable<InternalType>
         {
-            if (null == source)
+            if (source is null)
             {
                 throw new ArgumentNullException(nameof(source));
             }
 
-            if (null == create)
+            if (create is null)
             {
                 throw new ArgumentNullException(nameof(create));
             }
@@ -102,7 +102,7 @@ namespace TEGS.UI.ViewModels
                 var observableItem = create(clone ? item.Clone() : item);
                 target.SortedInsert(observableItem);
 
-                if (null != onIsDirtyChanged)
+                if (onIsDirtyChanged is not null)
                 {
                     observableItem.IsDirtyChanged += onIsDirtyChanged;
                 }

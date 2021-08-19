@@ -11,7 +11,7 @@ namespace TEGS.Test
         {
             get
             {
-                if (null == _carwash)
+                if (_carwash is null)
                 {
                     Graph g = new Graph
                     {
@@ -75,7 +75,7 @@ namespace TEGS.Test
         {
             get
             {
-                if (null == _breakdown)
+                if (_breakdown is null)
                 {
                     Graph g = new Graph
                     {

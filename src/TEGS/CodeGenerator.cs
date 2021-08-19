@@ -33,7 +33,7 @@ namespace TEGS
 
         public static string GenerateSource(Graph graph, string targetNamespace)
         {
-            if (null == graph)
+            if (graph is null)
             {
                 throw new ArgumentNullException(nameof(graph));
             }
@@ -343,7 +343,7 @@ namespace TEGS
                 }
 
                 string[] code = vertex.Code;
-                if (null != code && code.Length > 0)
+                if (code is not null && code.Length > 0)
                 {
                     if (addSpacing)
                     {
@@ -615,7 +615,7 @@ abstract class SimulationBase
     private static bool CancelPredicate(ScheduleEntry match, EventType eventType, object parameterValues)
     {
         return match.EventType == eventType &&
-            (null == parameterValues || (null != match.ParameterValues && match.ParameterValues.Equals(parameterValues)));
+            (parameterValues is null || (match.ParameterValues is not null && match.ParameterValues.Equals(parameterValues)));
     }
 
     protected double Clock() => _clock;
