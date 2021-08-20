@@ -232,21 +232,21 @@ namespace TEGS
 
     public class ParametersRequiredEdgeValidationError : EdgeValidationError
     {
-        public override string Message => $"Edge #{Graph.Edges.IndexOf(Edge)} from \"{Edge.Source?.Name}\" to \"{Edge.Target?.Name}\" requires parameters.";
+        public override string Message => $"Edge #{Graph.Edges.IndexOf(Edge)} from \"{Edge.Source?.Name}\" to \"{Edge.Target?.Name}\" requires {Edge.Target?.ParameterNames.Count} parameters.";
 
         public ParametersRequiredEdgeValidationError(Graph graph, Edge edge) : base(graph, edge) { }
     }
 
     public class InvalidParametersEdgeValidationError : EdgeValidationError
     {
-        public override string Message => $"Edge #{Graph.Edges.IndexOf(Edge)} from \"{Edge.Source?.Name}\" to \"{Edge.Target?.Name}\" has invalid parameters.";
+        public override string Message => $"Edge #{Graph.Edges.IndexOf(Edge)} from \"{Edge.Source?.Name}\" to \"{Edge.Target?.Name}\" has an invalid number of parameters.";
 
         public InvalidParametersEdgeValidationError(Graph graph, Edge edge) : base(graph, edge) { }
     }
 
     public class InvalidParameterEdgeValidationError : EdgeValidationError
     {
-        public override string Message => $"Edge #{Graph.Edges.IndexOf(Edge)} from \"{Edge.Source?.Name}\" to \"{Edge.Target?.Name}\" has invalid parameter  \"{Parameter}\": {Error}";
+        public override string Message => $"Edge #{Graph.Edges.IndexOf(Edge)} from \"{Edge.Source?.Name}\" to \"{Edge.Target?.Name}\" has invalid parameter \"{Parameter}\": {Error}";
 
         public readonly string Parameter;
 
@@ -291,6 +291,49 @@ namespace TEGS
 
         public InvalidPriorityEdgeValidationError(Graph graph, Edge edge, string error) : base(graph, edge)
         {
+            Error = error;
+        }
+    }
+
+    #endregion
+
+    #region Simulation Validation Errors
+
+    public abstract class SimulationValidationError : ValidationError
+    {
+        public readonly Simulation Simulation;
+
+        public SimulationValidationError(Simulation simulation) : base(simulation?.Graph)
+        {
+            Simulation = simulation ?? throw new ArgumentNullException(nameof(simulation));
+        }
+    }
+
+    public class StartingParametersRequiredValidationError : SimulationValidationError
+    {
+        public override string Message => $"Starting vertex #{Graph.Verticies.IndexOf(Graph.StartingVertex)} requires {Graph.StartingVertex.ParameterNames.Count} parameters to run a simulation.";
+
+        public StartingParametersRequiredValidationError(Simulation simulation) : base(simulation) { }
+    }
+
+    public class InvalidStartingParametersValidationError : SimulationValidationError
+    {
+        public override string Message => $"Invalid number of starting parameters to run a simulation.";
+
+        public InvalidStartingParametersValidationError(Simulation simulation) : base(simulation) { }
+    }
+
+    public class InvalidStartingParameterValidationError : SimulationValidationError
+    {
+        public override string Message => $"Invalid starting parameter \"{Parameter}\": {Error}";
+
+        public readonly string Parameter;
+
+        public readonly string Error;
+
+        public InvalidStartingParameterValidationError(Simulation simulation, string parameter, string error) : base(simulation)
+        {
+            Parameter = parameter;
             Error = error;
         }
     }

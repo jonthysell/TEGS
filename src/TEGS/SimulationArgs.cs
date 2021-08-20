@@ -12,7 +12,7 @@ namespace TEGS
 
         public int? StartingSeed { get; set; } = null;
 
-        public IReadOnlyList<string> StartParameterExpressions { get; set; } = null;
+        public List<string> StartParameterExpressions { get; private set; } = new List<string>();
 
         public StopCondition StopCondition { get; set; } = StopCondition.Never;
 

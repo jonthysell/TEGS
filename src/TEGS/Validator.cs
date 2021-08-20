@@ -15,6 +15,7 @@ namespace TEGS
                 throw new ArgumentNullException(nameof(graph));
             }
 
+            var scriptingHost = MakeValidationScriptingHost();
             List<ValidationError> errors = new List<ValidationError>();
 
             // Verify state variables
@@ -64,8 +65,6 @@ namespace TEGS
                     }
                 }
             }
-
-            ScriptingHost scriptingHost = MakeValidationScriptingHost();
 
             foreach (StateVariable sv in graph.StateVariables)
             {
@@ -174,16 +173,13 @@ namespace TEGS
                         var parameterNames = e.Target.ParameterNames;
                         var parameterExpressions = e.ParameterExpressions;
 
-                        if (parameterNames.Count > 0)
+                        if (parameterNames.Count > 0 && parameterExpressions.Count == 0)
                         {
-                            if (parameterExpressions.Count == 0)
-                            {
-                                errors.Add(new ParametersRequiredEdgeValidationError(graph, e));
-                            }
-                            else if (parameterExpressions.Count != e.Target.ParameterNames.Count)
-                            {
-                                errors.Add(new InvalidParametersEdgeValidationError(graph, e));
-                            }
+                            errors.Add(new ParametersRequiredEdgeValidationError(graph, e));
+                        }
+                        else if (parameterExpressions.Count != parameterNames.Count)
+                        {
+                            errors.Add(new InvalidParametersEdgeValidationError(graph, e));
                         }
 
                         if (parameterExpressions.Count > 0)
@@ -231,6 +227,56 @@ namespace TEGS
                     catch (Exception ex)
                     {
                         errors.Add(new InvalidPriorityEdgeValidationError(graph, e, ex.Message));
+                    }
+                }
+            }
+
+            return errors;
+        }
+
+        public static IReadOnlyList<ValidationError> Validate(Simulation simulation)
+        {
+            if (simulation is null)
+            {
+                throw new ArgumentNullException(nameof(simulation));
+            }
+
+            var graph = simulation.Graph;
+
+            var scriptingHost = MakeValidationScriptingHost();
+
+            foreach (StateVariable sv in graph.StateVariables)
+            {
+                scriptingHost.Create(sv);
+            }
+
+            List<ValidationError> errors = new List<ValidationError>();
+
+            // Validate starting parameters
+            var parameterNames = graph.StartingVertex.ParameterNames;
+            var parameterExpressions = simulation.Args.StartParameterExpressions;
+
+            if (parameterNames.Count > 0 && parameterExpressions.Count == 0)
+            {
+                errors.Add(new StartingParametersRequiredValidationError(simulation));
+            }
+            else if (parameterNames.Count != parameterExpressions.Count)
+            {
+                errors.Add(new InvalidStartingParametersValidationError(simulation));
+            }
+
+            if (parameterExpressions.Count > 0)
+            {
+                for (int i = 0; i < parameterExpressions.Count; i++)
+                {
+                    try
+                    {
+                        var result = scriptingHost.Evaluate(parameterExpressions[i]);
+                        scriptingHost.SetVariable(parameterNames[i], result);
+                    }
+                    catch (Exception ex)
+                    {
+                        errors.Add(new InvalidStartingParameterValidationError(simulation, parameterExpressions[i], ex.Message));
                     }
                 }
             }

@@ -338,7 +338,7 @@ namespace TEGS.Test
             ParseAndEvaluate_ValidTests(tests, context);
         }
 
-        private void ParseAndEvaluate_ValidTests(IEnumerable<ParseAndEvaluateTestCase> tests, IContext context)
+        private static void ParseAndEvaluate_ValidTests(IEnumerable<ParseAndEvaluateTestCase> tests, IContext context)
         {
             bool allPass = true;
 

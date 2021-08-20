@@ -552,7 +552,7 @@ namespace TEGS
     {
         public Node Node { get; private set; }
 
-        public NodeException(Node node, Exception innerException) : base("", innerException)
+        public NodeException(Node node, Exception innerException) : base(innerException?.Message, innerException)
         {
             Node = node ?? throw new ArgumentNullException(nameof(node));
         }

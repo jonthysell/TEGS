@@ -17,9 +17,11 @@ namespace TEGS.Test
             SimulationArgs args = new SimulationArgs(TestGraph.Carwash)
             {
                 StartingSeed = 12345,
-                StartParameterExpressions = new List<string>() { "5", "3" },
                 StopCondition = StopCondition.StopAfterMaxTime(500),
             };
+
+            args.StartParameterExpressions.Add("5");
+            args.StartParameterExpressions.Add("3");
 
             Simulation s = new Simulation(args);
             Assert.IsNotNull(s);
@@ -31,9 +33,11 @@ namespace TEGS.Test
             SimulationArgs args = new SimulationArgs(TestGraph.Carwash)
             {
                 StartingSeed = 12345,
-                StartParameterExpressions = new List<string>() { "5", "3" },
                 StopCondition = StopCondition.StopAfterMaxTime(500),
             };
+
+            args.StartParameterExpressions.Add("5");
+            args.StartParameterExpressions.Add("3");
 
             Simulation s = new Simulation(args);
             Assert.AreEqual(SimulationState.None, s.State);
@@ -50,9 +54,11 @@ namespace TEGS.Test
             SimulationArgs args = new SimulationArgs(TestGraph.Carwash)
             {
                 StartingSeed = 12345,
-                StartParameterExpressions = new List<string>() { "5", "3" },
                 StopCondition = StopCondition.StopAfterMaxTime(10000),
             };
+
+            args.StartParameterExpressions.Add("5");
+            args.StartParameterExpressions.Add("3");
 
             Simulation s = new Simulation(args);
             Assert.AreEqual(SimulationState.None, s.State);
@@ -77,9 +83,11 @@ namespace TEGS.Test
             SimulationArgs args = new SimulationArgs(TestGraph.Carwash)
             {
                 StartingSeed = 12345,
-                StartParameterExpressions = new List<string>() { "5", "3" },
                 StopCondition = StopCondition.StopAfterMaxTime(500),
             };
+
+            args.StartParameterExpressions.Add("5");
+            args.StartParameterExpressions.Add("3");
 
             Simulation s = new Simulation(args);
             Assert.AreEqual(SimulationState.None, s.State);
@@ -98,9 +106,11 @@ namespace TEGS.Test
             SimulationArgs args = new SimulationArgs(TestGraph.Carwash)
             {
                 StartingSeed = 12345,
-                StartParameterExpressions = new List<string>() { "5", "3" },
                 StopCondition = StopCondition.StopAfterMaxTime(500),
             };
+
+            args.StartParameterExpressions.Add("5");
+            args.StartParameterExpressions.Add("3");
 
             Simulation s = new Simulation(args);
             Assert.AreEqual(SimulationState.None, s.State);
@@ -129,9 +139,11 @@ namespace TEGS.Test
             SimulationArgs args = new SimulationArgs(TestGraph.Carwash)
             {
                 StartingSeed = 12345,
-                StartParameterExpressions = new List<string>() { "5", "3" },
                 StopCondition = StopCondition.StopAfterMaxTime(500)
             };
+
+            args.StartParameterExpressions.Add("5");
+            args.StartParameterExpressions.Add("3");
 
             args.TraceExpressions.Add(new StateVariableTraceExpression(args.Graph.GetStateVariable("QUEUE")));
             args.TraceExpressions.Add(new StateVariableTraceExpression(args.Graph.GetStateVariable("SERVERS")));
@@ -176,9 +188,11 @@ namespace TEGS.Test
             SimulationArgs args = new SimulationArgs(TestGraph.Breakdown)
             {
                 StartingSeed = 12345,
-                StartParameterExpressions = new List<string>() { "0" },
                 StopCondition = StopCondition.StopAfterMaxTime(500),
             };
+
+            args.StartParameterExpressions.Add("0");
+
 
             Simulation s = new Simulation(args);
             Assert.AreEqual(SimulationState.None, s.State);

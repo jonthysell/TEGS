@@ -136,8 +136,7 @@ namespace TEGS.CLI
             {
                 var oldColor = StartConsoleError();
 
-                Console.Error.WriteLine($"Graph has {ex.ValidationErrors.Count} validation errors:");
-
+                Console.Error.WriteLine( ex.ValidationErrors.Count == 1 ? "There was a validation error:" : $"There were {ex.ValidationErrors.Count} validation errors:");
                 foreach (var error in ex.ValidationErrors)
                 {
                     Console.Error.WriteLine($"  {error.Message}");
@@ -279,13 +278,13 @@ namespace TEGS.CLI
             Console.WriteLine("Options:");
             Console.WriteLine("-o, --output-file [file]           Write simulation output to the given file");
             Console.WriteLine("--seed [int]                       Set the starting seed for the simulation (default: random)");
-            Console.WriteLine("--show-output                      Show simulation output to the console (default: False)");
+            Console.WriteLine("--silent                           Do not write simulation output to the console");
+            Console.WriteLine("--skip-validation                  Improve start-up performance by skipping graph validation");
             Console.WriteLine("--start-parameter [expression]     Set a simulation start parameter");
             Console.WriteLine("--stop-condition [expression]      Stop the simulation if the given condition is met");
             Console.WriteLine("--stop-event-count [name] [count]  Stop the simulation if the named event occurs count times");
             Console.WriteLine("--stop-time [time]                 Stop the simulation if the clock passes the given time");
             Console.WriteLine("--trace-variable [name]            Add a trace variable by name");
-            Console.WriteLine("--skip-validation                  Improve start-up performance by skipping graph validation");
             Console.WriteLine();
         }
 
@@ -306,7 +305,7 @@ namespace TEGS.CLI
             }
 
             string outputFile = null;
-            bool showOutput = false;
+            bool silent = false;
             int? startingSeed = null;
             List<string> startParameters = new List<string>();
             StopCondition stopCondition = null;
@@ -327,8 +326,8 @@ namespace TEGS.CLI
                         case "--seed":
                             startingSeed = int.Parse(Arguments[++i]);
                             break;
-                        case "--show-output":
-                            showOutput = true;
+                        case "--silent":
+                            silent = true;
                             break;
                         case "--start-parameter":
                             startParameters.Add(Arguments[++i]);
@@ -362,12 +361,12 @@ namespace TEGS.CLI
             var runCommandArgs = new RunCommandArgs(graph, graphFile)
             {
                 OutputFile = outputFile,
-                ShowOutput = showOutput,
+                Silent = silent,
                 SkipValidation = skipValidation,
             };
 
             runCommandArgs.SimulationArgs.StartingSeed = startingSeed;
-            runCommandArgs.SimulationArgs.StartParameterExpressions = startParameters;
+            runCommandArgs.SimulationArgs.StartParameterExpressions.AddRange(startParameters);
             runCommandArgs.SimulationArgs.StopCondition = stopCondition;
 
             runCommandArgs.SimulationArgs.TraceExpressions.AddRange(traceExpressions);
@@ -384,13 +383,18 @@ namespace TEGS.CLI
                 ValidateLoadedGraph();
             }
 
-            using StreamWriter outputWriter = args.OutputFile is not null ? new StreamWriter(new FileStream(args.OutputFile, FileMode.Create), Encoding.UTF8) : null;
-
             Simulation simulation = new Simulation(args.SimulationArgs);
+
+            if (!args.SkipValidation)
+            {
+                ValidateSimulation(simulation);
+            }
+
+            using StreamWriter outputWriter = args.OutputFile is not null ? new StreamWriter(new FileStream(args.OutputFile, FileMode.Create), Encoding.UTF8) : null;
 
             int numTraceExpressions = args.SimulationArgs.TraceExpressions.Count;
 
-            if (args.ShowOutput)
+            if (!args.Silent)
             {
                 int? columnWidth = (Console.WindowWidth / (numTraceExpressions + 2)) - 1;
 
@@ -501,6 +505,16 @@ namespace TEGS.CLI
         private void ValidateLoadedGraph()
         {
             IReadOnlyList<ValidationError> validationErrors = Validator.Validate(ProgramArgs.Graph);
+
+            if (validationErrors.Count > 0)
+            {
+                throw new ValidationException(validationErrors);
+            }
+        }
+
+        private static void ValidateSimulation(Simulation simulation)
+        {
+            IReadOnlyList<ValidationError> validationErrors = Validator.Validate(simulation);
 
             if (validationErrors.Count > 0)
             {

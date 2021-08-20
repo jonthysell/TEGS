@@ -9,15 +9,15 @@
     },
     "Run Carwash (Perf)": {
       "commandName": "Project",
-      "commandLineArgs": "run --seed 12345 --start-parameter 5 --start-parameter 3 --stop-time 10000 --skip-validation $(ProjectDir)\\..\\..\\examples\\carwash.json"
+      "commandLineArgs": "run --seed 12345 --silent --start-parameter 5 --start-parameter 3 --stop-time 10000 --skip-validation $(ProjectDir)\\..\\..\\examples\\carwash.json"
     },
     "Run Carwash (Console Out)": {
       "commandName": "Project",
-      "commandLineArgs": "run --seed 12345 --show-output --start-parameter 5 --start-parameter 3 --stop-time 10000 --trace-variable QUEUE --trace-variable SERVERS $(ProjectDir)\\..\\..\\examples\\carwash.json"
+      "commandLineArgs": "run --seed 12345 --start-parameter 5 --start-parameter 3 --stop-time 10000 --trace-variable QUEUE --trace-variable SERVERS $(ProjectDir)\\..\\..\\examples\\carwash.json"
     },
     "Run Carwash (Text Out)": {
       "commandName": "Project",
-      "commandLineArgs": "run --output-file carwash.csv --seed 12345 --start-parameter 5 --start-parameter 3 --stop-time 10000 --trace-variable QUEUE --trace-variable SERVERS $(ProjectDir)\\..\\..\\examples\\carwash.json"
+      "commandLineArgs": "run --output-file carwash.csv --seed 12345 --silent --start-parameter 5 --start-parameter 3 --stop-time 10000 --trace-variable QUEUE --trace-variable SERVERS $(ProjectDir)\\..\\..\\examples\\carwash.json"
     },
     "Validate Carwash ": {
       "commandName": "Project",
@@ -26,6 +26,6 @@
     "Build Breakdown": {
       "commandName": "Project",
       "commandLineArgs": "build --output-path $(ProjectDir)\\..\\..\\src\\NativeExamples\\Breakdown  $(ProjectDir)\\..\\..\\examples\\breakdown.json"
-    },
+    }
   }
 }

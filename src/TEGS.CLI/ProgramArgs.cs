@@ -34,7 +34,7 @@ namespace TEGS.CLI
     {
         public readonly SimulationArgs SimulationArgs;
 
-        public bool ShowOutput { get; set; } = false;
+        public bool Silent { get; set; } = false;
 
         public bool SkipValidation { get; set; } = false;
 
