@@ -28,25 +28,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Update="**\*.xaml.cs">
-      <DependentUpon>%(Filename)</DependentUpon>
-    </Compile>
-    <AvaloniaResource Include="**\*.xaml">
-      <SubType>Designer</SubType>
-    </AvaloniaResource>
-  </ItemGroup>
-
-  <ItemGroup>
-    <AvaloniaResource Remove="Views\GraphPropertiesWindow.xaml" />
-    <AvaloniaResource Remove="Views\GraphStateVariablesWindow.xaml" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Remove="Views\GraphPropertiesWindow.xaml" />
-    <None Remove="Views\GraphStateVariablesWindow.xaml" />
-  </ItemGroup>
-
-  <ItemGroup>
     <TrimmerRootAssembly Include="System.ComponentModel.EventBasedAsync" />
     <TrimmerRootAssembly Include="System.Text.Json" />
   </ItemGroup>
@@ -60,22 +41,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="Views\GraphStateVariablesWindow.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Views\GraphPropertiesWindow.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </EmbeddedResource>
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\TEGS\TEGS.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Compile Update="Views\GraphStateVariablesWindow.xaml.cs">
-      <DependentUpon>GraphStateVariablesWindow.xaml</DependentUpon>
-    </Compile>
   </ItemGroup>
 
 </Project>
