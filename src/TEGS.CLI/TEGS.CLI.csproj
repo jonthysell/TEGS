@@ -4,7 +4,8 @@
     <OutputType>Exe</OutputType>
     <TargetFramework>net5.0</TargetFramework>
     <StartupObject>TEGS.CLI.Program</StartupObject>
-    <AssemblyName>tegs-cli</AssemblyName>
+    <AssemblyName>tegscli</AssemblyName>
+    <RootNamespace>TEGS.CLI</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
