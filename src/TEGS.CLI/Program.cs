@@ -136,7 +136,7 @@ namespace TEGS.CLI
             {
                 var oldColor = StartConsoleError();
 
-                Console.Error.WriteLine( ex.ValidationErrors.Count == 1 ? "There was a validation error:" : $"There were {ex.ValidationErrors.Count} validation errors:");
+                Console.Error.WriteLine(ex.ValidationErrors.Count == 1 ? "There was a validation error:" : $"There were {ex.ValidationErrors.Count} validation errors:");
                 foreach (var error in ex.ValidationErrors)
                 {
                     Console.Error.WriteLine($"  {error.Message}");
