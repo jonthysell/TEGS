@@ -1,8 +1,16 @@
 {
   "profiles": {
-    "Carwash": {
+    "Run Carwash (Perf)": {
+      "commandName": "Project",
+      "commandLineArgs": "--seed 12345 --silent --start-parameter 5 --start-parameter 3 --stop-time 10000"
+    },
+    "Run Carwash (Console Out)": {
       "commandName": "Project",
       "commandLineArgs": "--seed 12345 --start-parameter 5 --start-parameter 3 --stop-time 10000"
+    },
+    "Run Carwash (Text Out)": {
+      "commandName": "Project",
+      "commandLineArgs": "--output-file carwash.txt --seed 12345 --silent --start-parameter 5 --start-parameter 3 --stop-time 10000"
     }
   }
 }

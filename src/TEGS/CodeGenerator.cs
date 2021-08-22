@@ -183,6 +183,7 @@ namespace TEGS
         {
             "System",
             "System.Collections.Generic",
+            "System.IO",
             "System.Text"
         };
 
@@ -452,14 +453,14 @@ namespace TEGS
             EndBlock(sb, ref indent); // protected override string GetEventName
 
             sb.AppendLine();
-            StartBlock(sb, "protected override void TraceExpressionHeaders()", ref indent);
+            StartBlock(sb, "protected override void TraceExpressionHeaders(bool traceToConsole, StreamWriter outputWriter)", ref indent);
 
             //TODO Add expressions
 
             EndBlock(sb, ref indent); // protected override void TraceExpressionHeaders
 
             sb.AppendLine();
-            StartBlock(sb, "protected override void TraceExpressionValues()", ref indent);
+            StartBlock(sb, "protected override void TraceExpressionValues(bool traceToConsole, StreamWriter outputWriter)", ref indent);
 
             //TODO Add expressions
 
@@ -518,8 +519,15 @@ class Program
         {
             switch (args[i].ToLower())
             {
+                case ""-o"":
+                case ""--output-file"":
+                    simArgs.OutputFile = args[++i];
+                    break;
                 case ""--seed"":
                     simArgs.Seed = int.Parse(args[++i]);
+                    break;
+                case ""--silent"":
+                    simArgs.Silent = true;
                     break;
                 case ""--start-parameter"":
                     startValues.Add(args[++i]);
@@ -568,7 +576,9 @@ struct StopCondition
 
 struct SimulationArgs
 {
+    public string OutputFile;
     public int Seed;
+    public bool Silent;
     public string[] StartParameterValues;
     public StopCondition StopCondition;
 }
@@ -589,9 +599,12 @@ abstract class SimulationBase
 
         ScheduleEvent(StartingEventType, 0, 0, ParseStartParameters(args.StartParameterValues));
 
-        StartTraceHeader();
-        TraceExpressionHeaders();
-        EndTrace();
+        bool traceToConsole = !args.Silent;
+        using StreamWriter outputWriter = args.OutputFile is not null ? new StreamWriter(new FileStream(args.OutputFile, FileMode.Create), Encoding.UTF8) : null;
+
+        StartTraceHeader(traceToConsole, outputWriter);
+        TraceExpressionHeaders(traceToConsole, outputWriter);
+        EndTraceLine(traceToConsole, outputWriter);
 
         while (_schedule.Count > 0 && _clock < args.StopCondition.MaxTime)
         {
@@ -602,9 +615,9 @@ abstract class SimulationBase
 
             ProcessEvent(entry.EventType, entry.ParameterValues);
 
-            StartTrace(entry.EventType);
-            TraceExpressionValues();
-            EndTrace();
+            StartTrace(traceToConsole, outputWriter, entry.EventType);
+            TraceExpressionValues(traceToConsole, outputWriter);
+            EndTraceLine(traceToConsole, outputWriter);
         }
     }
 
@@ -614,27 +627,37 @@ abstract class SimulationBase
 
     protected abstract string GetEventName(EventType eventType);
 
-    private void StartTraceHeader()
+    protected void Trace(bool traceToConsole, StreamWriter outputWriter, string str)
     {
-        Console.Write(""Clock"");
-        Console.Write('\t');
-        Console.Write(""Event"");
+        if (traceToConsole)
+        {
+            Console.Write(str);
+        }
+        outputWriter?.Write(str);
     }
 
-    private void StartTrace(EventType eventType)
+    private void StartTraceHeader(bool traceToConsole, StreamWriter outputWriter)
     {
-        Console.Write(_clock);
-        Console.Write('\t');
-        Console.Write(GetEventName(eventType));
+        Trace(traceToConsole, outputWriter, ""Clock\tEvent"");
     }
 
-    protected abstract void TraceExpressionHeaders();
-
-    protected abstract void TraceExpressionValues();
-
-    private void EndTrace()
+    private void StartTrace(bool traceToConsole, StreamWriter outputWriter, EventType eventType)
     {
-        Console.WriteLine();
+        Trace(traceToConsole, outputWriter, $""{ _clock }\t{ GetEventName(eventType) }"");
+    }
+
+    protected abstract void TraceExpressionHeaders(bool traceToConsole, StreamWriter outputWriter);
+
+    protected abstract void TraceExpressionValues(bool traceToConsole, StreamWriter outputWriter);
+
+    private void EndTraceLine(bool traceToConsole, StreamWriter outputWriter)
+    {
+        if (traceToConsole)
+        {
+            Console.WriteLine();
+        }
+
+        outputWriter?.WriteLine();
     }
 
     protected void ScheduleEvent(EventType eventType, double delay, double priority, object parameterValues)

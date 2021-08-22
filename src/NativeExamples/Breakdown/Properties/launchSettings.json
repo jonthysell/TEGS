@@ -1,8 +1,16 @@
 {
   "profiles": {
-    "Breakdown": {
+    "Run Breakdown (Perf)": {
+      "commandName": "Project",
+      "commandLineArgs": "--seed 12345 --silent --start-parameter 0 --stop-time 10000"
+    },
+    "Run Breakdown (Console Out)": {
       "commandName": "Project",
       "commandLineArgs": "--seed 12345 --start-parameter 0 --stop-time 10000"
+    },
+    "Run Breakdown (Text Out)": {
+      "commandName": "Project",
+      "commandLineArgs": "--output-file breakdown.txt --seed 12345 --silent --start-parameter 0 --stop-time 10000"
     }
   }
 }

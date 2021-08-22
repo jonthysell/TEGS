@@ -5,7 +5,7 @@
     },
     "Build Carwash": {
       "commandName": "Project",
-      "commandLineArgs": "build --output-path $(ProjectDir)\\..\\..\\src\\NativeExamples\\Carwash  $(ProjectDir)\\..\\..\\examples\\carwash.json"
+      "commandLineArgs": "build --output-path $(ProjectDir)\\..\\..\\src\\NativeExamples\\Carwash $(ProjectDir)\\..\\..\\examples\\carwash.json"
     },
     "Run Carwash (Perf)": {
       "commandName": "Project",
@@ -17,7 +17,7 @@
     },
     "Run Carwash (Text Out)": {
       "commandName": "Project",
-      "commandLineArgs": "run --output-file carwash.csv --seed 12345 --silent --start-parameter 5 --start-parameter 3 --stop-time 10000 --trace-variable QUEUE --trace-variable SERVERS $(ProjectDir)\\..\\..\\examples\\carwash.json"
+      "commandLineArgs": "run --output-file carwash.txt --seed 12345 --silent --start-parameter 5 --start-parameter 3 --stop-time 10000 --trace-variable QUEUE --trace-variable SERVERS $(ProjectDir)\\..\\..\\examples\\carwash.json"
     },
     "Validate Carwash ": {
       "commandName": "Project",
@@ -25,7 +25,23 @@
     },
     "Build Breakdown": {
       "commandName": "Project",
-      "commandLineArgs": "build --output-path $(ProjectDir)\\..\\..\\src\\NativeExamples\\Breakdown  $(ProjectDir)\\..\\..\\examples\\breakdown.json"
+      "commandLineArgs": "build --output-path $(ProjectDir)\\..\\..\\src\\NativeExamples\\Breakdown $(ProjectDir)\\..\\..\\examples\\breakdown.json"
+    },
+    "Run Breakdown (Perf)": {
+      "commandName": "Project",
+      "commandLineArgs": "run --seed 12345 --silent --start-parameter 0 --stop-time 10000 --skip-validation $(ProjectDir)\\..\\..\\examples\\breakdown.json"
+    },
+    "Run Breakdown (Console Out)": {
+      "commandName": "Project",
+      "commandLineArgs": "run --seed 12345 --start-parameter 0 --stop-time 10000 --trace-variable QUEUE --trace-variable SERVER $(ProjectDir)\\..\\..\\examples\\breakdown.json"
+    },
+    "Run Breakdown (Text Out)": {
+      "commandName": "Project",
+      "commandLineArgs": "run --output-file breakdown.txt --seed 12345 --silent --start-parameter 0 --stop-time 10000 --trace-variable QUEUE --trace-variable SERVER $(ProjectDir)\\..\\..\\examples\\breakdown.json"
+    },
+    "Validate Breakdown ": {
+      "commandName": "Project",
+      "commandLineArgs": "validate $(ProjectDir)\\..\\..\\examples\\breakdown.json"
     }
   }
 }
