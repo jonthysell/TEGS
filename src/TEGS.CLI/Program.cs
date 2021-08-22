@@ -162,10 +162,11 @@ namespace TEGS.CLI
             Console.WriteLine();
 
             Console.WriteLine("Options:");
-            Console.WriteLine("--output-path [path]   Output generated files into the given path (Default: Current)");
-            Console.WriteLine("--project-file [name]  Specify the name of the generated project file");
-            Console.WriteLine("--source-file [name]   Specify the name of the generated C# source file");
-            Console.WriteLine("--source-only          Generate just the C# source file, directly into the output path");
+            Console.WriteLine("--output-path [path]    Output generated files into the given path (Default: Current)");
+            Console.WriteLine("--project-file [name]   Specify the name of the generated project file");
+            Console.WriteLine("--source-file [name]    Specify the name of the generated C# source file");
+            Console.WriteLine("--source-only           Generate just the C# source file, directly into the output path");
+            Console.WriteLine("--trace-variable [name] Add a trace variable by name");
             Console.WriteLine();
         }
 
@@ -190,6 +191,7 @@ namespace TEGS.CLI
             string projectFile = null;
             string sourceFile = null;
             bool sourceOnly = false;
+            List<string> traceExpressions = new List<string>();
 
             try
             {
@@ -209,6 +211,10 @@ namespace TEGS.CLI
                         case "--source-only":
                             sourceOnly = true;
                             break;
+                        case "--trace-variable":
+                            string name = Arguments[++i];
+                            traceExpressions.Add(graph.GetStateVariable(name).Name);
+                            break;
                         default:
                             throw new Exception($"Did not recognize option \"{ Arguments[i] }\".");
                     }
@@ -227,6 +233,8 @@ namespace TEGS.CLI
                 SourceOnly = sourceOnly,
             };
 
+            buildCommandArgs.TraceExpressions.AddRange(traceExpressions);
+
             ProgramArgs = buildCommandArgs;
         }
 
@@ -244,7 +252,7 @@ namespace TEGS.CLI
                 }
             }
 
-            string code = CodeGenerator.GenerateSource(args.Graph, targetNamespace);
+            string code = CodeGenerator.GenerateSource(args.Graph, targetNamespace, args.TraceExpressions);
 
             string rootPath = args.OutputPath ?? ".";
             string sourceFile = args.SourceFile ?? "Program.cs";

@@ -2,6 +2,12 @@
 //
 // Name: Breakdown
 // Description: A deterministic queue (M/D/1) with breakdowns
+//
+// Outputs:
+// Clock
+// Event
+// QUEUE
+// SERVER
 
 using System;
 using System.Collections.Generic;
@@ -178,10 +184,14 @@ namespace Breakdown
 
         protected override void TraceExpressionHeaders(bool traceToConsole, StreamWriter outputWriter)
         {
+            Trace(traceToConsole, outputWriter, "\tQUEUE");
+            Trace(traceToConsole, outputWriter, "\tSERVER");
         }
 
         protected override void TraceExpressionValues(bool traceToConsole, StreamWriter outputWriter)
         {
+            Trace(traceToConsole, outputWriter, $"\t{ StateVariable_QUEUE }");
+            Trace(traceToConsole, outputWriter, $"\t{ StateVariable_SERVER }");
         }
     }
 

@@ -31,7 +31,7 @@ namespace TEGS
 </Project>
 ";
 
-        public static string GenerateSource(Graph graph, string targetNamespace)
+        public static string GenerateSource(Graph graph, string targetNamespace, IEnumerable<string> traceExpressions = null)
         {
             if (graph is null)
             {
@@ -47,7 +47,7 @@ namespace TEGS
             int indent = 0;
 
             // Header
-            AddHeader(sb, graph, ref indent);
+            AddHeader(sb, graph, traceExpressions, ref indent);
 
             // Usings
             sb.AppendLine();
@@ -58,7 +58,7 @@ namespace TEGS
             StartBlock(sb, $"namespace { targetNamespace }", ref indent);
 
             // Graph Code
-            WriteGraphCode(sb, graph, ref indent);
+            WriteGraphCode(sb, graph, traceExpressions, ref indent);
 
             // Common Code
             sb.AppendLine();
@@ -69,21 +69,21 @@ namespace TEGS
             return sb.ToString();
         }
 
-        public static string RewriteExpression(Graph graph, string expression)
+        public static string RewriteExpression(Graph graph, string expression, bool rewriteSymbols = true)
         {
             StringBuilder sb = new StringBuilder();
 
             TokenReader tr = new TokenReader(expression);
             while (tr.CurrentToken != TokenType.End)
             {
-                sb.Append(RewriteToken(tr, graph));
+                sb.Append(RewriteToken(tr, graph, rewriteSymbols));
                 tr.ReadNext();
             }
 
             return sb.ToString();
         }
 
-        private static string RewriteToken(TokenReader tokenReader, Graph graph)
+        private static string RewriteToken(TokenReader tokenReader, Graph graph, bool rewriteSymbol)
         {
             switch (tokenReader.CurrentToken)
             {
@@ -129,11 +129,11 @@ namespace TEGS
                     string symbol = tokenReader.CurrentSymbol;
                     if (graph.HasStateVariable(symbol))
                     {
-                        return $"{ StateVariableRewritePrefix }{ symbol }";
+                        return rewriteSymbol ? $"{ StateVariableRewritePrefix }{ symbol }" : symbol;
                     }
                     else
                     {
-                        return FunctionRewriteMap.TryGetValue(symbol, out string result) ? result : symbol;
+                        return rewriteSymbol && FunctionRewriteMap.TryGetValue(symbol, out string result) ? result : symbol;
                     }
                 case TokenType.Value:
                     return tokenReader.CurrentSymbol; // Contains the literal value read by the parser
@@ -151,7 +151,7 @@ namespace TEGS
 
         #region Header
 
-        private static void AddHeader(StringBuilder sb, Graph graph, ref int indent)
+        private static void AddHeader(StringBuilder sb, Graph graph, IEnumerable<string> traceExpressions, ref int indent)
         {
             WriteComment(sb, $"Generated with { AppInfo.Name } v{ AppInfo.Version }", ref indent);
             WriteComment(sb, "", ref indent);
@@ -164,6 +164,20 @@ namespace TEGS
             if (!string.IsNullOrWhiteSpace(graph.Description))
             {
                 WriteComment(sb, $"Description: { graph.Description }", ref indent);
+            }
+
+            WriteComment(sb, "", ref indent);
+
+            WriteComment(sb, $"Outputs:", ref indent);
+            WriteComment(sb, $"Clock", ref indent);
+            WriteComment(sb, $"Event", ref indent);
+
+            if (traceExpressions is not null)
+            {
+                foreach (var traceExpression in traceExpressions)
+                {
+                    WriteComment(sb, RewriteExpression(graph, traceExpression, false), ref indent);
+                }
             }
         }
 
@@ -191,7 +205,7 @@ namespace TEGS
 
         #region Graph Code
 
-        private static void WriteGraphCode(StringBuilder sb, Graph graph, ref int indent)
+        private static void WriteGraphCode(StringBuilder sb, Graph graph, IEnumerable<string> traceExpressions, ref int indent)
         {
             StartBlock(sb, "enum EventType", ref indent);
 
@@ -455,14 +469,26 @@ namespace TEGS
             sb.AppendLine();
             StartBlock(sb, "protected override void TraceExpressionHeaders(bool traceToConsole, StreamWriter outputWriter)", ref indent);
 
-            //TODO Add expressions
+            if (traceExpressions is not null)
+            {
+                foreach (string traceExpression in traceExpressions)
+                {
+                    WriteCode(sb, $"Trace(traceToConsole, outputWriter, \"\\t{ RewriteExpression(graph, traceExpression, false) }\");", ref indent);
+                }
+            }
 
             EndBlock(sb, ref indent); // protected override void TraceExpressionHeaders
 
             sb.AppendLine();
             StartBlock(sb, "protected override void TraceExpressionValues(bool traceToConsole, StreamWriter outputWriter)", ref indent);
 
-            //TODO Add expressions
+            if (traceExpressions is not null)
+            {
+                foreach (string traceExpression in traceExpressions)
+                {
+                    WriteCode(sb, $"Trace(traceToConsole, outputWriter, $\"\\t{{ { RewriteExpression(graph, traceExpression) } }}\");", ref indent);
+                }
+            }
 
             EndBlock(sb, ref indent); // protected override void TraceExpressionValues
 

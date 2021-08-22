@@ -2,6 +2,12 @@
 //
 // Name: Carwash
 // Description: An automatic carwash
+//
+// Outputs:
+// Clock
+// Event
+// QUEUE
+// SERVERS
 
 using System;
 using System.Collections.Generic;
@@ -127,10 +133,14 @@ namespace Carwash
 
         protected override void TraceExpressionHeaders(bool traceToConsole, StreamWriter outputWriter)
         {
+            Trace(traceToConsole, outputWriter, "\tQUEUE");
+            Trace(traceToConsole, outputWriter, "\tSERVERS");
         }
 
         protected override void TraceExpressionValues(bool traceToConsole, StreamWriter outputWriter)
         {
+            Trace(traceToConsole, outputWriter, $"\t{ StateVariable_QUEUE }");
+            Trace(traceToConsole, outputWriter, $"\t{ StateVariable_SERVERS }");
         }
     }
 

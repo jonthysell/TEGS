@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Generic;
 
 namespace TEGS.CLI
 {
@@ -26,6 +27,8 @@ namespace TEGS.CLI
         public string SourceFile { get; set; } = null;
 
         public bool SourceOnly { get; set; } = false;
+
+        public List<string> TraceExpressions { get; private set; } = new List<string>();
 
         public BuildCommandArgs(Graph graph, string graphFile) : base(graph, graphFile) { }
     }

@@ -5,7 +5,7 @@
     },
     "Build Carwash": {
       "commandName": "Project",
-      "commandLineArgs": "build --output-path $(ProjectDir)\\..\\..\\src\\NativeExamples\\Carwash $(ProjectDir)\\..\\..\\examples\\carwash.json"
+      "commandLineArgs": "build --trace-variable QUEUE --trace-variable SERVERS --output-path $(ProjectDir)\\..\\..\\src\\NativeExamples\\Carwash $(ProjectDir)\\..\\..\\examples\\carwash.json"
     },
     "Run Carwash (Perf)": {
       "commandName": "Project",
@@ -25,7 +25,7 @@
     },
     "Build Breakdown": {
       "commandName": "Project",
-      "commandLineArgs": "build --output-path $(ProjectDir)\\..\\..\\src\\NativeExamples\\Breakdown $(ProjectDir)\\..\\..\\examples\\breakdown.json"
+      "commandLineArgs": "build --trace-variable QUEUE --trace-variable SERVER --output-path $(ProjectDir)\\..\\..\\src\\NativeExamples\\Breakdown $(ProjectDir)\\..\\..\\examples\\breakdown.json"
     },
     "Run Breakdown (Perf)": {
       "commandName": "Project",
