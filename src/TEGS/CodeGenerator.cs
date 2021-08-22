@@ -429,6 +429,42 @@ namespace TEGS
                 EndBlock(sb, ref indent); // private void Event
             }
 
+            sb.AppendLine();
+            StartBlock(sb, "protected override string GetEventName(EventType eventType)", ref indent);
+
+            StartBlock(sb, "switch (eventType)", ref indent);
+
+            for (int i = 0; i < graph.Verticies.Count; i++)
+            {
+                Vertex vertex = graph.Verticies[i];
+
+                StartBlock(sb, $"case EventType.{ eventNames[vertex] }:", ref indent, false);
+
+                WriteCode(sb, $"return \"{ eventNames[vertex].Substring(EventNamePrefix.Length) }\";", ref indent);
+
+                EndBlock(sb, ref indent, false); // case
+            }
+
+            EndBlock(sb, ref indent); // switch
+
+            WriteCode(sb, $"return \"\";", ref indent);
+
+            EndBlock(sb, ref indent); // protected override string GetEventName
+
+            sb.AppendLine();
+            StartBlock(sb, "protected override void TraceExpressionHeaders()", ref indent);
+
+            //TODO Add expressions
+
+            EndBlock(sb, ref indent); // protected override void TraceExpressionHeaders
+
+            sb.AppendLine();
+            StartBlock(sb, "protected override void TraceExpressionValues()", ref indent);
+
+            //TODO Add expressions
+
+            EndBlock(sb, ref indent); // protected override void TraceExpressionValues
+
             EndBlock(sb, ref indent); // class Simulation
         }
 
@@ -553,6 +589,10 @@ abstract class SimulationBase
 
         ScheduleEvent(StartingEventType, 0, 0, ParseStartParameters(args.StartParameterValues));
 
+        StartTraceHeader();
+        TraceExpressionHeaders();
+        EndTrace();
+
         while (_schedule.Count > 0 && _clock < args.StopCondition.MaxTime)
         {
             var entry = _schedule[0];
@@ -561,12 +601,41 @@ abstract class SimulationBase
             _clock = entry.Time;
 
             ProcessEvent(entry.EventType, entry.ParameterValues);
+
+            StartTrace(entry.EventType);
+            TraceExpressionValues();
+            EndTrace();
         }
     }
 
     protected virtual object ParseStartParameters(string[] startParameters) => null;
 
     protected abstract void ProcessEvent(EventType eventType, object parameterValues);
+
+    protected abstract string GetEventName(EventType eventType);
+
+    private void StartTraceHeader()
+    {
+        Console.Write(""Clock"");
+        Console.Write('\t');
+        Console.Write(""Event"");
+    }
+
+    private void StartTrace(EventType eventType)
+    {
+        Console.Write(_clock);
+        Console.Write('\t');
+        Console.Write(GetEventName(eventType));
+    }
+
+    protected abstract void TraceExpressionHeaders();
+
+    protected abstract void TraceExpressionValues();
+
+    private void EndTrace()
+    {
+        Console.WriteLine();
+    }
 
     protected void ScheduleEvent(EventType eventType, double delay, double priority, object parameterValues)
     {

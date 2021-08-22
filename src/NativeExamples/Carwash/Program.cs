@@ -1,4 +1,4 @@
-﻿// Generated with tegs-cli v0.9
+﻿// Generated with tegscli v0.9
 //
 // Name: Carwash
 // Description: An automatic carwash
@@ -107,6 +107,30 @@ namespace Carwash
                 ScheduleEvent(EventType.Event_START, 0, 5, null);
             }
         }
+
+        protected override string GetEventName(EventType eventType)
+        {
+            switch (eventType)
+            {
+                case EventType.Event_RUN:
+                    return "RUN";
+                case EventType.Event_ENTER:
+                    return "ENTER";
+                case EventType.Event_START:
+                    return "START";
+                case EventType.Event_LEAVE:
+                    return "LEAVE";
+            }
+            return "";
+        }
+
+        protected override void TraceExpressionHeaders()
+        {
+        }
+
+        protected override void TraceExpressionValues()
+        {
+        }
     }
 
     class Program
@@ -201,6 +225,10 @@ namespace Carwash
     
             ScheduleEvent(StartingEventType, 0, 0, ParseStartParameters(args.StartParameterValues));
     
+            StartTraceHeader();
+            TraceExpressionHeaders();
+            EndTrace();
+    
             while (_schedule.Count > 0 && _clock < args.StopCondition.MaxTime)
             {
                 var entry = _schedule[0];
@@ -209,12 +237,41 @@ namespace Carwash
                 _clock = entry.Time;
     
                 ProcessEvent(entry.EventType, entry.ParameterValues);
+    
+                StartTrace(entry.EventType);
+                TraceExpressionValues();
+                EndTrace();
             }
         }
     
         protected virtual object ParseStartParameters(string[] startParameters) => null;
     
         protected abstract void ProcessEvent(EventType eventType, object parameterValues);
+    
+        protected abstract string GetEventName(EventType eventType);
+    
+        private void StartTraceHeader()
+        {
+            Console.Write("Clock");
+            Console.Write('\t');
+            Console.Write("Event");
+        }
+    
+        private void StartTrace(EventType eventType)
+        {
+            Console.Write(_clock);
+            Console.Write('\t');
+            Console.Write(GetEventName(eventType));
+        }
+    
+        protected abstract void TraceExpressionHeaders();
+    
+        protected abstract void TraceExpressionValues();
+    
+        private void EndTrace()
+        {
+            Console.WriteLine();
+        }
     
         protected void ScheduleEvent(EventType eventType, double delay, double priority, object parameterValues)
         {

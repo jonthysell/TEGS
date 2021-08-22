@@ -1,6 +1,6 @@
 {
   "profiles": {
-    "Breakdown (No Output)": {
+    "Breakdown": {
       "commandName": "Project",
       "commandLineArgs": "--seed 12345 --start-parameter 0 --stop-time 10000"
     }
