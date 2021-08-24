@@ -158,7 +158,7 @@ namespace TEGS.CLI
 
         private static void ShowBuildHelp()
         {
-            Console.WriteLine("Usage: tegs-cli build [<options>] graph.json");
+            Console.WriteLine($"Usage: { AppInfo.Name } build [<options>] graph.json");
             Console.WriteLine();
 
             Console.WriteLine("Options:");
@@ -280,7 +280,7 @@ namespace TEGS.CLI
 
         private static void ShowRunHelp()
         {
-            Console.WriteLine("Usage: tegs-cli run [<options>] graph.json");
+            Console.WriteLine($"Usage: { AppInfo.Name } run [<options>] graph.json");
             Console.WriteLine();
 
             Console.WriteLine("Options:");
@@ -479,7 +479,7 @@ namespace TEGS.CLI
 
         private static void ShowValidateHelp()
         {
-            Console.WriteLine("Usage: tegs-cli validate graph.json");
+            Console.WriteLine($"Usage: { AppInfo.Name } validate graph.json");
             Console.WriteLine();
         }
 
@@ -558,7 +558,7 @@ namespace TEGS.CLI
                     ShowValidateHelp();
                     break;
                 default:
-                    Console.WriteLine("Usage: tegs-cli [--version] [--help]");
+                    Console.WriteLine($"Usage: { AppInfo.Name } [--version] [--help]");
                     Console.WriteLine("                <command> [<args>]");
                     Console.WriteLine();
 
@@ -568,7 +568,7 @@ namespace TEGS.CLI
                     Console.WriteLine("validate  Validate a given graph");
                     Console.WriteLine();
 
-                    Console.WriteLine("See 'tegs-cli help <command>' to see the arguments for that command.");
+                    Console.WriteLine($"See '{ AppInfo.Name } help <command>' to see the arguments for that command.");
                     break;
             }
         }
