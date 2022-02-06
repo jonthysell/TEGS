@@ -1,7 +1,7 @@
 param()
 
 [string] $Product = "TEGS"
-[string] $Target = "Portable"
+[string] $Target = "Unpackaged"
 
 & "$PSScriptRoot\Build.ps1" -Product $Product -Target $Target -BuildArgs "-target:Publish"
 

@@ -1,6 +1,6 @@
 param()
 
-& "$PSScriptRoot\BuildPortable.ps1"
+& "$PSScriptRoot\BuildUnpackaged.ps1"
 & "$PSScriptRoot\BuildWin32.ps1"
 & "$PSScriptRoot\BuildWin64.ps1"
 & "$PSScriptRoot\BuildMacOS.ps1"
