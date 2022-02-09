@@ -363,9 +363,14 @@ namespace Carwash
     
     public static class RandomExtensions
     {
-        public static double UniformVariate(this Random random, double alpha, double beta)
+        public static double UniformVariate(this Random random, double a, double b)
         {
-            return alpha + (beta - alpha) * random.NextDouble();
+            if (b <= a)
+            {
+                throw new ArgumentOutOfRangeException(nameof(b));
+            }
+    
+            return a + (b - a) * random.NextDouble();
         }
     
         public static double ExponentialVariate(this Random random, double lambda)
@@ -380,6 +385,11 @@ namespace Carwash
     
         public static double NormalVariate(this Random random, double mu, double sigma)
         {
+            if (sigma < 0.0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(sigma));
+            }
+    
             double z;
             while (true)
             {
@@ -399,47 +409,56 @@ namespace Carwash
     
         public static double LogNormalVariate(this Random random, double mu, double sigma)
         {
+            if (sigma < 0.0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(sigma));
+            }
+    
             return Math.Exp(random.NormalVariate(mu, sigma));
         }
     
-        public static double TriangularVariate(this Random random, double low, double high, double mode)
+        public static double TriangularVariate(this Random random, double a, double b, double c)
         {
+            if (b <= a)
+            {
+                throw new ArgumentOutOfRangeException(nameof(b));
+            }
+    
+            if (c < a || c > b)
+            {
+                throw new ArgumentOutOfRangeException(nameof(c));
+            }
+    
             double u = random.NextDouble();
-            if (high == low)
-            {
-                return low;
-            }
+            double fc = (c - a) / (b - a);
     
-            double c = (mode - low) / (high - low);
-            if (u > c)
+            if (u < fc)
             {
-                u = 1.0 - u;
-                c = 1.0 - c;
-                double h = high;
-                high = low;
-                low = h;
+                return a + Math.Sqrt(u * (b - a) * (c - a));
             }
-    
-            return low + (high - low) * Math.Sqrt(u * c);
+            else
+            {
+                return b - Math.Sqrt((1.0 - u) * (b - a) * (b - c));
+            }
         }
     
-        public static double GammaVariate(this Random random, double alpha, double beta)
+        public static double GammaVariate(this Random random, double k, double sigma)
         {
-            if (alpha <= 0.0)
+            if (k <= 0.0)
             {
-                throw new ArgumentOutOfRangeException(nameof(alpha));
+                throw new ArgumentOutOfRangeException(nameof(k));
             }
     
-            if (beta <= 0.0)
+            if (sigma <= 0.0)
             {
-                throw new ArgumentOutOfRangeException(nameof(beta));
+                throw new ArgumentOutOfRangeException(nameof(sigma));
             }
     
-            if (alpha > 1.0)
+            if (k > 1.0)
             {
-                double ainv = Math.Sqrt(2.0 * alpha - 1.0);
-                double bbb = alpha - Math.Log(4.0);
-                double ccc = alpha + ainv;
+                double ainv = Math.Sqrt(2.0 * k - 1.0);
+                double bbb = k - Math.Log(4.0);
+                double ccc = k + ainv;
     
                 while (true)
                 {
@@ -451,19 +470,19 @@ namespace Carwash
     
                     double u2 = 1.0 - random.NextDouble();
                     double v = Math.Log(u1 / (1.0 - u1)) / ainv;
-                    double x = alpha * Math.Exp(v);
+                    double x = k * Math.Exp(v);
                     double z = u1 * u1 * u2;
                     double r = bbb + ccc * v - x;
     
                     if ((r + (1.0 + Math.Log(4.5)) - 4.5 * z >= 0.0) || r >= Math.Log(z))
                     {
-                        return x * beta;
+                        return x * sigma;
                     }
                 }
             }
-            else if (alpha == 1.0)
+            else if (k == 1.0)
             {
-                return -Math.Log(1.0 - random.NextDouble()) * beta;
+                return -Math.Log(1.0 - random.NextDouble()) * sigma;
             }
             else
             {
@@ -471,22 +490,22 @@ namespace Carwash
                 while (true)
                 {
                     double u = random.NextDouble();
-                    double b = (Math.E + alpha) / Math.E;
+                    double b = (Math.E + k) / Math.E;
                     double p = b * u;
     
                     if (p <= 1.0)
                     {
-                        x = Math.Pow(p, 1.0 / alpha);
+                        x = Math.Pow(p, 1.0 / k);
                     }
                     else
                     {
-                        x = -Math.Log((b - p) / alpha);
+                        x = -Math.Log((b - p) / k);
                     }
     
                     double u1 = random.NextDouble();
                     if (p > 1.0)
                     {
-                        if (u1 <= Math.Pow(x, alpha - 1.0))
+                        if (u1 <= Math.Pow(x, k - 1.0))
                         {
                             break;
                         }
@@ -497,7 +516,7 @@ namespace Carwash
                     }
                 }
     
-                return x * beta;
+                return x * sigma;
             }
         }
     

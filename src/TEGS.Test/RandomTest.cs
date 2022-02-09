@@ -11,6 +11,13 @@ namespace TEGS.Test
     public class RandomTest
     {
         [TestMethod]
+        [ExpectedException(typeof(ArgumentOutOfRangeException))]
+        public void Random_UniformVariate_BLessThanALambdaTest()
+        {
+            new Random(12345).UniformVariate(1, 0);
+        }
+
+        [TestMethod]
         public void Random_UniformVariate_IsDeterminateTest()
         {
             VariateIsDeterminateTest(r => r.UniformVariate(0, 1));
@@ -37,15 +44,50 @@ namespace TEGS.Test
         }
 
         [TestMethod]
+        [ExpectedException(typeof(ArgumentOutOfRangeException))]
+        public void Random_NormalVariate_NegativeSigmaTest()
+        {
+            new Random(12345).NormalVariate(0, -1);
+        }
+
+        [TestMethod]
         public void Random_NormalVariate_IsDeterminateTest()
         {
-            VariateIsDeterminateTest(r => r.NormalVariate(5, 1));
+            VariateIsDeterminateTest(r => r.NormalVariate(0, 1));
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentOutOfRangeException))]
+        public void Random_LogNormalVariate_NegativeSigmaTest()
+        {
+            new Random(12345).LogNormalVariate(0, -1);
         }
 
         [TestMethod]
         public void Random_LogNormalVariate_IsDeterminateTest()
         {
-            VariateIsDeterminateTest(r => r.LogNormalVariate(5, 1));
+            VariateIsDeterminateTest(r => r.LogNormalVariate(0, 1));
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentOutOfRangeException))]
+        public void Random_TriangulaVariate_BLessThanALambdaTest()
+        {
+            new Random(12345).TriangularVariate(0, -1, -0.5);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentOutOfRangeException))]
+        public void Random_TriangulaVariate_CLessThanALambdaTest()
+        {
+            new Random(12345).TriangularVariate(0, 1, -1);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentOutOfRangeException))]
+        public void Random_TriangulaVariate_CGreaterThanBLambdaTest()
+        {
+            new Random(12345).TriangularVariate(0, 1, 2);
         }
 
         [TestMethod]
@@ -56,16 +98,30 @@ namespace TEGS.Test
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentOutOfRangeException))]
-        public void Random_GammaVariate_ZeroAlphaTest()
+        public void Random_GammaVariate_ZeroKTest()
         {
             new Random(12345).GammaVariate(0, 1);
         }
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentOutOfRangeException))]
-        public void Random_GammaVariate_ZeroBetaTest()
+        public void Random_GammaVariate_NegativeKTest()
+        {
+            new Random(12345).GammaVariate(-1, 1);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentOutOfRangeException))]
+        public void Random_GammaVariate_ZeroSigmaTest()
         {
             new Random(12345).GammaVariate(1, 0);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentOutOfRangeException))]
+        public void Random_GammaVariate_NegativeSigmaTest()
+        {
+            new Random(12345).GammaVariate(1, -1);
         }
 
         [TestMethod]
@@ -83,9 +139,23 @@ namespace TEGS.Test
 
         [TestMethod]
         [ExpectedException(typeof(ArgumentOutOfRangeException))]
+        public void Random_BetaVariate_NegativeAlphaTest()
+        {
+            new Random(12345).BetaVariate(-1, 1);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentOutOfRangeException))]
         public void Random_BetaVariate_ZeroBetaTest()
         {
             new Random(12345).BetaVariate(1, 0);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentOutOfRangeException))]
+        public void Random_BetaVariate_NegativeBetaTest()
+        {
+            new Random(12345).BetaVariate(1, -1);
         }
 
         [TestMethod]
