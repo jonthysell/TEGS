@@ -370,7 +370,7 @@ namespace Carwash
     
         public static double ExponentialVariate(this Random random, double lambda)
         {
-            if (lambda == 0.0)
+            if (lambda <= 0.0)
             {
                 throw new ArgumentOutOfRangeException(nameof(lambda));
             }
@@ -520,6 +520,27 @@ namespace Carwash
             }
     
             return 0.0;
+        }
+    
+        public static double ErlangVariate(this Random random, int k, double lambda)
+        {
+            if (k < 1)
+            {
+                throw new ArgumentOutOfRangeException(nameof(k));
+            }
+    
+            if (lambda <= 0.0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(lambda));
+            }
+    
+            double t = 1.0;
+            for (int i = 0; i < k; i++)
+            {
+                t *= 1.0 - random.NextDouble();
+            }
+    
+            return -Math.Log(t) / lambda;
         }
     }
 }

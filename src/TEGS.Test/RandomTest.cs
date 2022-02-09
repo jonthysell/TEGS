@@ -24,6 +24,13 @@ namespace TEGS.Test
         }
 
         [TestMethod]
+        [ExpectedException(typeof(ArgumentOutOfRangeException))]
+        public void Random_ExponentialVariate_NegativeLambdaTest()
+        {
+            new Random(12345).ExponentialVariate(-1);
+        }
+
+        [TestMethod]
         public void Random_ExponentialVariate_IsDeterminateTest()
         {
             VariateIsDeterminateTest(r => r.ExponentialVariate(5));
@@ -85,6 +92,40 @@ namespace TEGS.Test
         public void Random_BetaVariate_IsDeterminateTest()
         {
             VariateIsDeterminateTest(r => r.BetaVariate(1, 1));
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentOutOfRangeException))]
+        public void Random_ErlangVariate_ZeroKTest()
+        {
+            new Random(12345).ErlangVariate(0, 5);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentOutOfRangeException))]
+        public void Random_ErlangVariate_NegativeKTest()
+        {
+            new Random(12345).ErlangVariate(-1, 5);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentOutOfRangeException))]
+        public void Random_ErlangVariate_ZeroLambdaTest()
+        {
+            new Random(12345).ErlangVariate(5, 0);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentOutOfRangeException))]
+        public void Random_ErlangVariate_NegativeLambdaTest()
+        {
+            new Random(12345).ErlangVariate(5, -1);
+        }
+
+        [TestMethod]
+        public void Random_ErlangVariate_IsDeterminateTest()
+        {
+            VariateIsDeterminateTest(r => r.ErlangVariate(5, 5));
         }
 
         private static void VariateIsDeterminateTest(Func<Random, double> variateFunc)
