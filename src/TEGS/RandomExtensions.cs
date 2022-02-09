@@ -1,8 +1,6 @@
 ﻿// Copyright (c) Jon Thysell <http://jonthysell.com>
 // Licensed under the MIT License.
 
-// Variates ported from https://github.com/python/cpython/blob/main/Lib/random.py
-
 using System;
 
 namespace TEGS
@@ -164,6 +162,7 @@ namespace TEGS
             {
                 return y / (y + random.GammaVariate(beta, 1.0));
             }
+
             return 0.0;
         }
     }

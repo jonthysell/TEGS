@@ -569,6 +569,7 @@ namespace Breakdown
             {
                 return y / (y + random.GammaVariate(beta, 1.0));
             }
+    
             return 0.0;
         }
     }
