@@ -5,7 +5,7 @@
     },
     "Build Carwash": {
       "commandName": "Project",
-      "commandLineArgs": "build --trace-variable QUEUE --trace-variable SERVERS --output-path $(ProjectDir)\\..\\..\\src\\NativeExamples\\Carwash $(ProjectDir)\\..\\..\\examples\\carwash.json"
+      "commandLineArgs": "build --trace QUEUE --trace SERVERS --output-path $(ProjectDir)\\..\\..\\src\\NativeExamples\\Carwash $(ProjectDir)\\..\\..\\examples\\carwash.json"
     },
     "Run Carwash (Perf)": {
       "commandName": "Project",
@@ -13,11 +13,11 @@
     },
     "Run Carwash (Console Out)": {
       "commandName": "Project",
-      "commandLineArgs": "run --seed 12345 --start-parameter 5 --start-parameter 3 --stop-time 10000 --trace-variable QUEUE --trace-variable SERVERS $(ProjectDir)\\..\\..\\examples\\carwash.json"
+      "commandLineArgs": "run --seed 12345 --start-parameter 5 --start-parameter 3 --stop-time 10000 --trace QUEUE --trace SERVERS $(ProjectDir)\\..\\..\\examples\\carwash.json"
     },
     "Run Carwash (Text Out)": {
       "commandName": "Project",
-      "commandLineArgs": "run --output-file carwash.txt --seed 12345 --silent --start-parameter 5 --start-parameter 3 --stop-time 10000 --trace-variable QUEUE --trace-variable SERVERS $(ProjectDir)\\..\\..\\examples\\carwash.json"
+      "commandLineArgs": "run --output-file carwash.txt --seed 12345 --silent --start-parameter 5 --start-parameter 3 --stop-time 10000 --trace QUEUE --trace SERVERS $(ProjectDir)\\..\\..\\examples\\carwash.json"
     },
     "Validate Carwash ": {
       "commandName": "Project",
@@ -25,7 +25,7 @@
     },
     "Build Breakdown": {
       "commandName": "Project",
-      "commandLineArgs": "build --trace-variable QUEUE --trace-variable SERVER --output-path $(ProjectDir)\\..\\..\\src\\NativeExamples\\Breakdown $(ProjectDir)\\..\\..\\examples\\breakdown.json"
+      "commandLineArgs": "build --trace QUEUE --trace SERVER --output-path $(ProjectDir)\\..\\..\\src\\NativeExamples\\Breakdown $(ProjectDir)\\..\\..\\examples\\breakdown.json"
     },
     "Run Breakdown (Perf)": {
       "commandName": "Project",
@@ -33,11 +33,11 @@
     },
     "Run Breakdown (Console Out)": {
       "commandName": "Project",
-      "commandLineArgs": "run --seed 12345 --start-parameter 0 --stop-time 10000 --trace-variable QUEUE --trace-variable SERVER $(ProjectDir)\\..\\..\\examples\\breakdown.json"
+      "commandLineArgs": "run --seed 12345 --start-parameter 0 --stop-time 10000 --trace QUEUE --trace SERVER $(ProjectDir)\\..\\..\\examples\\breakdown.json"
     },
     "Run Breakdown (Text Out)": {
       "commandName": "Project",
-      "commandLineArgs": "run --output-file breakdown.txt --seed 12345 --silent --start-parameter 0 --stop-time 10000 --trace-variable QUEUE --trace-variable SERVER $(ProjectDir)\\..\\..\\examples\\breakdown.json"
+      "commandLineArgs": "run --output-file breakdown.txt --seed 12345 --silent --start-parameter 0 --stop-time 10000 --trace QUEUE --trace SERVER $(ProjectDir)\\..\\..\\examples\\breakdown.json"
     },
     "Validate Breakdown ": {
       "commandName": "Project",

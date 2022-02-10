@@ -166,7 +166,7 @@ namespace TEGS.CLI
             Console.WriteLine("--project-file [name]   Specify the name of the generated project file");
             Console.WriteLine("--source-file [name]    Specify the name of the generated C# source file");
             Console.WriteLine("--source-only           Generate just the C# source file, directly into the output path");
-            Console.WriteLine("--trace-variable [name] Add a trace variable by name");
+            Console.WriteLine("--trace [expression]    Add the given expression to be traced");
             Console.WriteLine();
         }
 
@@ -211,9 +211,9 @@ namespace TEGS.CLI
                         case "--source-only":
                             sourceOnly = true;
                             break;
-                        case "--trace-variable":
-                            string name = Arguments[++i];
-                            traceExpressions.Add(graph.GetStateVariable(name).Name);
+                        case "--trace":
+                            string code = Arguments[++i]; // TODO: allow specifying the label
+                            traceExpressions.Add(code);
                             break;
                         default:
                             throw new Exception($"Did not recognize option \"{ Arguments[i] }\".");
@@ -292,7 +292,7 @@ namespace TEGS.CLI
             Console.WriteLine("--stop-condition [expression]      Stop the simulation if the given condition is met");
             Console.WriteLine("--stop-event-count [name] [count]  Stop the simulation if the named event occurs count times");
             Console.WriteLine("--stop-time [time]                 Stop the simulation if the clock passes the given time");
-            Console.WriteLine("--trace-variable [name]            Add a trace variable by name");
+            Console.WriteLine("--trace [expression]               Add the given expression to be traced");
             Console.WriteLine();
         }
 
@@ -347,11 +347,11 @@ namespace TEGS.CLI
                             stopCondition = StopCondition.StopAfterMaxEventCount(Arguments[++i], int.Parse(Arguments[++i]));
                             break;
                         case "--stop-time":
-                            stopCondition = StopCondition.StopAfterMaxTime(int.Parse(Arguments[++i]));
+                            stopCondition = StopCondition.StopAfterMaxTime(double.Parse(Arguments[++i]));
                             break;
-                        case "--trace-variable":
-                            string name = Arguments[++i];
-                            traceExpressions.Add(new StateVariableTraceExpression(graph.GetStateVariable(name)));
+                        case "--trace":
+                            string code = Arguments[++i]; // TODO: allow specifying the label
+                            traceExpressions.Add(graph.HasStateVariable(code) ? new StateVariableTraceExpression(code, graph.GetStateVariable(code)) : new CodeTraceExpression(code, code));
                             break;
                         case "--skip-validation":
                             skipValidation = true;

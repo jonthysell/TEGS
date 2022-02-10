@@ -11,7 +11,7 @@ namespace TEGS
 
         public VariableValue Value;
 
-        public TraceExpression(string label, VariableValueType type)
+        public TraceExpression(string label)
         {
             if (string.IsNullOrWhiteSpace(label))
             {
@@ -19,6 +19,10 @@ namespace TEGS
             }
 
             Label = label.Trim();
+        }
+
+        public TraceExpression(string label, VariableValueType type) : this(label)
+        {
             Value = new VariableValue(type);
         }
 
@@ -34,9 +38,35 @@ namespace TEGS
             StateVariable = stateVariable ?? throw new ArgumentNullException(nameof(stateVariable));
         }
 
+        public StateVariableTraceExpression(string label, StateVariable stateVariable) : base(label)
+        {
+            StateVariable = stateVariable ?? throw new ArgumentNullException(nameof(stateVariable));
+            Value = new VariableValue(stateVariable.Type);
+        }
+
         public override void Evaluate(ScriptingHost scriptingHost)
         {
             Value = scriptingHost.Get(StateVariable);
+        }
+    }
+
+    public class CodeTraceExpression : TraceExpression
+    {
+        public readonly string Code;
+
+        public CodeTraceExpression(string label, string code) : base(label)
+        {
+            if (string.IsNullOrEmpty(code))
+            {
+                throw new ArgumentNullException(nameof(code));
+            }
+
+            Code = code.Trim();
+        }
+
+        public override void Evaluate(ScriptingHost scriptingHost)
+        {
+            Value = scriptingHost.Evaluate(Code);
         }
     }
 }
