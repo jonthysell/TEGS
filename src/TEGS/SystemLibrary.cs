@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 
 namespace TEGS
@@ -10,9 +11,9 @@ namespace TEGS
     {
         #region Constructors
 
-        public SystemLibrary(Type type, ReflectionType reflectionType = ReflectionType.All, Type extensions = null) : base(type, reflectionType, extensions) { }
+        public SystemLibrary([DynamicallyAccessedMembers(RequiredMemberTypes)] Type type, ReflectionType reflectionType = ReflectionType.All, [DynamicallyAccessedMembers(RequiredMemberTypes)] Type extensions = null) : base(type, reflectionType, extensions) { }
 
-        public SystemLibrary(object instance, ReflectionType reflectionType = ReflectionType.All, Type extensions = null) : base(instance, reflectionType, extensions) { }
+        public SystemLibrary(object instance, [DynamicallyAccessedMembers(RequiredMemberTypes)] Type type, ReflectionType reflectionType = ReflectionType.All, [DynamicallyAccessedMembers(RequiredMemberTypes)] Type extensions = null) : base(instance, type, reflectionType, extensions) { }
 
         #endregion
 

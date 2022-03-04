@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 
 namespace TEGS
@@ -34,15 +35,13 @@ namespace TEGS
     {
         #region Constructors
 
-        public AttributedLibrary(Type type) : base(type, ReflectionType.All, null) { }
-
-        public AttributedLibrary(object instance) : base(instance, ReflectionType.All, null) { }
+        public AttributedLibrary([DynamicallyAccessedMembers(RequiredMemberTypes)] Type type) : base(type, ReflectionType.All, null) { }
 
         #endregion
 
         #region ReflectionLibraryBase
 
-        protected override void LoadName(TypeInfo typeInfo)
+        protected override void LoadName([DynamicallyAccessedMembers(RequiredMemberTypes)] TypeInfo typeInfo)
         {
             var libraryAttribute = TypeInfo.GetCustomAttribute<LibraryAttribute>();
             if (libraryAttribute is not null)
@@ -51,7 +50,7 @@ namespace TEGS
             }
         }
 
-        protected override void LoadConstants(TypeInfo typeInfo)
+        protected override void LoadConstants([DynamicallyAccessedMembers(RequiredMemberTypes)] TypeInfo typeInfo)
         {
             foreach (var fieldInfo in GetFields(typeInfo))
             {
@@ -72,7 +71,7 @@ namespace TEGS
             }
         }
 
-        protected override void LoadMethods(TypeInfo typeInfo)
+        protected override void LoadMethods([DynamicallyAccessedMembers(RequiredMemberTypes)] TypeInfo typeInfo)
         {
             foreach (var methodInfo in GetMethods(typeInfo))
             {

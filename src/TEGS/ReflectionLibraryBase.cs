@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 
 namespace TEGS
@@ -13,8 +14,10 @@ namespace TEGS
 
         protected ReflectionType ReflectionType { get; private set; }
 
+        [DynamicallyAccessedMembers(RequiredMemberTypes)] 
         protected TypeInfo TypeInfo { get; private set; }
 
+        [DynamicallyAccessedMembers(RequiredMemberTypes)] 
         protected TypeInfo ExtensionsTypeInfo { get; private set; }
 
         protected object Instance { get; private set; } = null;
@@ -31,7 +34,7 @@ namespace TEGS
 
         #region Constructors
 
-        public ReflectionLibraryBase(Type type, ReflectionType reflectionType, Type extensions)
+        public ReflectionLibraryBase([DynamicallyAccessedMembers(RequiredMemberTypes)] Type type, ReflectionType reflectionType, [DynamicallyAccessedMembers(RequiredMemberTypes)] Type extensions)
         {
             ReflectionType = reflectionType;
             TypeInfo = type?.GetTypeInfo() ?? throw new ArgumentNullException(nameof(type));
@@ -40,11 +43,11 @@ namespace TEGS
             Initialize();
         }
 
-        public ReflectionLibraryBase(object instance, ReflectionType reflectionType, Type extensions)
+        public ReflectionLibraryBase(object instance, [DynamicallyAccessedMembers(RequiredMemberTypes)] Type type, ReflectionType reflectionType, [DynamicallyAccessedMembers(RequiredMemberTypes)] Type extensions)
         {
             ReflectionType = reflectionType;
             Instance = instance ?? throw new ArgumentNullException(nameof(instance));
-            TypeInfo = instance.GetType().GetTypeInfo();
+            TypeInfo = type.GetTypeInfo();
             ExtensionsTypeInfo = extensions?.GetTypeInfo();
 
             Initialize();
@@ -98,12 +101,12 @@ namespace TEGS
             }
         }
 
-        protected virtual void LoadName(TypeInfo typeInfo)
+        protected virtual void LoadName([DynamicallyAccessedMembers(RequiredMemberTypes)] TypeInfo typeInfo)
         {
             Name = TypeInfo.Name;
         }
 
-        protected virtual void LoadConstants(TypeInfo typeInfo)
+        protected virtual void LoadConstants([DynamicallyAccessedMembers(RequiredMemberTypes)] TypeInfo typeInfo)
         {
             foreach (var fieldInfo in GetFields(typeInfo))
             {
@@ -122,7 +125,7 @@ namespace TEGS
             }
         }
 
-        protected static IEnumerable<FieldInfo> GetFields(TypeInfo typeInfo)
+        protected static IEnumerable<FieldInfo> GetFields([DynamicallyAccessedMembers(RequiredMemberTypes)] TypeInfo typeInfo)
         {
             if (!_fieldInfoCache.TryGetValue(typeInfo, out IEnumerable<FieldInfo> value))
             {
@@ -133,7 +136,7 @@ namespace TEGS
             return value;
         }
 
-        protected static IEnumerable<PropertyInfo> GetProperties(TypeInfo typeInfo)
+        protected static IEnumerable<PropertyInfo> GetProperties([DynamicallyAccessedMembers(RequiredMemberTypes)] TypeInfo typeInfo)
         {
             if (!_propertyInfoCache.TryGetValue(typeInfo, out IEnumerable<PropertyInfo> value))
             {
@@ -144,7 +147,7 @@ namespace TEGS
             return value;
         }
 
-        protected virtual void LoadMethods(TypeInfo typeInfo)
+        protected virtual void LoadMethods([DynamicallyAccessedMembers(RequiredMemberTypes)] TypeInfo typeInfo)
         {
             foreach (var methodInfo in GetMethods(typeInfo))
             {
@@ -155,7 +158,7 @@ namespace TEGS
             }
         }
 
-        protected static IEnumerable<MethodInfo> GetMethods(TypeInfo typeInfo)
+        protected static IEnumerable<MethodInfo> GetMethods([DynamicallyAccessedMembers(RequiredMemberTypes)] TypeInfo typeInfo)
         {
             if (!_methodInfoCache.TryGetValue(typeInfo, out IEnumerable<MethodInfo> value))
             {
@@ -244,6 +247,13 @@ namespace TEGS
         }
 
         #endregion
+
+        public const DynamicallyAccessedMemberTypes RequiredMemberTypes = DynamicallyAccessedMemberTypes.PublicFields
+                                                                        | DynamicallyAccessedMemberTypes.NonPublicFields
+                                                                        | DynamicallyAccessedMemberTypes.PublicMethods
+                                                                        | DynamicallyAccessedMemberTypes.NonPublicMethods
+                                                                        | DynamicallyAccessedMemberTypes.PublicProperties
+                                                                        | DynamicallyAccessedMemberTypes.NonPublicProperties;
     }
 
     [Flags]

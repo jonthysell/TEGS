@@ -21,7 +21,7 @@ namespace TEGS
 
         public static ILibrary RandomVariateLibrary(int? seed = null)
         {
-            return new SystemLibrary(seed.HasValue ? new Random(seed.Value) : new Random(), ReflectionType.ExtensionOnly, typeof(RandomExtensions));
+            return new SystemLibrary(seed.HasValue ? new Random(seed.Value) : new Random(), typeof(Random), ReflectionType.ExtensionOnly, typeof(RandomExtensions));
         }
 
         public static ScriptingHost MakeBaseScriptingHost(int? seed = null)

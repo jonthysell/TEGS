@@ -2,7 +2,6 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net5.0</TargetFramework>
     <StartupObject>TEGS.CLI.Program</StartupObject>
     <AssemblyName>tegscli</AssemblyName>
     <RootNamespace>TEGS.CLI</RootNamespace>
