@@ -296,15 +296,18 @@ namespace TEGS.Test
         [TestMethod]
         public void Parser_ConditionalAndTest()
         {
+            int zero = 0;
             List<ParseAndEvaluateTestCase> tests = new List<ParseAndEvaluateTestCase>()
             {
                 new ParseAndEvaluateTestCase("false && false", false && false),
                 new ParseAndEvaluateTestCase("false && true", false && true),
                 new ParseAndEvaluateTestCase("true && false", true && false),
                 new ParseAndEvaluateTestCase("true && true", true && true),
+                new ParseAndEvaluateTestCase("false && 5 == 1/zero", false && 5 == 1/zero),
             };
 
             IContext context = new TestContext();
+            context.SetVariable("x", new VariableValue(0));
 
             ParseAndEvaluate_ValidTests(tests, context);
         }
@@ -312,15 +315,18 @@ namespace TEGS.Test
         [TestMethod]
         public void Parser_ConditionalOrTest()
         {
+            int zero = 0;
             List<ParseAndEvaluateTestCase> tests = new List<ParseAndEvaluateTestCase>()
             {
                 new ParseAndEvaluateTestCase("false || false", false || false),
                 new ParseAndEvaluateTestCase("false || true", false || true),
                 new ParseAndEvaluateTestCase("true || false", true || false),
                 new ParseAndEvaluateTestCase("true || true", true || true),
+                new ParseAndEvaluateTestCase("true || 5 == 1/zero", true || 5 == 1/zero),
             };
 
             IContext context = new TestContext();
+            context.SetVariable("x", new VariableValue(0));
 
             ParseAndEvaluate_ValidTests(tests, context);
         }
