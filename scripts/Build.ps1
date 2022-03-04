@@ -29,6 +29,7 @@ try
     Copy-Item "README.md" -Destination "$OutputRoot\$TargetOutputDirectory\ReadMe.txt"
     Copy-Item "scripts\Licenses.txt" -Destination "$OutputRoot\$TargetOutputDirectory\Licenses.txt"
     Copy-Item "CHANGELOG.md" -Destination "$OutputRoot\$TargetOutputDirectory\ChangeLog.txt"
+    Copy-Item "examples" -Destination "$OutputRoot\$TargetOutputDirectory\examples" -Recurse
 }
 finally
 {
