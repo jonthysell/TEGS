@@ -235,6 +235,22 @@ namespace TEGS.Test
                 Assert.AreEqual(VariableValueType.Double, actualValue.Type);
                 Assert.AreEqual(expectedValue, actualValue.DoubleValue);
             }
+
+            foreach (var value in ValidBooleanValues)
+            {
+                Assert.ThrowsException<ValueIsNotANumberException>(() =>
+                {
+                    var actualValue = -new VariableValue(value);
+                });
+            }
+
+            foreach (var value in ValidStringValues)
+            {
+                Assert.ThrowsException<ValueIsNotANumberException>(() =>
+                {
+                    var actualValue = -new VariableValue(value);
+                });
+            }
         }
 
         [TestMethod]
@@ -246,6 +262,30 @@ namespace TEGS.Test
                 var actualValue = ! new VariableValue(value);
 
                 Assert.AreEqual(expectedValue, actualValue);
+            }
+
+            foreach (var value in ValidIntegerValues)
+            {
+                Assert.ThrowsException<ValueIsNotABooleanException>(() =>
+                {
+                    var actualValue = !new VariableValue(value);
+                });
+            }
+
+            foreach (var value in ValidDoubleValues)
+            {
+                Assert.ThrowsException<ValueIsNotABooleanException>(() =>
+                {
+                    var actualValue = !new VariableValue(value);
+                });
+            }
+
+            foreach (var value in ValidStringValues)
+            {
+                Assert.ThrowsException<ValueIsNotABooleanException>(() =>
+                {
+                    var actualValue = !new VariableValue(value);
+                });
             }
         }
 
@@ -306,6 +346,17 @@ namespace TEGS.Test
                     Assert.AreEqual(expectedValue, actualValue.StringValue);
                 }
             }
+
+            foreach (var value1 in ValidBooleanValues)
+            {
+                foreach (var value2 in ValidBooleanValues)
+                {
+                    Assert.ThrowsException<VariableValueValueOperationException>(() =>
+                    {
+                        var actualValue = new VariableValue(value1) + new VariableValue(value2);
+                    });
+                }
+            }
         }
 
         [TestMethod]
@@ -354,6 +405,28 @@ namespace TEGS.Test
 
                 }
             }
+
+            foreach (var value1 in ValidBooleanValues)
+            {
+                foreach (var value2 in ValidBooleanValues)
+                {
+                    Assert.ThrowsException<VariableValueValueOperationException>(() =>
+                    {
+                        var actualValue = new VariableValue(value1) - new VariableValue(value2);
+                    });
+                }
+            }
+
+            foreach (var value1 in ValidStringValues)
+            {
+                foreach (var value2 in ValidStringValues)
+                {
+                    Assert.ThrowsException<VariableValueValueOperationException>(() =>
+                    {
+                        var actualValue = new VariableValue(value1) - new VariableValue(value2);
+                    });
+                }
+            }
         }
 
         [TestMethod]
@@ -400,6 +473,28 @@ namespace TEGS.Test
                     Assert.AreEqual(VariableValueType.Double, actualValue.Type);
                     Assert.AreEqual(expectedValue, actualValue.DoubleValue);
 
+                }
+            }
+
+            foreach (var value1 in ValidBooleanValues)
+            {
+                foreach (var value2 in ValidBooleanValues)
+                {
+                    Assert.ThrowsException<VariableValueValueOperationException>(() =>
+                    {
+                        var actualValue = new VariableValue(value1) * new VariableValue(value2);
+                    });
+                }
+            }
+
+            foreach (var value1 in ValidStringValues)
+            {
+                foreach (var value2 in ValidStringValues)
+                {
+                    Assert.ThrowsException<VariableValueValueOperationException>(() =>
+                    {
+                        var actualValue = new VariableValue(value1) * new VariableValue(value2);
+                    });
                 }
             }
         }
@@ -460,6 +555,28 @@ namespace TEGS.Test
                     }
                 }
             }
+
+            foreach (var value1 in ValidBooleanValues)
+            {
+                foreach (var value2 in ValidBooleanValues)
+                {
+                    Assert.ThrowsException<VariableValueValueOperationException>(() =>
+                    {
+                        var actualValue = new VariableValue(value1) / new VariableValue(value2);
+                    });
+                }
+            }
+
+            foreach (var value1 in ValidStringValues)
+            {
+                foreach (var value2 in ValidStringValues)
+                {
+                    Assert.ThrowsException<VariableValueValueOperationException>(() =>
+                    {
+                        var actualValue = new VariableValue(value1) / new VariableValue(value2);
+                    });
+                }
+            }
         }
 
         [TestMethod]
@@ -500,6 +617,28 @@ namespace TEGS.Test
                     var actualValue = new VariableValue(value1) < new VariableValue(value2);
 
                     Assert.AreEqual(expectedValue, actualValue);
+                }
+            }
+
+            foreach (var value1 in ValidBooleanValues)
+            {
+                foreach (var value2 in ValidBooleanValues)
+                {
+                    Assert.ThrowsException<VariableValueValueOperationException>(() =>
+                    {
+                        var actualValue = new VariableValue(value1) < new VariableValue(value2);
+                    });
+                }
+            }
+
+            foreach (var value1 in ValidStringValues)
+            {
+                foreach (var value2 in ValidStringValues)
+                {
+                    Assert.ThrowsException<VariableValueValueOperationException>(() =>
+                    {
+                        var actualValue = new VariableValue(value1) < new VariableValue(value2);
+                    });
                 }
             }
         }
@@ -544,6 +683,28 @@ namespace TEGS.Test
                     Assert.AreEqual(expectedValue, actualValue);
                 }
             }
+
+            foreach (var value1 in ValidBooleanValues)
+            {
+                foreach (var value2 in ValidBooleanValues)
+                {
+                    Assert.ThrowsException<VariableValueValueOperationException>(() =>
+                    {
+                        var actualValue = new VariableValue(value1) > new VariableValue(value2);
+                    });
+                }
+            }
+
+            foreach (var value1 in ValidStringValues)
+            {
+                foreach (var value2 in ValidStringValues)
+                {
+                    Assert.ThrowsException<VariableValueValueOperationException>(() =>
+                    {
+                        var actualValue = new VariableValue(value1) > new VariableValue(value2);
+                    });
+                }
+            }
         }
 
         [TestMethod]
@@ -584,6 +745,28 @@ namespace TEGS.Test
                     var actualValue = new VariableValue(value1) <= new VariableValue(value2);
 
                     Assert.AreEqual(expectedValue, actualValue);
+                }
+            }
+
+            foreach (var value1 in ValidBooleanValues)
+            {
+                foreach (var value2 in ValidBooleanValues)
+                {
+                    Assert.ThrowsException<VariableValueValueOperationException>(() =>
+                    {
+                        var actualValue = new VariableValue(value1) <= new VariableValue(value2);
+                    });
+                }
+            }
+
+            foreach (var value1 in ValidStringValues)
+            {
+                foreach (var value2 in ValidStringValues)
+                {
+                    Assert.ThrowsException<VariableValueValueOperationException>(() =>
+                    {
+                        var actualValue = new VariableValue(value1) <= new VariableValue(value2);
+                    });
                 }
             }
         }
@@ -628,6 +811,28 @@ namespace TEGS.Test
                     Assert.AreEqual(expectedValue, actualValue);
                 }
             }
+
+            foreach (var value1 in ValidBooleanValues)
+            {
+                foreach (var value2 in ValidBooleanValues)
+                {
+                    Assert.ThrowsException<VariableValueValueOperationException>(() =>
+                    {
+                        var actualValue = new VariableValue(value1) >= new VariableValue(value2);
+                    });
+                }
+            }
+
+            foreach (var value1 in ValidStringValues)
+            {
+                foreach (var value2 in ValidStringValues)
+                {
+                    Assert.ThrowsException<VariableValueValueOperationException>(() =>
+                    {
+                        var actualValue = new VariableValue(value1) >= new VariableValue(value2);
+                    });
+                }
+            }
         }
 
         [TestMethod]
@@ -643,6 +848,39 @@ namespace TEGS.Test
                     Assert.AreEqual(expectedValue, actualValue);
                 }
             }
+
+            foreach (var value1 in ValidIntegerValues)
+            {
+                foreach (var value2 in ValidIntegerValues)
+                {
+                    Assert.ThrowsException<VariableValueValueOperationException>(() =>
+                    {
+                        var actualValue = new VariableValue(value1) & new VariableValue(value2);
+                    });
+                }
+            }
+
+            foreach (var value1 in ValidDoubleValues)
+            {
+                foreach (var value2 in ValidDoubleValues)
+                {
+                    Assert.ThrowsException<VariableValueValueOperationException>(() =>
+                    {
+                        var actualValue = new VariableValue(value1) & new VariableValue(value2);
+                    });
+                }
+            }
+
+            foreach (var value1 in ValidStringValues)
+            {
+                foreach (var value2 in ValidStringValues)
+                {
+                    Assert.ThrowsException<VariableValueValueOperationException>(() =>
+                    {
+                        var actualValue = new VariableValue(value1) & new VariableValue(value2);
+                    });
+                }
+            }
         }
 
         [TestMethod]
@@ -656,6 +894,39 @@ namespace TEGS.Test
                     var actualValue = new VariableValue(value1) | new VariableValue(value2);
 
                     Assert.AreEqual(expectedValue, actualValue);
+                }
+            }
+
+            foreach (var value1 in ValidIntegerValues)
+            {
+                foreach (var value2 in ValidIntegerValues)
+                {
+                    Assert.ThrowsException<VariableValueValueOperationException>(() =>
+                    {
+                        var actualValue = new VariableValue(value1) | new VariableValue(value2);
+                    });
+                }
+            }
+
+            foreach (var value1 in ValidDoubleValues)
+            {
+                foreach (var value2 in ValidDoubleValues)
+                {
+                    Assert.ThrowsException<VariableValueValueOperationException>(() =>
+                    {
+                        var actualValue = new VariableValue(value1) | new VariableValue(value2);
+                    });
+                }
+            }
+
+            foreach (var value1 in ValidStringValues)
+            {
+                foreach (var value2 in ValidStringValues)
+                {
+                    Assert.ThrowsException<VariableValueValueOperationException>(() =>
+                    {
+                        var actualValue = new VariableValue(value1) | new VariableValue(value2);
+                    });
                 }
             }
         }
