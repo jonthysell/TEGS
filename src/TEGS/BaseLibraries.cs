@@ -29,7 +29,7 @@ namespace TEGS
             ScriptingHost scriptingHost = new ScriptingHost();
 
             scriptingHost.LoadLibrary(SystemBool);
-            scriptingHost.LoadLibrary(SystemInt);
+            scriptingHost.LoadLibrary(SystemInt, "Integer");
             scriptingHost.LoadLibrary(SystemDouble);
             scriptingHost.LoadLibrary(SystemString);
             scriptingHost.LoadLibrary(StringLibrary);

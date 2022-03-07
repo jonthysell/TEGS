@@ -133,7 +133,7 @@ namespace TEGS
                     }
                     else
                     {
-                        return rewriteSymbol && FunctionRewriteMap.TryGetValue(symbol, out string result) ? result : symbol;
+                        return rewriteSymbol && SymbolRewriteMap.TryGetValue(symbol, out string result) ? result : symbol;
                     }
                 case TokenType.Value:
                     return tokenReader.CurrentSymbol; // Contains the literal value read by the parser
@@ -144,8 +144,10 @@ namespace TEGS
 
         private const string StateVariableRewritePrefix = "StateVariable_";
 
-        private static readonly Dictionary<string, string> FunctionRewriteMap = new Dictionary<string, string>()
+        private static readonly Dictionary<string, string> SymbolRewriteMap = new Dictionary<string, string>()
         {
+            {  "Integer.MaxValue", "Int32.MaxValue" },
+            {  "Integer.MinValue", "Int32.MinValue" },
             {  "String.Length", "String_Length" },
         };
 

@@ -173,14 +173,14 @@ namespace TEGS
 
         #region Library
 
-        public void LoadLibrary(ILibrary library)
+        public void LoadLibrary(ILibrary library, string name = null)
         {
             if (library is null)
             {
                 throw new ArgumentNullException(nameof(library));
             }
 
-            string libraryName = library.Name?.Trim() ?? "";
+            string libraryName = name?.Trim() ?? library.Name?.Trim() ?? "";
 
             if (libraryName != "")
             {
@@ -252,17 +252,42 @@ namespace TEGS
 
         public VariableValue GetVariable(string name)
         {
-            return Get(_stateVariablesByName[name]);
+            if (_constants.TryGetValue(name, out var constantValue))
+            {
+                return constantValue;
+            }
+            else if (_stateVariablesByName.TryGetValue(name, out var stateVariable))
+            {
+                return Get(stateVariable);
+            }
+
+            throw new ArgumentException($"\"{name}\" is not a valid constant or state variable.");
+
         }
 
         public void SetVariable(string name, VariableValue value)
         {
-            Assign(_stateVariablesByName[name], value);
+            if (_constants.ContainsKey(name))
+            {
+                throw new ArgumentException($"\"{name}\" is a constant and cannot be assigned.");
+            }
+
+            if (!_stateVariablesByName.TryGetValue(name, out var stateVariable))
+            {
+                throw new ArgumentException($"\"{name}\" is not a valid state variable and cannot be assigned.");
+            }
+
+            Assign(stateVariable, value);
         }
 
         public VariableValue CallFunction(string name, VariableValue[] arguments)
         {
-            return _customFunctions[name](arguments);
+            if (!_customFunctions.TryGetValue(name, out var customFunction))
+            {
+                throw new ArgumentException($"\"{name}\" is not a valid function and cannot be called.");
+            }
+
+            return customFunction(arguments);
         }
 
         #endregion
@@ -412,6 +437,7 @@ namespace TEGS
 
         public static readonly HashSet<string> ReservedKeywords = new HashSet<string>()
         {
+            // Reserved C# keywords
             "abstract", "as", "base", "bool",
             "break", "byte", "case", "catch",
             "char", "checked", "class", "const",
