@@ -114,14 +114,14 @@ namespace TEGS
 
     public class BlankVertexNameValidationError : VertexValidationError
     {
-        public override string Message => $"Vertex #{Graph.Verticies.IndexOf(Vertex)} has a blank name.";
+        public override string Message => $"Vertex #{Graph.Vertices.IndexOf(Vertex)} has a blank name.";
 
         public BlankVertexNameValidationError(Graph graph, Vertex vertex) : base(graph, vertex) { }
     }
 
     public class InvalidParameterNameVertexValidationError : VertexValidationError
     {
-        public override string Message => $"Vertex #{Graph.Verticies.IndexOf(Vertex)} has invalid parameter name \"{ParameterName}\".";
+        public override string Message => $"Vertex #{Graph.Vertices.IndexOf(Vertex)} has invalid parameter name \"{ParameterName}\".";
 
         public readonly string ParameterName;
 
@@ -133,7 +133,7 @@ namespace TEGS
 
     public class InvalidCodeVertexValidationError : VertexValidationError
     {
-        public override string Message => $"Vertex #{Graph.Verticies.IndexOf(Vertex)} has invalid code \"{Code}\": {Error}";
+        public override string Message => $"Vertex #{Graph.Vertices.IndexOf(Vertex)} has invalid code \"{Code}\": {Error}";
 
         public readonly string Code;
 
@@ -148,22 +148,22 @@ namespace TEGS
 
     #endregion
 
-    #region Verticies Validation Errors
+    #region Vertices Validation Errors
 
-    public abstract class VerticiesValidationError : ValidationError
+    public abstract class VerticesValidationError : ValidationError
     {
-        public readonly IReadOnlyList<Vertex> Verticies;
+        public readonly IReadOnlyList<Vertex> Vertices;
 
-        public VerticiesValidationError(Graph graph, IReadOnlyList<Vertex> verticies) : base(graph)
+        public VerticesValidationError(Graph graph, IReadOnlyList<Vertex> vertices) : base(graph)
         {
-            Verticies = verticies ?? throw new ArgumentNullException(nameof(verticies));
+            Vertices = vertices ?? throw new ArgumentNullException(nameof(vertices));
         }
 
         protected string[] GetNames()
         {
             List<string> names = new List<string>();
 
-            foreach (Vertex v in Verticies)
+            foreach (Vertex v in Vertices)
             {
                 names.Add(v.Name);
             }
@@ -172,7 +172,7 @@ namespace TEGS
         }
     }
 
-    public class DuplicateVertexNamesValidationError : VerticiesValidationError
+    public class DuplicateVertexNamesValidationError : VerticesValidationError
     {
         public override string Message
         {
@@ -180,14 +180,14 @@ namespace TEGS
             {
                 string[] names = GetNames();
 
-                return $"Graph has {names.Length} verticies named \"{names[0]}\".";
+                return $"Graph has {names.Length} vertices named \"{names[0]}\".";
             }
         }
 
-        public DuplicateVertexNamesValidationError(Graph graph, IReadOnlyList<Vertex> verticies) : base(graph, verticies) { }
+        public DuplicateVertexNamesValidationError(Graph graph, IReadOnlyList<Vertex> vertices) : base(graph, vertices) { }
     }
 
-    public class MultipleStartingVertexValidationError : VerticiesValidationError
+    public class MultipleStartingVertexValidationError : VerticesValidationError
     {
         public override string Message
         {
@@ -195,11 +195,11 @@ namespace TEGS
             {
                 string[] names = GetNames();
 
-                return $"Graph has {names.Length} starting verticies: \"{string.Join("\", \"", names)}\".";
+                return $"Graph has {names.Length} starting vertices: \"{string.Join("\", \"", names)}\".";
             }
         }
 
-        public MultipleStartingVertexValidationError(Graph graph, IReadOnlyList<Vertex> verticies) : base(graph, verticies) { }
+        public MultipleStartingVertexValidationError(Graph graph, IReadOnlyList<Vertex> vertices) : base(graph, vertices) { }
     }
 
     #endregion
@@ -311,7 +311,7 @@ namespace TEGS
 
     public class StartingParametersRequiredValidationError : SimulationValidationError
     {
-        public override string Message => $"Starting vertex #{Graph.Verticies.IndexOf(Graph.StartingVertex)} requires {Graph.StartingVertex.ParameterNames.Count} parameters to run a simulation.";
+        public override string Message => $"Starting vertex #{Graph.Vertices.IndexOf(Graph.StartingVertex)} requires {Graph.StartingVertex.ParameterNames.Count} parameters to run a simulation.";
 
         public StartingParametersRequiredValidationError(Simulation simulation) : base(simulation) { }
     }

@@ -74,16 +74,16 @@ namespace TEGS
                 }
             }
 
-            // Verify verticies
-            List<Vertex> startingVerticies = new List<Vertex>();
+            // Verify vertices
+            List<Vertex> startingVertices = new List<Vertex>();
 
             Dictionary<string, List<Vertex>> uniqueVertexNames = new Dictionary<string, List<Vertex>>();
 
-            foreach (Vertex v in graph.Verticies)
+            foreach (Vertex v in graph.Vertices)
             {
                 if (v.IsStartingVertex)
                 {
-                    startingVerticies.Add(v);
+                    startingVertices.Add(v);
                 }
 
                 // Verify name
@@ -133,13 +133,13 @@ namespace TEGS
                 }
             }
 
-            if (startingVerticies.Count == 0)
+            if (startingVertices.Count == 0)
             {
                 errors.Add(new NoStartingVertexValidationError(graph));
             }
-            else if (startingVerticies.Count > 1)
+            else if (startingVertices.Count > 1)
             {
-                errors.Add(new MultipleStartingVertexValidationError(graph, startingVerticies));
+                errors.Add(new MultipleStartingVertexValidationError(graph, startingVertices));
             }
 
             foreach (var kvp in uniqueVertexNames)
@@ -153,20 +153,20 @@ namespace TEGS
             // Verify edges
             foreach (Edge e in graph.Edges)
             {
-                bool validVerticies = true;
+                bool validVertices = true;
                 if (e.Source is null)
                 {
                     errors.Add(new SourceMissingEdgeValidationError(graph, e));
-                    validVerticies = false;
+                    validVertices = false;
                 }
 
                 if (e.Target is null)
                 {
                     errors.Add(new TargetMissingEdgeValidationError(graph, e));
-                    validVerticies = false;
+                    validVertices = false;
                 }
 
-                if (validVerticies)
+                if (validVertices)
                 {
                     if (e.Action == EdgeAction.Schedule)
                     {

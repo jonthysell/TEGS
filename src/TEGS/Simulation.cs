@@ -178,7 +178,7 @@ namespace TEGS
             Clock = Schedule.MinTime;
 
             // Initialize event count
-            EventCount = new int[Graph.Verticies.Count];
+            EventCount = new int[Graph.Vertices.Count];
 
             CurrentVertex = null;
             CurrentEdge = null;
@@ -196,7 +196,7 @@ namespace TEGS
 
             // Update internal variables
             Clock = nextEvent.Time;
-            EventCount[Graph.Verticies.IndexOf(nextEvent.Target)]++;
+            EventCount[Graph.Vertices.IndexOf(nextEvent.Target)]++;
 
             // Assign parameters
             AssignParameters(nextEvent.Target, nextEvent.ParameterValues);
@@ -342,7 +342,7 @@ namespace TEGS
         {
             if (args is null || args.Length == 0)
             {
-                return new VariableValue(EventCount[Graph.Verticies.IndexOf(CurrentVertex)]);
+                return new VariableValue(EventCount[Graph.Vertices.IndexOf(CurrentVertex)]);
             }
 
             throw new ArgumentOutOfRangeException(nameof(args));

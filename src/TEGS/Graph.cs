@@ -46,7 +46,7 @@ namespace TEGS
         {
             get
             {
-                foreach (Vertex v in Verticies)
+                foreach (Vertex v in Vertices)
                 {
                     if (v.IsStartingVertex)
                     {
@@ -58,7 +58,7 @@ namespace TEGS
             }
         }
 
-        public readonly List<Vertex> Verticies = new List<Vertex>();
+        public readonly List<Vertex> Vertices = new List<Vertex>();
 
         public readonly List<Edge> Edges = new List<Edge>();
 
@@ -118,7 +118,7 @@ namespace TEGS
 
         #endregion
 
-        #region Verticies
+        #region Vertices
 
         public Vertex AddVertex(string name, bool isStarting = false)
         {
@@ -128,7 +128,7 @@ namespace TEGS
                 IsStartingVertex = isStarting,
             };
 
-            Verticies.Add(item);
+            Vertices.Add(item);
 
             return item;
         }
@@ -161,9 +161,9 @@ namespace TEGS
 
             Graph graph = new Graph();
 
-            Dictionary<int, Vertex> verticiesMap = new Dictionary<int, Vertex>();
+            Dictionary<int, Vertex> verticesMap = new Dictionary<int, Vertex>();
             Dictionary<int, Edge> edgesMap = new Dictionary<int, Edge>();
-            Dictionary<int, Tuple<int, int>> edgeToVerticiesMap = new Dictionary<int, Tuple<int, int>>();
+            Dictionary<int, Tuple<int, int>> edgeToVerticesMap = new Dictionary<int, Tuple<int, int>>();
 
             var options = new JsonDocumentOptions()
             {
@@ -188,7 +188,7 @@ namespace TEGS
                 }
             }
 
-            if (doc.RootElement.TryGetProperty("verticies", out var vertexArray) && vertexArray.ValueKind != JsonValueKind.Null)
+            if (doc.RootElement.TryGetProperty("vertices", out var vertexArray) && vertexArray.ValueKind != JsonValueKind.Null)
             {
                 foreach (var vertex in vertexArray.EnumerateArray())
                 {
@@ -239,7 +239,7 @@ namespace TEGS
                         }
                     }
 
-                    verticiesMap.Add(id, v);
+                    verticesMap.Add(id, v);
                 }
             }
 
@@ -288,20 +288,20 @@ namespace TEGS
                     }
 
                     edgesMap.Add(id, e);
-                    edgeToVerticiesMap.Add(id, new Tuple<int, int>(sourceId, targetId));
+                    edgeToVerticesMap.Add(id, new Tuple<int, int>(sourceId, targetId));
                 }
             }
 
             // Set the sources and targets if possible
-            foreach (var kvp in edgeToVerticiesMap)
+            foreach (var kvp in edgeToVerticesMap)
             {
-                edgesMap[kvp.Key].Source = verticiesMap.TryGetValue(kvp.Value.Item1, out Vertex source) ? source : null;
-                edgesMap[kvp.Key].Target = verticiesMap.TryGetValue(kvp.Value.Item2, out Vertex target) ? target : null;
+                edgesMap[kvp.Key].Source = verticesMap.TryGetValue(kvp.Value.Item1, out Vertex source) ? source : null;
+                edgesMap[kvp.Key].Target = verticesMap.TryGetValue(kvp.Value.Item2, out Vertex target) ? target : null;
             }
 
-            foreach (var kvp in verticiesMap.OrderBy(kvp => kvp.Key))
+            foreach (var kvp in verticesMap.OrderBy(kvp => kvp.Key))
             {
-                graph.Verticies.Add(kvp.Value);
+                graph.Vertices.Add(kvp.Value);
             }
 
             foreach (var kvp in edgesMap.OrderBy(kvp => kvp.Key))
@@ -347,17 +347,17 @@ namespace TEGS
 
             jsonWriter.WriteEndArray(); // variables
 
-            jsonWriter.WriteStartArray("verticies");
+            jsonWriter.WriteStartArray("vertices");
 
-            for (int i = 0; i < Verticies.Count; i++)
+            for (int i = 0; i < Vertices.Count; i++)
             {
                 jsonWriter.WriteStartObject();
 
                 jsonWriter.WriteNumber("id", i);
-                jsonWriter.WriteString("name", Verticies[i].Name);
-                jsonWriter.WriteString("description", Verticies[i].Description);
+                jsonWriter.WriteString("name", Vertices[i].Name);
+                jsonWriter.WriteString("description", Vertices[i].Description);
 
-                if (Verticies[i].Code is null)
+                if (Vertices[i].Code is null)
                 {
                     jsonWriter.WriteNull("code");
                 }
@@ -365,27 +365,27 @@ namespace TEGS
                 {
                     jsonWriter.WriteStartArray("code");
 
-                    for (int j = 0; j < Verticies[i].Code.Length; j++)
+                    for (int j = 0; j < Vertices[i].Code.Length; j++)
                     {
-                        jsonWriter.WriteStringValue(Verticies[i].Code[j]);
+                        jsonWriter.WriteStringValue(Vertices[i].Code[j]);
                     }
                     jsonWriter.WriteEndArray();
                 }
 
-                jsonWriter.WriteNumber("x", Verticies[i].X);
-                jsonWriter.WriteNumber("y", Verticies[i].Y);
+                jsonWriter.WriteNumber("x", Vertices[i].X);
+                jsonWriter.WriteNumber("y", Vertices[i].Y);
 
-                if (Verticies[i].IsStartingVertex)
+                if (Vertices[i].IsStartingVertex)
                 {
-                    jsonWriter.WriteBoolean("starting", Verticies[i].IsStartingVertex);
+                    jsonWriter.WriteBoolean("starting", Vertices[i].IsStartingVertex);
                 }
 
-                if (Verticies[i].ParameterNames.Count > 0)
+                if (Vertices[i].ParameterNames.Count > 0)
                 {
                     jsonWriter.WriteStartArray("parameters");
-                    for (int j = 0; j < Verticies[i].ParameterNames.Count; j++)
+                    for (int j = 0; j < Vertices[i].ParameterNames.Count; j++)
                     {
-                        jsonWriter.WriteStringValue(Verticies[i].ParameterNames[j]);
+                        jsonWriter.WriteStringValue(Vertices[i].ParameterNames[j]);
                     }
                     jsonWriter.WriteEndArray();
                 }
@@ -403,8 +403,8 @@ namespace TEGS
 
                 jsonWriter.WriteNumber("id", i);
 
-                jsonWriter.WriteNumber("source", Verticies.IndexOf(Edges[i].Source));
-                jsonWriter.WriteNumber("target", Verticies.IndexOf(Edges[i].Target));
+                jsonWriter.WriteNumber("source", Vertices.IndexOf(Edges[i].Source));
+                jsonWriter.WriteNumber("target", Vertices.IndexOf(Edges[i].Target));
 
                 jsonWriter.WriteString("action", Edges[i].Action.ToString());
 
@@ -446,20 +446,20 @@ namespace TEGS
                 clone.StateVariables.Add(stateVariable.Clone());
             }
 
-            foreach (var vertex in Verticies)
+            foreach (var vertex in Vertices)
             {
-                clone.Verticies.Add(vertex.Clone());
+                clone.Vertices.Add(vertex.Clone());
             }
 
             foreach (var edge in Edges)
             {
                 var clonedEdge = edge.Clone();
 
-                int sourceId = Verticies.IndexOf(edge.Source);
-                clonedEdge.Source = sourceId > 0 ? clone.Verticies[sourceId] : null;
+                int sourceId = Vertices.IndexOf(edge.Source);
+                clonedEdge.Source = sourceId > 0 ? clone.Vertices[sourceId] : null;
 
-                int targetId = Verticies.IndexOf(edge.Target);
-                clonedEdge.Target = targetId > 0 ? clone.Verticies[targetId] : null;
+                int targetId = Vertices.IndexOf(edge.Target);
+                clonedEdge.Target = targetId > 0 ? clone.Vertices[targetId] : null;
 
                 clone.Edges.Add(clonedEdge);
             }

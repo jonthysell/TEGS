@@ -212,9 +212,9 @@ namespace TEGS
             var eventNames = new Dictionary<Vertex, string>();
             var eventParameterTypes = new Dictionary<Vertex, string>();
 
-            for (int i = 0; i < graph.Verticies.Count; i++)
+            for (int i = 0; i < graph.Vertices.Count; i++)
             {
-                Vertex vertex = graph.Verticies[i];
+                Vertex vertex = graph.Vertices[i];
 
                 int paramCount = vertex.ParameterNames.Count;
                 if (paramCount > 0 && !eventParameterTypes.ContainsKey(vertex))
@@ -311,9 +311,9 @@ namespace TEGS
 
             StartBlock(sb, "switch (eventType)", ref indent);
 
-            for (int i = 0; i < graph.Verticies.Count; i++)
+            for (int i = 0; i < graph.Vertices.Count; i++)
             {
-                Vertex vertex = graph.Verticies[i];
+                Vertex vertex = graph.Vertices[i];
 
                 StartBlock(sb, $"case EventType.{ eventNames[vertex] }:", ref indent, false);
 
@@ -328,9 +328,9 @@ namespace TEGS
 
             EndBlock(sb, ref indent); // protected override void ProcessEvent
 
-            for (int i = 0; i < graph.Verticies.Count; i++)
+            for (int i = 0; i < graph.Vertices.Count; i++)
             {
-                Vertex vertex = graph.Verticies[i];
+                Vertex vertex = graph.Vertices[i];
 
                 sb.AppendLine();
 
@@ -449,9 +449,9 @@ namespace TEGS
 
             StartBlock(sb, "switch (eventType)", ref indent);
 
-            for (int i = 0; i < graph.Verticies.Count; i++)
+            for (int i = 0; i < graph.Vertices.Count; i++)
             {
-                Vertex vertex = graph.Verticies[i];
+                Vertex vertex = graph.Vertices[i];
 
                 StartBlock(sb, $"case EventType.{ eventNames[vertex] }:", ref indent, false);
 
@@ -653,7 +653,7 @@ abstract class SimulationBase
 
     protected abstract string GetEventName(EventType eventType);
 
-    protected void Trace(bool traceToConsole, StreamWriter outputWriter, string str)
+    protected static void Trace(bool traceToConsole, StreamWriter outputWriter, string str)
     {
         if (traceToConsole)
         {
@@ -662,7 +662,7 @@ abstract class SimulationBase
         outputWriter?.Write(str);
     }
 
-    private void StartTraceHeader(bool traceToConsole, StreamWriter outputWriter)
+    private static void StartTraceHeader(bool traceToConsole, StreamWriter outputWriter)
     {
         Trace(traceToConsole, outputWriter, ""Clock\tEvent"");
     }
@@ -676,7 +676,7 @@ abstract class SimulationBase
 
     protected abstract void TraceExpressionValues(bool traceToConsole, StreamWriter outputWriter);
 
-    private void EndTraceLine(bool traceToConsole, StreamWriter outputWriter)
+    private static void EndTraceLine(bool traceToConsole, StreamWriter outputWriter)
     {
         if (traceToConsole)
         {

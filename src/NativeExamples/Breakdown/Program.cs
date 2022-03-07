@@ -324,7 +324,7 @@ namespace Breakdown
     
         protected abstract string GetEventName(EventType eventType);
     
-        protected void Trace(bool traceToConsole, StreamWriter outputWriter, string str)
+        protected static void Trace(bool traceToConsole, StreamWriter outputWriter, string str)
         {
             if (traceToConsole)
             {
@@ -333,7 +333,7 @@ namespace Breakdown
             outputWriter?.Write(str);
         }
     
-        private void StartTraceHeader(bool traceToConsole, StreamWriter outputWriter)
+        private static void StartTraceHeader(bool traceToConsole, StreamWriter outputWriter)
         {
             Trace(traceToConsole, outputWriter, "Clock\tEvent");
         }
@@ -347,7 +347,7 @@ namespace Breakdown
     
         protected abstract void TraceExpressionValues(bool traceToConsole, StreamWriter outputWriter);
     
-        private void EndTraceLine(bool traceToConsole, StreamWriter outputWriter)
+        private static void EndTraceLine(bool traceToConsole, StreamWriter outputWriter)
         {
             if (traceToConsole)
             {

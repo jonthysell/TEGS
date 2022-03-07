@@ -43,7 +43,7 @@ namespace TEGS
                 throw new ArgumentOutOfRangeException(nameof(maxEventCount));
             }
 
-            return new StopCondition(sim => sim.CurrentVertex.Name == eventName && sim.EventCount[sim.Graph.Verticies.IndexOf(sim.CurrentVertex)] >= maxEventCount);
+            return new StopCondition(sim => sim.CurrentVertex.Name == eventName && sim.EventCount[sim.Graph.Vertices.IndexOf(sim.CurrentVertex)] >= maxEventCount);
         }
 
         public static StopCondition StopOnCondition(string code)

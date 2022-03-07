@@ -19,7 +19,7 @@ namespace TEGS.Test
             Assert.IsNotNull(graph);
 
             Assert.AreEqual(0, graph.StateVariables.Count);
-            Assert.AreEqual(0, graph.Verticies.Count);
+            Assert.AreEqual(0, graph.Vertices.Count);
             Assert.AreEqual(0, graph.Edges.Count);
         }
 
@@ -30,7 +30,7 @@ namespace TEGS.Test
             Assert.IsNotNull(graph);
 
             Assert.AreEqual(2, graph.StateVariables.Count);
-            Assert.AreEqual(4, graph.Verticies.Count);
+            Assert.AreEqual(4, graph.Vertices.Count);
             Assert.AreEqual(5, graph.Edges.Count);
         }
 
@@ -56,7 +56,7 @@ namespace TEGS.Test
             Assert.IsNotNull(graph);
 
             Assert.AreEqual(2, graph.StateVariables.Count);
-            Assert.AreEqual(4, graph.Verticies.Count);
+            Assert.AreEqual(4, graph.Vertices.Count);
             Assert.AreEqual(5, graph.Edges.Count);
         }
 
@@ -67,7 +67,7 @@ namespace TEGS.Test
             Assert.IsNotNull(graph);
 
             Assert.AreEqual(2, graph.StateVariables.Count);
-            Assert.AreEqual(6, graph.Verticies.Count);
+            Assert.AreEqual(6, graph.Vertices.Count);
             Assert.AreEqual(10, graph.Edges.Count);
         }
     }
