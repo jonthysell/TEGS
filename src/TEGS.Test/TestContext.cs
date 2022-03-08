@@ -14,12 +14,12 @@ namespace TEGS.Test
 
         public Dictionary<string, CustomFunction> Functions { get; private set; } = new Dictionary<string, CustomFunction>();
 
-        public VariableValue GetVariable(string name)
+        public VariableValue GetValue(string name)
         {
             return Constants.TryGetValue(name, out var constantValue) ? constantValue : Variables[name];
         }
 
-        public void SetVariable(string name, VariableValue value)
+        public void SetValue(string name, VariableValue value)
         {
             Variables[name] = value;
         }

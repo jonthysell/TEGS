@@ -26,7 +26,7 @@ namespace TEGS.Test
                 var expectedValue = VariableValue.Parse(value);
 
                 var context = new TestContext();
-                context.SetVariable("test", expectedValue);
+                context.SetValue("test", expectedValue);
 
                 Evaluate_ValidTest(expectedValue, new NodeVariable("test"), context);
             }

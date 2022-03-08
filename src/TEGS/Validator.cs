@@ -189,7 +189,7 @@ namespace TEGS
                                 try
                                 {
                                     var result = scriptingHost.Evaluate(parameterExpressions[i]);
-                                    scriptingHost.SetVariable(parameterNames[i], result);
+                                    scriptingHost.SetValue(parameterNames[i], result);
                                 }
                                 catch (Exception ex)
                                 {
@@ -272,7 +272,7 @@ namespace TEGS
                     try
                     {
                         var result = scriptingHost.Evaluate(parameterExpressions[i]);
-                        scriptingHost.SetVariable(parameterNames[i], result);
+                        scriptingHost.SetValue(parameterNames[i], result);
                     }
                     catch (Exception ex)
                     {

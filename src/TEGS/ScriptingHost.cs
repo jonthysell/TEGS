@@ -134,7 +134,7 @@ namespace TEGS
             _stateVariablesByName[stateVariable.Name] = stateVariable;
         }
 
-        public void Assign(StateVariable stateVariable, VariableValue value)
+        public void AssignVariable(StateVariable stateVariable, VariableValue value)
         {
             if (stateVariable is null)
             {
@@ -154,7 +154,7 @@ namespace TEGS
             _stateVariables[stateVariable] = value;
         }
 
-        public VariableValue Get(StateVariable stateVariable)
+        public VariableValue GetVariable(StateVariable stateVariable)
         {
             if (stateVariable is null)
             {
@@ -250,7 +250,7 @@ namespace TEGS
 
         #region IContext
 
-        public VariableValue GetVariable(string name)
+        public VariableValue GetValue(string name)
         {
             if (_constants.TryGetValue(name, out var constantValue))
             {
@@ -258,14 +258,14 @@ namespace TEGS
             }
             else if (_stateVariablesByName.TryGetValue(name, out var stateVariable))
             {
-                return Get(stateVariable);
+                return GetVariable(stateVariable);
             }
 
             throw new ArgumentException($"\"{name}\" is not a valid constant or state variable.");
 
         }
 
-        public void SetVariable(string name, VariableValue value)
+        public void SetValue(string name, VariableValue value)
         {
             if (_constants.ContainsKey(name))
             {
@@ -277,7 +277,7 @@ namespace TEGS
                 throw new ArgumentException($"\"{name}\" is not a valid state variable and cannot be assigned.");
             }
 
-            Assign(stateVariable, value);
+            AssignVariable(stateVariable, value);
         }
 
         public VariableValue CallFunction(string name, VariableValue[] arguments)

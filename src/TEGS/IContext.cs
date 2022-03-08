@@ -7,9 +7,9 @@ namespace TEGS
 {
     public interface IContext
     {
-        VariableValue GetVariable(string name);
+        VariableValue GetValue(string name);
 
-        void SetVariable(string name, VariableValue value);
+        void SetValue(string name, VariableValue value);
 
         VariableValue CallFunction(string name, VariableValue[] arguments);
     }

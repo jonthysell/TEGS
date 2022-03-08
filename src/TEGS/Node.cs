@@ -71,7 +71,7 @@ namespace TEGS
 
         protected override VariableValue EvaluateInternal(IContext context)
         {
-            return context.GetVariable(Name);
+            return context.GetValue(Name);
         }
     }
 
@@ -209,7 +209,7 @@ namespace TEGS
 
         protected override VariableValue EvaluateInternal(IContext context)
         {
-            context.SetVariable((LHS as NodeVariable).Name, RHS.Evaluate(context));
+            context.SetValue((LHS as NodeVariable).Name, RHS.Evaluate(context));
 
             return LHS.Evaluate(context);
         }

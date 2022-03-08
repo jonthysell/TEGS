@@ -307,7 +307,7 @@ namespace TEGS.Test
             };
 
             IContext context = new TestContext();
-            context.SetVariable("x", new VariableValue(0));
+            context.SetValue("x", new VariableValue(0));
 
             ParseAndEvaluate_ValidTests(tests, context);
         }
@@ -326,7 +326,7 @@ namespace TEGS.Test
             };
 
             IContext context = new TestContext();
-            context.SetVariable("x", new VariableValue(0));
+            context.SetValue("x", new VariableValue(0));
 
             ParseAndEvaluate_ValidTests(tests, context);
         }

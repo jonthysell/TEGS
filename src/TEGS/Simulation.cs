@@ -271,7 +271,7 @@ namespace TEGS
 
                 for (int i = 0; i < parameterValues.Count; i++)
                 {
-                    ScriptingHost.SetVariable(parameterNames[i], parameterValues[i]);
+                    ScriptingHost.SetValue(parameterNames[i], parameterValues[i]);
                 }
             }
         }
