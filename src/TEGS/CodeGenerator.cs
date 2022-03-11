@@ -275,7 +275,9 @@ namespace TEGS
             }
 
             sb.AppendLine();
-            WriteCode(sb, "public Simulation() { }", ref indent);
+            StartBlock(sb, "public Simulation()", ref indent);
+            WriteCode(sb, $"_eventCount = new int[{ eventNames.Count }];", ref indent);
+            EndBlock(sb, ref indent);
 
             if (startingVertex.ParameterNames.Count > 0)
             {
@@ -375,6 +377,16 @@ namespace TEGS
 
                     addSpacing = true;
                 }
+
+                if (addSpacing)
+                {
+                    sb.AppendLine();
+                }
+
+                WriteComment(sb, "Bump Event Count", ref indent);
+                WriteCode(sb, $"_eventCount[(int)EventType.{ eventNames[vertex] }]++;", ref indent);
+
+                addSpacing = true;
 
                 for (int j = 0; j < graph.Edges.Count; j++)
                 {
@@ -613,13 +625,16 @@ struct SimulationArgs
 
 abstract class SimulationBase
 {
-    private double _clock = 0.0;
+    private double _clock = 0.0;    
+    protected int[] _eventCount;
 
     private readonly List<ScheduleEntry> _schedule = new List<ScheduleEntry>();
 
     protected Random Random;
 
     protected abstract EventType StartingEventType { get; }
+
+    private EventType _currentEventType;
 
     public void Run(SimulationArgs args)
     {
@@ -638,6 +653,8 @@ abstract class SimulationBase
         {
             var entry = _schedule[0];
             _schedule.RemoveAt(0);
+
+            _currentEventType = entry.EventType;
 
             _clock = entry.Time;
 
@@ -739,6 +756,8 @@ abstract class SimulationBase
     }
 
     protected double Clock() => _clock;
+
+    protected int EventCount() => _eventCount[(int)_currentEventType];
 
     protected static int String_Length(string str) => str.Length;
 }

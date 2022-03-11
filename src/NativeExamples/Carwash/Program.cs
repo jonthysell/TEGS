@@ -32,7 +32,10 @@ namespace Carwash
         int StateVariable_QUEUE = default;
         int StateVariable_SERVERS = default;
 
-        public Simulation() { }
+        public Simulation()
+        {
+            _eventCount = new int[4];
+        }
 
         protected override object ParseStartParameters(string[] startParameters) => Tuple.Create(int.Parse(startParameters[0]), int.Parse(startParameters[1]));
 
@@ -63,6 +66,9 @@ namespace Carwash
             StateVariable_QUEUE = parameterValues.Item1;
             StateVariable_SERVERS = parameterValues.Item2;
 
+            // Bump Event Count
+            _eventCount[(int)EventType.Event_RUN]++;
+
             // Edge #0: Schedule RUN to ENTER
             // Description: The car will enter the line
             ScheduleEvent(EventType.Event_ENTER, 0, 5, null);
@@ -74,6 +80,9 @@ namespace Carwash
         {
             // Event Code
             StateVariable_QUEUE = StateVariable_QUEUE + 1;
+
+            // Bump Event Count
+            _eventCount[(int)EventType.Event_ENTER]++;
 
             // Edge #1: Schedule ENTER to ENTER
             // Description: The next customer enters in 3 to 8 minutes
@@ -95,6 +104,9 @@ namespace Carwash
             StateVariable_SERVERS = StateVariable_SERVERS - 1;
             StateVariable_QUEUE = StateVariable_QUEUE - 1;
 
+            // Bump Event Count
+            _eventCount[(int)EventType.Event_START]++;
+
             // Edge #3: Schedule START to LEAVE
             // Description: The car will be in service for at least 5 minutes
             ScheduleEvent(EventType.Event_LEAVE, Random.UniformVariate(5, 20), 6, null);
@@ -106,6 +118,9 @@ namespace Carwash
         {
             // Event Code
             StateVariable_SERVERS = StateVariable_SERVERS + 1;
+
+            // Bump Event Count
+            _eventCount[(int)EventType.Event_LEAVE]++;
 
             // Edge #4: Schedule LEAVE to START
             // Description: There are cars in queue, start service for the next car in line
@@ -231,13 +246,16 @@ namespace Carwash
     
     abstract class SimulationBase
     {
-        private double _clock = 0.0;
+        private double _clock = 0.0;    
+        protected int[] _eventCount;
     
         private readonly List<ScheduleEntry> _schedule = new List<ScheduleEntry>();
     
         protected Random Random;
     
         protected abstract EventType StartingEventType { get; }
+    
+        private EventType _currentEventType;
     
         public void Run(SimulationArgs args)
         {
@@ -256,6 +274,8 @@ namespace Carwash
             {
                 var entry = _schedule[0];
                 _schedule.RemoveAt(0);
+    
+                _currentEventType = entry.EventType;
     
                 _clock = entry.Time;
     
@@ -357,6 +377,8 @@ namespace Carwash
         }
     
         protected double Clock() => _clock;
+    
+        protected int EventCount() => _eventCount[(int)_currentEventType];
     
         protected static int String_Length(string str) => str.Length;
     }

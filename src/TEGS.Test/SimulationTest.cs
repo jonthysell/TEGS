@@ -202,5 +202,55 @@ namespace TEGS.Test
 
             Assert.AreEqual(SimulationState.Complete, s.State);
         }
+
+        [TestMethod]
+        public void Simulation_StopAfterMaxTimeTest()
+        {
+            SimulationArgs args = new SimulationArgs(TestGraph.Carwash)
+            {
+                StartingSeed = 12345,
+                StopCondition = StopCondition.StopAfterMaxTime(double.Epsilon),
+            };
+
+            args.StartParameterExpressions.Add("5");
+            args.StartParameterExpressions.Add("3");
+
+            Simulation s = new Simulation(args);
+            Assert.AreEqual(SimulationState.None, s.State);
+
+            Assert.AreEqual(0.0, s.Clock);
+
+            s.Run();
+            s.Wait();
+
+            Assert.AreEqual(SimulationState.Complete, s.State);
+
+            Assert.IsTrue(s.Clock >= double.Epsilon);
+        }
+
+        [TestMethod]
+        public void Simulation_StopAfterMaxEventCountTest()
+        {
+            SimulationArgs args = new SimulationArgs(TestGraph.Carwash)
+            {
+                StartingSeed = 12345,
+                StopCondition = StopCondition.StopAfterMaxEventCount(TestGraph.Carwash.StartingVertex.Name, 1)
+            };
+
+            args.StartParameterExpressions.Add("5");
+            args.StartParameterExpressions.Add("3");
+
+            Simulation s = new Simulation(args);
+            Assert.AreEqual(SimulationState.None, s.State);
+
+            Assert.AreEqual(0, s.EventCount[args.Graph.Vertices.IndexOf(args.Graph.StartingVertex)]);
+
+            s.Run();
+            s.Wait();
+
+            Assert.AreEqual(SimulationState.Complete, s.State);
+
+            Assert.AreEqual(1, s.EventCount[args.Graph.Vertices.IndexOf(args.Graph.StartingVertex)]);
+        }
     }
 }

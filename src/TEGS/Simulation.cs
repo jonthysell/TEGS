@@ -75,6 +75,15 @@ namespace TEGS
             Args = args ?? throw new ArgumentNullException(nameof(args));
 
             Schedule = new Schedule(Graph);
+
+            // Initialize clock
+            Clock = Schedule.MinTime;
+
+            // Initialize event count
+            EventCount = new int[Graph.Vertices.Count];
+
+            CurrentVertex = null;
+            CurrentEdge = null;
         }
 
         #region Simulation Operations
@@ -174,15 +183,6 @@ namespace TEGS
                 ScriptingHost.Create(stateVariable);
             }
 
-            // Initialize clock
-            Clock = Schedule.MinTime;
-
-            // Initialize event count
-            EventCount = new int[Graph.Vertices.Count];
-
-            CurrentVertex = null;
-            CurrentEdge = null;
-
             // Insert starting event
             Schedule.Insert(Graph.StartingVertex, Schedule.DefaultDelay, Schedule.DefaultPriority, EvaluateParameters(Args.StartParameterExpressions));
         }
@@ -194,15 +194,17 @@ namespace TEGS
 
             OnVertexFiring(nextEvent.Target);
 
-            // Update internal variables
+            // Update clock
             Clock = nextEvent.Time;
-            EventCount[Graph.Vertices.IndexOf(nextEvent.Target)]++;
 
             // Assign parameters
             AssignParameters(nextEvent.Target, nextEvent.ParameterValues);
 
-            // Execute event
+            // Execute event code
             ScriptingHost.Execute(nextEvent.Target.Code);
+
+            // Update event count
+            EventCount[Graph.Vertices.IndexOf(nextEvent.Target)]++;
 
             // Evaluate trace variables
             EvaluateTraces();

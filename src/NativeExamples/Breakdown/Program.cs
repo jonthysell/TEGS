@@ -34,7 +34,10 @@ namespace Breakdown
         int StateVariable_QUEUE = default;
         int StateVariable_SERVER = default;
 
-        public Simulation() { }
+        public Simulation()
+        {
+            _eventCount = new int[6];
+        }
 
         protected override object ParseStartParameters(string[] startParameters) => Tuple.Create(int.Parse(startParameters[0]));
 
@@ -73,6 +76,9 @@ namespace Breakdown
             // Event Code
             StateVariable_SERVER = 1;
 
+            // Bump Event Count
+            _eventCount[(int)EventType.Event_RUN]++;
+
             // Edge #0: Schedule RUN to ENTER
             // Description: Initiate the first job arrival
             ScheduleEvent(EventType.Event_ENTER, 0, 5, null);
@@ -88,6 +94,9 @@ namespace Breakdown
         {
             // Event Code
             StateVariable_QUEUE = StateVariable_QUEUE + 1;
+
+            // Bump Event Count
+            _eventCount[(int)EventType.Event_ENTER]++;
 
             // Edge #2: Schedule ENTER to ENTER
             // Description: Schedule the next arrival
@@ -109,6 +118,9 @@ namespace Breakdown
             StateVariable_SERVER = 0;
             StateVariable_QUEUE = StateVariable_QUEUE - 1;
 
+            // Bump Event Count
+            _eventCount[(int)EventType.Event_START]++;
+
             // Edge #4: Schedule START to LEAVE
             // Description: The job is placed in service for 2 minutes
             ScheduleEvent(EventType.Event_LEAVE, 2, 6, null);
@@ -120,6 +132,9 @@ namespace Breakdown
         {
             // Event Code
             StateVariable_SERVER = 1;
+
+            // Bump Event Count
+            _eventCount[(int)EventType.Event_LEAVE]++;
 
             // Edge #5: Schedule LEAVE to START
             // Description: Start servicing the waiting job
@@ -135,6 +150,9 @@ namespace Breakdown
         {
             // Event Code
             StateVariable_SERVER = 1;
+
+            // Bump Event Count
+            _eventCount[(int)EventType.Event_FIX]++;
 
             // Edge #8: Schedule FIX to FAIL
             // Description: Schedule the next machine failure
@@ -153,6 +171,9 @@ namespace Breakdown
         {
             // Event Code
             StateVariable_SERVER =  - 1;
+
+            // Bump Event Count
+            _eventCount[(int)EventType.Event_FAIL]++;
 
             // Edge #6: Schedule FAIL to FIX
             // Description: After 30 minutes the machine will be fixed
@@ -282,13 +303,16 @@ namespace Breakdown
     
     abstract class SimulationBase
     {
-        private double _clock = 0.0;
+        private double _clock = 0.0;    
+        protected int[] _eventCount;
     
         private readonly List<ScheduleEntry> _schedule = new List<ScheduleEntry>();
     
         protected Random Random;
     
         protected abstract EventType StartingEventType { get; }
+    
+        private EventType _currentEventType;
     
         public void Run(SimulationArgs args)
         {
@@ -307,6 +331,8 @@ namespace Breakdown
             {
                 var entry = _schedule[0];
                 _schedule.RemoveAt(0);
+    
+                _currentEventType = entry.EventType;
     
                 _clock = entry.Time;
     
@@ -408,6 +434,8 @@ namespace Breakdown
         }
     
         protected double Clock() => _clock;
+    
+        protected int EventCount() => _eventCount[(int)_currentEventType];
     
         protected static int String_Length(string str) => str.Length;
     }
