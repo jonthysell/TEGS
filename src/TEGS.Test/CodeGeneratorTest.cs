@@ -59,27 +59,28 @@ namespace TEGS.Test
             Assert.IsNotNull(compiledCode);
         }
 
-        private static byte[] CompileCode(string code, string assemblyName)
+        static CodeGeneratorTest()
         {
-            var options = CSharpParseOptions.Default.WithLanguageVersion(LanguageVersion.Latest);
-
-            var parsedSyntaxTree = SyntaxFactory.ParseSyntaxTree(code, options);
-
-            var references = new List<MetadataReference>
-            {
-                MetadataReference.CreateFromFile(typeof(object).Assembly.Location),
-                MetadataReference.CreateFromFile(typeof(Console).Assembly.Location),
-            };
+            _metadataReferences.Add(MetadataReference.CreateFromFile(typeof(object).Assembly.Location));
+            _metadataReferences.Add(MetadataReference.CreateFromFile(typeof(Console).Assembly.Location));
 
             Assembly.GetEntryAssembly().GetReferencedAssemblies()
             .ToList()
-            .ForEach(a => references.Add(MetadataReference.CreateFromFile(Assembly.Load(a).Location)));
+            .ForEach(a => _metadataReferences.Add(MetadataReference.CreateFromFile(Assembly.Load(a).Location)));
+        }
+
+        private static readonly CSharpParseOptions _parseOptions = CSharpParseOptions.Default.WithLanguageVersion(LanguageVersion.Latest);
+        private static readonly CSharpCompilationOptions _compilationOptions = new CSharpCompilationOptions(OutputKind.ConsoleApplication, optimizationLevel: OptimizationLevel.Release);
+        private static readonly List<MetadataReference> _metadataReferences = new List<MetadataReference>();
+
+        private static byte[] CompileCode(string code, string assemblyName)
+        {
+            var parsedSyntaxTree = SyntaxFactory.ParseSyntaxTree(code, _parseOptions);
 
             var compilation = CSharpCompilation.Create(assemblyName,
                 new[] { parsedSyntaxTree },
-                references: references,
-                options: new CSharpCompilationOptions(OutputKind.ConsoleApplication,
-                optimizationLevel: OptimizationLevel.Release));
+                references: _metadataReferences,
+                options: _compilationOptions);
 
             using var memoryStream = new MemoryStream();
 
