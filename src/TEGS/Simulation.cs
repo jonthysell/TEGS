@@ -192,10 +192,10 @@ namespace TEGS
             // Get next event
             ScheduledEvent nextEvent = Schedule.GetNext();
 
-            OnVertexFiring(nextEvent.Target);
-
             // Update clock
             Clock = nextEvent.Time;
+
+            OnVertexFiring(nextEvent.Target);
 
             // Assign parameters
             AssignParameters(nextEvent.Target, nextEvent.ParameterValues);

@@ -252,5 +252,74 @@ namespace TEGS.Test
 
             Assert.AreEqual(1, s.EventCount[args.Graph.Vertices.IndexOf(args.Graph.StartingVertex)]);
         }
+
+        [TestMethod]
+        public void Simulation_ClockTest()
+        {
+            SimulationArgs args = new SimulationArgs(TestGraph.Carwash)
+            {
+                StartingSeed = 12345,
+                StopCondition = StopCondition.StopAfterMaxTime(500),
+            };
+
+            args.StartParameterExpressions.Add("5");
+            args.StartParameterExpressions.Add("3");
+
+            Simulation s = new Simulation(args);
+            Assert.AreEqual(SimulationState.None, s.State);
+
+            double expectedClock = 0.0;
+
+            s.VertexFiring += (_, e) =>
+            {
+                expectedClock = e.Clock;
+                Assert.AreEqual(expectedClock, s.Clock);
+            };
+
+            s.VertexFired += (_, _) =>
+            {
+                Assert.AreEqual(expectedClock, s.Clock);
+            };
+
+            s.Run();
+            s.Wait();
+
+            Assert.AreEqual(SimulationState.Complete, s.State);
+        }
+
+        [TestMethod]
+        public void Simulation_EventCountTest()
+        {
+            SimulationArgs args = new SimulationArgs(TestGraph.Carwash)
+            {
+                StartingSeed = 12345,
+                StopCondition = StopCondition.StopAfterMaxTime(500),
+            };
+
+            args.StartParameterExpressions.Add("5");
+            args.StartParameterExpressions.Add("3");
+
+            Simulation s = new Simulation(args);
+            Assert.AreEqual(SimulationState.None, s.State);
+
+            int[] expectedEventCounts = new int[args.Graph.Vertices.Count];
+
+            s.VertexFiring += (_, e) =>
+            {
+                int eventIndex = args.Graph.Vertices.IndexOf(e.Vertex);
+                Assert.AreEqual(expectedEventCounts[eventIndex], s.EventCount[eventIndex]);
+            };
+
+            s.VertexFired += (_, e) =>
+            {
+                int eventIndex = args.Graph.Vertices.IndexOf(e.Vertex);
+                Assert.AreEqual(++expectedEventCounts[eventIndex], s.EventCount[eventIndex]);
+            };
+
+            s.Run();
+            s.Wait();
+
+            Assert.AreEqual(SimulationState.Complete, s.State);
+        }
     }
 }
