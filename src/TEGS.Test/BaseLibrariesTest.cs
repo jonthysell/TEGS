@@ -103,6 +103,50 @@ namespace TEGS.Test
         }
 
         [TestMethod]
+        public void BaseLibraries_ConvertLibraryTest()
+        {
+            var lib = BaseLibraries.ConvertLibrary;
+
+            CustomFunction customFunction;
+
+            Assert.IsTrue(lib.Functions.TryGetValue(nameof(ConvertLibrary.ToBoolean), out customFunction));
+            foreach (var value in new object[] { -1, 0, 1, false, true, -1.0, 0.0, 1.0, bool.FalseString, bool.TrueString })
+            {
+                var expected = Convert.ToBoolean(value);
+                var actual = customFunction(new[] { VariableValue.Parse(value) });
+                Assert.AreEqual(VariableValueType.Boolean, actual.Type);
+                Assert.AreEqual(expected, actual.BooleanValue);
+            }
+
+            Assert.IsTrue(lib.Functions.TryGetValue(nameof(ConvertLibrary.ToInteger), out customFunction));
+            foreach (var value in new object[] { -1, 0, 1, false, true, -1.0, 0.0, 1.0, "-1", "0", "1" })
+            {
+                var expected = Convert.ToInt32(value);
+                var actual = customFunction(new[] { VariableValue.Parse(value) });
+                Assert.AreEqual(VariableValueType.Integer, actual.Type);
+                Assert.AreEqual(expected, actual.IntegerValue);
+            }
+
+            Assert.IsTrue(lib.Functions.TryGetValue(nameof(ConvertLibrary.ToDouble), out customFunction));
+            foreach (var value in new object[] { -1, 0, 1, false, true, -1.0, 0.0, 1.0, "-1", "0", "1", "-1.0", "0.0", "1.0" })
+            {
+                var expected = Convert.ToDouble(value);
+                var actual = customFunction(new[] { VariableValue.Parse(value) });
+                Assert.AreEqual(VariableValueType.Double, actual.Type);
+                Assert.AreEqual(expected, actual.DoubleValue);
+            }
+
+            Assert.IsTrue(lib.Functions.TryGetValue(nameof(ConvertLibrary.ToString), out customFunction));
+            foreach (var value in new object[] { -1, 0, 1, false, true, -1.0, 0.0, 1.0, "-1", "0", "1", "-1.0", "0.0", "1.0", bool.FalseString, bool.TrueString })
+            {
+                var expected = Convert.ToString(value);
+                var actual = customFunction(new[] { VariableValue.Parse(value) });
+                Assert.AreEqual(VariableValueType.String, actual.Type);
+                Assert.AreEqual(expected, actual.StringValue);
+            }
+        }
+
+        [TestMethod]
         public void BaseLibraries_SystemMathTest()
         {
             var lib = BaseLibraries.SystemMath;
