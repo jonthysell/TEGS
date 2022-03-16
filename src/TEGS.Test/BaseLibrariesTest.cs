@@ -182,8 +182,8 @@ namespace TEGS.Test
             NumericFunctionTest(lib, Math.Cosh, nameof(Math.Cosh));
             NumericFunctionTest(lib, Math.Exp, nameof(Math.Exp));
             NumericFunctionTest(lib, Math.Floor, nameof(Math.Floor));
-            NumericFunctionTest(lib, (a) => Math.Log(a), nameof(Math.Log));
             NumericFunctionTest(lib, Math.IEEERemainder, nameof(Math.IEEERemainder));
+            NumericFunctionTest(lib, (a) => Math.Log(a), nameof(Math.Log));
             NumericFunctionTest(lib, Math.Log10, nameof(Math.Log10));
             NumericFunctionTest(lib, Math.Log2, nameof(Math.Log2));
             NumericFunctionTest(lib, Math.Max, Math.Max, nameof(Math.Max));
