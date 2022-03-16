@@ -164,6 +164,144 @@ namespace TEGS.Test
             Assert.IsTrue(lib.Constants.TryGetValue(nameof(Math.Tau), out constantValue));
             Assert.AreEqual(VariableValueType.Double, constantValue.Type);
             Assert.AreEqual(Math.Tau, constantValue.DoubleValue);
+
+            NumericFunctionTest(lib, Math.Abs, Math.Abs, nameof(Math.Abs));
+            NumericFunctionTest(lib, Math.Acos, nameof(Math.Acos));
+            NumericFunctionTest(lib, Math.Acosh, nameof(Math.Acosh));
+            NumericFunctionTest(lib, Math.Asin, nameof(Math.Asin));
+            NumericFunctionTest(lib, Math.Asinh, nameof(Math.Asinh));
+            NumericFunctionTest(lib, Math.Atan, nameof(Math.Atan));
+            NumericFunctionTest(lib, Math.Atanh, nameof(Math.Atanh));
+            NumericFunctionTest(lib, Math.Atan2, nameof(Math.Atan2));
+            NumericFunctionTest(lib, Math.BitDecrement, nameof(Math.BitDecrement));
+            NumericFunctionTest(lib, Math.BitIncrement, nameof(Math.BitIncrement));
+            NumericFunctionTest(lib, Math.Cbrt, nameof(Math.Cbrt));
+            NumericFunctionTest(lib, Math.Ceiling, nameof(Math.Ceiling));
+            NumericFunctionTest(lib, Math.CopySign, nameof(Math.CopySign));
+            NumericFunctionTest(lib, Math.Cos, nameof(Math.Cos));
+            NumericFunctionTest(lib, Math.Cosh, nameof(Math.Cosh));
+            NumericFunctionTest(lib, Math.Exp, nameof(Math.Exp));
+            NumericFunctionTest(lib, Math.Floor, nameof(Math.Floor));
+            NumericFunctionTest(lib, (a) => Math.Log(a), nameof(Math.Log));
+            NumericFunctionTest(lib, Math.IEEERemainder, nameof(Math.IEEERemainder));
+            NumericFunctionTest(lib, Math.Log10, nameof(Math.Log10));
+            NumericFunctionTest(lib, Math.Log2, nameof(Math.Log2));
+            NumericFunctionTest(lib, Math.Max, Math.Max, nameof(Math.Max));
+            NumericFunctionTest(lib, Math.MaxMagnitude, nameof(Math.MaxMagnitude));
+            NumericFunctionTest(lib, Math.Min, Math.Min, nameof(Math.Min));
+            NumericFunctionTest(lib, Math.MinMagnitude, nameof(Math.MinMagnitude));
+            NumericFunctionTest(lib, Math.Pow, nameof(Math.Pow));
+            NumericFunctionTest(lib, Math.ReciprocalEstimate, nameof(Math.ReciprocalEstimate));
+            NumericFunctionTest(lib, Math.ReciprocalSqrtEstimate, nameof(Math.ReciprocalSqrtEstimate));
+            NumericFunctionTest(lib, Math.Round, nameof(Math.Round));
+            NumericFunctionTest(lib, Math.Sign, nameof(Math.Sign));
+            NumericFunctionTest(lib, Math.Sin, nameof(Math.Sin));
+            NumericFunctionTest(lib, Math.Sinh, nameof(Math.Sinh));
+            NumericFunctionTest(lib, Math.Sqrt, nameof(Math.Sqrt));
+            NumericFunctionTest(lib, Math.Tan, nameof(Math.Tan));
+            NumericFunctionTest(lib, Math.Tanh, nameof(Math.Tanh));
+            NumericFunctionTest(lib, Math.Truncate, nameof(Math.Truncate));
+        }
+
+        private static void NumericFunctionTest(SystemLibrary lib, Func<int, int> intFunction, Func<double, double> doubleFunction, string functionName)
+        {
+            NumericFunctionTest(lib, intFunction, functionName);
+            NumericFunctionTest(lib, doubleFunction, functionName, false);
+        }
+
+        private static void NumericFunctionTest(SystemLibrary lib, Func<int, int> function, string functionName)
+        {
+            CustomFunction customFunction;
+
+            Assert.IsTrue(lib.Functions.TryGetValue(functionName, out customFunction));
+            foreach (var value in VariableValueTest.SimpleIntValues)
+            {
+                var expected = function(value);
+                var actual = customFunction(new[] { VariableValue.Parse(value) });
+                Assert.AreEqual(VariableValueType.Integer, actual.Type);
+                Assert.AreEqual(expected, actual.IntegerValue);
+            }
+        }
+
+        private static void NumericFunctionTest(SystemLibrary lib, Func<double, double> function, string functionName, bool testIntToDouble = true)
+        {
+            CustomFunction customFunction;
+
+            Assert.IsTrue(lib.Functions.TryGetValue(functionName, out customFunction));
+
+            foreach (var value in VariableValueTest.SimpleDoubleValues)
+            {
+                var expected = function(value);
+                var actual = customFunction(new[] { VariableValue.Parse(value) });
+                Assert.AreEqual(VariableValueType.Double, actual.Type);
+                Assert.AreEqual(expected, actual.DoubleValue);
+            }
+
+            if (testIntToDouble)
+            {
+                foreach (var value in VariableValueTest.SimpleIntValues)
+                {
+                    var expected = function(value);
+                    var actual = customFunction(new[] { VariableValue.Parse(value) });
+                    Assert.AreEqual(VariableValueType.Double, actual.Type);
+                    Assert.AreEqual(expected, actual.DoubleValue);
+                }
+            }
+        }
+
+        private static void NumericFunctionTest(SystemLibrary lib, Func<int, int, int> intFunction, Func<double, double, double> doubleFunction, string functionName)
+        {
+            NumericFunctionTest(lib, intFunction, functionName);
+            NumericFunctionTest(lib, doubleFunction, functionName, false);
+        }
+
+        private static void NumericFunctionTest(SystemLibrary lib, Func<int, int, int> function, string functionName)
+        {
+            CustomFunction customFunction;
+
+            Assert.IsTrue(lib.Functions.TryGetValue(functionName, out customFunction));
+            foreach (var value1 in VariableValueTest.SimpleIntValues)
+            {
+                foreach (var value2 in VariableValueTest.SimpleIntValues)
+                {
+                    var expected = function(value1, value2);
+                    var actual = customFunction(new[] { VariableValue.Parse(value1), VariableValue.Parse(value2) });
+                    Assert.AreEqual(VariableValueType.Integer, actual.Type);
+                    Assert.AreEqual(expected, actual.IntegerValue);
+                }
+            }
+        }
+
+        private static void NumericFunctionTest(SystemLibrary lib, Func<double, double, double> function, string functionName, bool testIntToDouble = true)
+        {
+            CustomFunction customFunction;
+
+            Assert.IsTrue(lib.Functions.TryGetValue(functionName, out customFunction));
+
+            foreach (var value1 in VariableValueTest.SimpleDoubleValues)
+            {
+                foreach (var value2 in VariableValueTest.SimpleDoubleValues)
+                {
+                    var expected = function(value1, value2);
+                    var actual = customFunction(new[] { VariableValue.Parse(value1), VariableValue.Parse(value2) });
+                    Assert.AreEqual(VariableValueType.Double, actual.Type);
+                    Assert.AreEqual(expected, actual.DoubleValue);
+                }
+            }
+
+            if (testIntToDouble)
+            {
+                foreach (var value1 in VariableValueTest.SimpleIntValues)
+                {
+                    foreach (var value2 in VariableValueTest.SimpleIntValues)
+                    {
+                        var expected = function(value1, value2);
+                        var actual = customFunction(new[] { VariableValue.Parse(value1), VariableValue.Parse(value2) });
+                        Assert.AreEqual(VariableValueType.Double, actual.Type);
+                        Assert.AreEqual(expected, actual.DoubleValue);
+                    }
+                }
+            }
         }
     }
 }
