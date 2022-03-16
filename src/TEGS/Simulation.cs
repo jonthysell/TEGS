@@ -34,20 +34,14 @@ namespace TEGS
         {
             get
             {
-                lock (this)
-                {
-                    return _state;
-                }
+                return _state;
             }
             private set
             {
-                lock (this)
+                if (value != _state)
                 {
-                    if (value != _state)
-                    {
-                        _state = value;
-                        OnSimulationStateChanged();
-                    }
+                    _state = value;
+                    OnSimulationStateChanged();
                 }
             }
         }
@@ -96,73 +90,63 @@ namespace TEGS
 
         public void Run()
         {
-            if (State == SimulationState.Running || State == SimulationState.Complete)
-            {
-                throw new InvalidOperationException();
-            }
-
             if (State == SimulationState.None)
             {
                 InternalStart();
+                State = SimulationState.Paused;
             }
 
-            State = SimulationState.Running;
-
-            _currentCTS = new CancellationTokenSource();
-
-            var cancelationToken = _currentCTS.Token;
-
-            _currentTask = Task.Factory.StartNew(() =>
+            if (State == SimulationState.Paused)
             {
-                while (State == SimulationState.Running)
-                {
-                    if (cancelationToken.IsCancellationRequested)
-                    {
-                        break;
-                    }
+                _currentCTS = new CancellationTokenSource();
 
-                    InternalStep();
-                    Thread.Yield();
-                }
-            });
+                var cancelationToken = _currentCTS.Token;
+
+                _currentTask = Task.Run(() =>
+                {
+                    while (State == SimulationState.Running)
+                    {
+                        if (cancelationToken.IsCancellationRequested)
+                        {
+                            break;
+                        }
+
+                        InternalStep();
+                        Thread.Yield();
+                    }
+                });
+
+                State = SimulationState.Running;
+            }
         }
 
         public void Wait()
         {
-            if (State != SimulationState.Running)
+            if (State == SimulationState.Running)
             {
-                throw new InvalidOperationException();
+                _currentTask?.Wait();
+
+                _currentCTS = null;
+                _currentTask = null;
             }
-
-            _currentTask.Wait();
-
-            _currentCTS = null;
-            _currentTask = null;
         }
 
         public void Pause()
         {
-            if (State != SimulationState.Running)
+            if (State == SimulationState.Running)
             {
-                throw new InvalidOperationException();
+                _currentCTS?.Cancel();
+                _currentTask?.Wait();
+
+                State = SimulationState.Paused;
+
+                _currentCTS = null;
+                _currentTask = null;
             }
-
-            _currentCTS.Cancel();
-            _currentTask.Wait();
-
-            _currentCTS = null;
-            _currentTask = null;
-
-            State = SimulationState.Paused;
         }
 
         public void Step()
         {
-            if (State == SimulationState.Running || State == SimulationState.Complete)
-            {
-                throw new InvalidOperationException();
-            }
-
             if (State == SimulationState.None)
             {
                 InternalStart();
