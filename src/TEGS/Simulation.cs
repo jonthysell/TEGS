@@ -102,6 +102,8 @@ namespace TEGS
 
                 var cancelationToken = _currentCTS.Token;
 
+                State = SimulationState.Running;
+
                 _currentTask = Task.Run(() =>
                 {
                     while (State == SimulationState.Running)
@@ -115,8 +117,6 @@ namespace TEGS
                         Thread.Yield();
                     }
                 });
-
-                State = SimulationState.Running;
             }
         }
 
