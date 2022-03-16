@@ -149,6 +149,7 @@ namespace TEGS
             {  "Integer.MaxValue", "Int32.MaxValue" },
             {  "Integer.MinValue", "Int32.MinValue" },
             {  "String.Length", "String_Length" },
+            {  "Convert.ToInteger", "Convert.ToInt32" },
         };
 
         #region Header

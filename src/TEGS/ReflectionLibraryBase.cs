@@ -71,6 +71,38 @@ namespace TEGS
 
         #endregion
 
+        #region Rename
+
+        public ReflectionLibraryBase Rename(string name)
+        {
+            Name = name;
+            return this;
+        }
+
+        public ReflectionLibraryBase Rename(params Tuple<string, string>[] names)
+        {
+            foreach (var name in names)
+            {
+                if (Constants.TryGetValue(name.Item1, out var constantValue))
+                {
+                    Constants.Remove(name.Item1);
+                    Constants.Add(name.Item2, constantValue);
+                }
+                else if (Functions.TryGetValue(name.Item1, out var customFunction))
+                {
+                    Functions.Remove(name.Item1);
+                    Functions.Add(name.Item2, customFunction);
+                }
+                else
+                {
+                    throw new KeyNotFoundException();
+                }
+            }
+            return this;
+        }
+
+        #endregion
+
         #region Reflection
 
         protected void Initialize()

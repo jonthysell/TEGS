@@ -179,14 +179,14 @@ namespace TEGS
 
         #region Library
 
-        public void LoadLibrary(ILibrary library, string name = null)
+        public void LoadLibrary(ILibrary library)
         {
             if (library is null)
             {
                 throw new ArgumentNullException(nameof(library));
             }
 
-            string libraryName = name?.Trim() ?? library.Name?.Trim() ?? "";
+            string libraryName = library.Name?.Trim() ?? "";
 
             if (libraryName != "")
             {
