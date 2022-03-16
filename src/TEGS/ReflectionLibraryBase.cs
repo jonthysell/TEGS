@@ -22,9 +22,9 @@ namespace TEGS
 
         protected object Instance { get; private set; } = null;
 
-        protected Dictionary<string, VariableValue> Constants { get; private set; } = new Dictionary<string, VariableValue>();
+        internal Dictionary<string, VariableValue> Constants { get; private set; } = new Dictionary<string, VariableValue>();
 
-        protected Dictionary<string, CustomFunction> Functions { get; private set; } = new Dictionary<string, CustomFunction>();
+        internal Dictionary<string, CustomFunction> Functions { get; private set; } = new Dictionary<string, CustomFunction>();
 
         protected static readonly Dictionary<TypeInfo, IEnumerable<FieldInfo>> _fieldInfoCache = new Dictionary<TypeInfo, IEnumerable<FieldInfo>>();
         protected static readonly Dictionary<TypeInfo, IEnumerable<PropertyInfo>> _propertyInfoCache = new Dictionary<TypeInfo, IEnumerable<PropertyInfo>>();
@@ -67,38 +67,6 @@ namespace TEGS
         public IEnumerable<KeyValuePair<string, CustomFunction>> GetCustomFunctions()
         {
             return Functions;
-        }
-
-        #endregion
-
-        #region Rename
-
-        public ReflectionLibraryBase Rename(string name)
-        {
-            Name = name;
-            return this;
-        }
-
-        public ReflectionLibraryBase Rename(params Tuple<string, string>[] names)
-        {
-            foreach (var name in names)
-            {
-                if (Constants.TryGetValue(name.Item1, out var constantValue))
-                {
-                    Constants.Remove(name.Item1);
-                    Constants.Add(name.Item2, constantValue);
-                }
-                else if (Functions.TryGetValue(name.Item1, out var customFunction))
-                {
-                    Functions.Remove(name.Item1);
-                    Functions.Add(name.Item2, customFunction);
-                }
-                else
-                {
-                    throw new KeyNotFoundException();
-                }
-            }
-            return this;
         }
 
         #endregion

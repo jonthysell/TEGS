@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 
@@ -14,6 +15,38 @@ namespace TEGS
         public SystemLibrary([DynamicallyAccessedMembers(RequiredMemberTypes)] Type type, ReflectionType reflectionType = ReflectionType.All, [DynamicallyAccessedMembers(RequiredMemberTypes)] Type extensions = null) : base(type, reflectionType, extensions) { }
 
         public SystemLibrary(object instance, [DynamicallyAccessedMembers(RequiredMemberTypes)] Type type, ReflectionType reflectionType = ReflectionType.All, [DynamicallyAccessedMembers(RequiredMemberTypes)] Type extensions = null) : base(instance, type, reflectionType, extensions) { }
+
+        #endregion
+
+        #region Rename
+
+        public SystemLibrary Rename(string name)
+        {
+            Name = name;
+            return this;
+        }
+
+        public SystemLibrary Rename(params Tuple<string, string>[] names)
+        {
+            foreach (var name in names)
+            {
+                if (Constants.TryGetValue(name.Item1, out var constantValue))
+                {
+                    Constants.Remove(name.Item1);
+                    Constants.Add(name.Item2, constantValue);
+                }
+                else if (Functions.TryGetValue(name.Item1, out var customFunction))
+                {
+                    Functions.Remove(name.Item1);
+                    Functions.Add(name.Item2, customFunction);
+                }
+                else
+                {
+                    throw new KeyNotFoundException();
+                }
+            }
+            return this;
+        }
 
         #endregion
 
