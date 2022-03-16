@@ -34,14 +34,20 @@ namespace TEGS
         {
             get
             {
-                return _state;
+                lock (this)
+                {
+                    return _state;
+                }
             }
             private set
             {
-                if (value != _state)
+                lock (this)
                 {
-                    _state = value;
-                    OnSimulationStateChanged();
+                    if (value != _state)
+                    {
+                        _state = value;
+                        OnSimulationStateChanged();
+                    }
                 }
             }
         }
