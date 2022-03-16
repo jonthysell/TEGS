@@ -53,7 +53,7 @@ namespace TEGS
 
         public VariableValue(string value) : this(VariableValueType.String)
         {
-            _objectValue = value;
+            _objectValue = value ?? throw new ArgumentNullException(nameof(value));
         }
 
         public static VariableValue Parse(object value)

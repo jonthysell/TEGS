@@ -11,19 +11,19 @@ namespace TEGS.Test
     public class BaseLibrariesTest
     {
         [TestMethod]
-        public void BaseLibraries_SystemBoolTest()
+        public void BaseLibraries_SystemBooleanTest()
         {
-            var lib = BaseLibraries.SystemBool;
+            var lib = BaseLibraries.SystemBoolean;
 
-            VariableValue actual;
+            VariableValue constantValue;
 
-            Assert.IsTrue(lib.Constants.TryGetValue(nameof(bool.FalseString), out actual));
-            Assert.AreEqual(VariableValueType.String, actual.Type);
-            Assert.AreEqual(bool.FalseString, actual.StringValue);
+            Assert.IsTrue(lib.Constants.TryGetValue(nameof(bool.FalseString), out constantValue));
+            Assert.AreEqual(VariableValueType.String, constantValue.Type);
+            Assert.AreEqual(bool.FalseString, constantValue.StringValue);
 
-            Assert.IsTrue(lib.Constants.TryGetValue(nameof(bool.TrueString), out actual));
-            Assert.AreEqual(VariableValueType.String, actual.Type);
-            Assert.AreEqual(bool.TrueString, actual.StringValue);
+            Assert.IsTrue(lib.Constants.TryGetValue(nameof(bool.TrueString), out constantValue));
+            Assert.AreEqual(VariableValueType.String, constantValue.Type);
+            Assert.AreEqual(bool.TrueString, constantValue.StringValue);
         }
 
         [TestMethod]
@@ -31,15 +31,15 @@ namespace TEGS.Test
         {
             var lib = BaseLibraries.SystemInteger;
 
-            VariableValue actual;
+            VariableValue constantValue;
 
-            Assert.IsTrue(lib.Constants.TryGetValue(nameof(int.MaxValue), out actual));
-            Assert.AreEqual(VariableValueType.Integer, actual.Type);
-            Assert.AreEqual(int.MaxValue, actual.IntegerValue);
+            Assert.IsTrue(lib.Constants.TryGetValue(nameof(int.MaxValue), out constantValue));
+            Assert.AreEqual(VariableValueType.Integer, constantValue.Type);
+            Assert.AreEqual(int.MaxValue, constantValue.IntegerValue);
 
-            Assert.IsTrue(lib.Constants.TryGetValue(nameof(int.MinValue), out actual));
-            Assert.AreEqual(VariableValueType.Integer, actual.Type);
-            Assert.AreEqual(int.MinValue, actual.IntegerValue);
+            Assert.IsTrue(lib.Constants.TryGetValue(nameof(int.MinValue), out constantValue));
+            Assert.AreEqual(VariableValueType.Integer, constantValue.Type);
+            Assert.AreEqual(int.MinValue, constantValue.IntegerValue);
         }
 
         [TestMethod]
@@ -47,31 +47,31 @@ namespace TEGS.Test
         {
             var lib = BaseLibraries.SystemDouble;
 
-            VariableValue actual;
+            VariableValue constantValue;
 
-            Assert.IsTrue(lib.Constants.TryGetValue(nameof(double.Epsilon), out actual));
-            Assert.AreEqual(VariableValueType.Double, actual.Type);
-            Assert.AreEqual(double.Epsilon, actual.DoubleValue);
+            Assert.IsTrue(lib.Constants.TryGetValue(nameof(double.Epsilon), out constantValue));
+            Assert.AreEqual(VariableValueType.Double, constantValue.Type);
+            Assert.AreEqual(double.Epsilon, constantValue.DoubleValue);
 
-            Assert.IsTrue(lib.Constants.TryGetValue(nameof(double.MaxValue), out actual));
-            Assert.AreEqual(VariableValueType.Double, actual.Type);
-            Assert.AreEqual(double.MaxValue, actual.DoubleValue);
+            Assert.IsTrue(lib.Constants.TryGetValue(nameof(double.MaxValue), out constantValue));
+            Assert.AreEqual(VariableValueType.Double, constantValue.Type);
+            Assert.AreEqual(double.MaxValue, constantValue.DoubleValue);
 
-            Assert.IsTrue(lib.Constants.TryGetValue(nameof(double.MinValue), out actual));
-            Assert.AreEqual(VariableValueType.Double, actual.Type);
-            Assert.AreEqual(double.MinValue, actual.DoubleValue);
+            Assert.IsTrue(lib.Constants.TryGetValue(nameof(double.MinValue), out constantValue));
+            Assert.AreEqual(VariableValueType.Double, constantValue.Type);
+            Assert.AreEqual(double.MinValue, constantValue.DoubleValue);
 
-            Assert.IsTrue(lib.Constants.TryGetValue(nameof(double.NaN), out actual));
-            Assert.AreEqual(VariableValueType.Double, actual.Type);
-            Assert.AreEqual(double.NaN, actual.DoubleValue);
+            Assert.IsTrue(lib.Constants.TryGetValue(nameof(double.NaN), out constantValue));
+            Assert.AreEqual(VariableValueType.Double, constantValue.Type);
+            Assert.AreEqual(double.NaN, constantValue.DoubleValue);
 
-            Assert.IsTrue(lib.Constants.TryGetValue(nameof(double.NegativeInfinity), out actual));
-            Assert.AreEqual(VariableValueType.Double, actual.Type);
-            Assert.AreEqual(double.NegativeInfinity, actual.DoubleValue);
+            Assert.IsTrue(lib.Constants.TryGetValue(nameof(double.NegativeInfinity), out constantValue));
+            Assert.AreEqual(VariableValueType.Double, constantValue.Type);
+            Assert.AreEqual(double.NegativeInfinity, constantValue.DoubleValue);
 
-            Assert.IsTrue(lib.Constants.TryGetValue(nameof(double.PositiveInfinity), out actual));
-            Assert.AreEqual(VariableValueType.Double, actual.Type);
-            Assert.AreEqual(double.PositiveInfinity, actual.DoubleValue);
+            Assert.IsTrue(lib.Constants.TryGetValue(nameof(double.PositiveInfinity), out constantValue));
+            Assert.AreEqual(VariableValueType.Double, constantValue.Type);
+            Assert.AreEqual(double.PositiveInfinity, constantValue.DoubleValue);
         }
 
         [TestMethod]
@@ -79,11 +79,27 @@ namespace TEGS.Test
         {
             var lib = BaseLibraries.SystemString;
 
-            VariableValue actual;
+            VariableValue constantValue;
 
-            Assert.IsTrue(lib.Constants.TryGetValue(nameof(string.Empty), out actual));
-            Assert.AreEqual(VariableValueType.String, actual.Type);
-            Assert.AreEqual(string.Empty, actual.StringValue);
+            Assert.IsTrue(lib.Constants.TryGetValue(nameof(string.Empty), out constantValue));
+            Assert.AreEqual(VariableValueType.String, constantValue.Type);
+            Assert.AreEqual(string.Empty, constantValue.StringValue);
+        }
+
+        [TestMethod]
+        public void BaseLibraries_StringLibraryTest()
+        {
+            var lib = BaseLibraries.StringLibrary;
+
+            CustomFunction customFunction;
+
+            Assert.IsTrue(lib.Functions.TryGetValue(nameof(StringLibrary.Length), out customFunction));
+            foreach (var value in VariableValueTest.ValidStringValues)
+            {
+                var actual = customFunction(new[] { new VariableValue(value) });
+                Assert.AreEqual(VariableValueType.Integer, actual.Type);
+                Assert.AreEqual(value.Length, actual.IntegerValue);
+            }
         }
 
         [TestMethod]
@@ -91,19 +107,19 @@ namespace TEGS.Test
         {
             var lib = BaseLibraries.SystemMath;
 
-            VariableValue actual;
+            VariableValue constantValue;
 
-            Assert.IsTrue(lib.Constants.TryGetValue(nameof(Math.E), out actual));
-            Assert.AreEqual(VariableValueType.Double, actual.Type);
-            Assert.AreEqual(Math.E, actual.DoubleValue);
+            Assert.IsTrue(lib.Constants.TryGetValue(nameof(Math.E), out constantValue));
+            Assert.AreEqual(VariableValueType.Double, constantValue.Type);
+            Assert.AreEqual(Math.E, constantValue.DoubleValue);
 
-            Assert.IsTrue(lib.Constants.TryGetValue(nameof(Math.PI), out actual));
-            Assert.AreEqual(VariableValueType.Double, actual.Type);
-            Assert.AreEqual(Math.PI, actual.DoubleValue);
+            Assert.IsTrue(lib.Constants.TryGetValue(nameof(Math.PI), out constantValue));
+            Assert.AreEqual(VariableValueType.Double, constantValue.Type);
+            Assert.AreEqual(Math.PI, constantValue.DoubleValue);
 
-            Assert.IsTrue(lib.Constants.TryGetValue(nameof(Math.Tau), out actual));
-            Assert.AreEqual(VariableValueType.Double, actual.Type);
-            Assert.AreEqual(Math.Tau, actual.DoubleValue);
+            Assert.IsTrue(lib.Constants.TryGetValue(nameof(Math.Tau), out constantValue));
+            Assert.AreEqual(VariableValueType.Double, constantValue.Type);
+            Assert.AreEqual(Math.Tau, constantValue.DoubleValue);
         }
     }
 }

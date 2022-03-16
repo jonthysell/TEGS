@@ -7,7 +7,7 @@ namespace TEGS
 {
     public static class BaseLibraries
     {
-        public static SystemLibrary SystemBool => new SystemLibrary(typeof(bool), ReflectionType.StandardConstants);
+        public static SystemLibrary SystemBoolean => new SystemLibrary(typeof(bool), ReflectionType.StandardConstants);
 
         public static SystemLibrary SystemInteger => new SystemLibrary(typeof(int), ReflectionType.StandardConstants).Rename("Integer");
 
@@ -30,7 +30,7 @@ namespace TEGS
         {
             ScriptingHost scriptingHost = new ScriptingHost();
 
-            scriptingHost.LoadLibrary(SystemBool);
+            scriptingHost.LoadLibrary(SystemBoolean);
             scriptingHost.LoadLibrary(SystemInteger);
             scriptingHost.LoadLibrary(SystemDouble);
             scriptingHost.LoadLibrary(SystemString);
