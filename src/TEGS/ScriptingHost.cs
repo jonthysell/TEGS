@@ -141,17 +141,23 @@ namespace TEGS
                 throw new ArgumentNullException(nameof(stateVariable));
             }
 
-            if (stateVariable.Type != value.Type)
-            {
-                throw new StateVariableAssignmentException(stateVariable, value);
-            }
-
             if (!_stateVariables.ContainsKey(stateVariable))
             {
                 throw new StateVariableNotFoundException(stateVariable.Name);
             }
 
-            _stateVariables[stateVariable] = value;
+            if (stateVariable.Type == value.Type)
+            {
+                _stateVariables[stateVariable] = value;
+            }
+            else if (stateVariable.Type == VariableValueType.Double && value.Type == VariableValueType.Integer)
+            {
+                _stateVariables[stateVariable] = new VariableValue(value.AsNumber());
+            }
+            else
+            {
+                throw new StateVariableAssignmentException(stateVariable, value);
+            }
         }
 
         public VariableValue GetVariable(StateVariable stateVariable)

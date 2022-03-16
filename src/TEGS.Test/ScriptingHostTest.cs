@@ -173,6 +173,31 @@ namespace TEGS.Test
         }
 
         [TestMethod]
+        public void ScriptingHost_ValidIntegerToDoubleTest()
+        {
+            ScriptingHost host = new ScriptingHost();
+            Assert.IsNotNull(host);
+
+            int[] expectedValues = VariableValueTest.ValidIntegerValues;
+
+            for (int i = 0; i < expectedValues.Length; i++)
+            {
+                StateVariable sv = new StateVariable() { Name = $"test{i}", Type = VariableValueType.Double };
+                host.Create(sv);
+
+                VariableValue defaultValue = host.GetVariable(sv);
+                Assert.AreEqual(VariableValueType.Double, defaultValue.Type);
+                Assert.AreEqual(default, defaultValue.DoubleValue);
+
+                host.AssignVariable(sv, new VariableValue(expectedValues[i]));
+
+                VariableValue actualValue = host.GetVariable(sv);
+                Assert.AreEqual(VariableValueType.Double, actualValue.Type);
+                Assert.AreEqual(expectedValues[i], actualValue.DoubleValue);
+            }
+        }
+
+        [TestMethod]
         public void ScriptingHost_ValidStringVariableTest()
         {
             ScriptingHost host = new ScriptingHost();
@@ -211,6 +236,8 @@ namespace TEGS.Test
 
             Assert.ThrowsException<StateVariableNotFoundException>(() => host.GetVariable(sv));
             Assert.ThrowsException<StateVariableNotFoundException>(() => host.AssignVariable(sv, new VariableValue(default(bool))));
+
+            host.Create(sv);
             Assert.ThrowsException<StateVariableAssignmentException>(() => host.AssignVariable(sv, new VariableValue(VariableValueType.String)));
         }
 
@@ -224,6 +251,8 @@ namespace TEGS.Test
 
             Assert.ThrowsException<StateVariableNotFoundException>(() => host.GetVariable(sv));
             Assert.ThrowsException<StateVariableNotFoundException>(() => host.AssignVariable(sv, new VariableValue(default(int))));
+
+            host.Create(sv);
             Assert.ThrowsException<StateVariableAssignmentException>(() => host.AssignVariable(sv, new VariableValue(default(bool))));
         }
 
@@ -237,7 +266,9 @@ namespace TEGS.Test
 
             Assert.ThrowsException<StateVariableNotFoundException>(() => host.GetVariable(sv));
             Assert.ThrowsException<StateVariableNotFoundException>(() => host.AssignVariable(sv, new VariableValue(default(double))));
-            Assert.ThrowsException<StateVariableAssignmentException>(() => host.AssignVariable(sv, new VariableValue(default(int))));
+
+            host.Create(sv);
+            Assert.ThrowsException<StateVariableAssignmentException>(() => host.AssignVariable(sv, new VariableValue(default(bool))));
         }
 
         [TestMethod]
@@ -250,6 +281,8 @@ namespace TEGS.Test
 
             Assert.ThrowsException<StateVariableNotFoundException>(() => host.GetVariable(sv));
             Assert.ThrowsException<StateVariableNotFoundException>(() => host.AssignVariable(sv, new VariableValue(VariableValueType.String)));
+
+            host.Create(sv);
             Assert.ThrowsException<StateVariableAssignmentException>(() => host.AssignVariable(sv, new VariableValue(default(double))));
         }
 
