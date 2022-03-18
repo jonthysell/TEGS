@@ -114,7 +114,6 @@ namespace TEGS
                         }
 
                         InternalStep();
-                        Thread.Yield();
                     }
                 });
             }
