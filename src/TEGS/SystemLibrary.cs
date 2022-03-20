@@ -123,6 +123,23 @@ namespace TEGS
                             return MakeFunction(intFunc);
                         }
                     }
+                    else if (returnType == typeof(int) && CheckParams<int, int, int>(parameterInfos))
+                    {
+                        // int, int, int => int
+                        var intFunc = MakeDelegate<Func<int, int, int, int>>(methodInfo);
+
+                        if (TryFindRelatedMethod<double, double, double, double>(methodInfo, out MethodInfo relatedMethodInfo))
+                        {
+                            // int, int, int => int + double, double, double => double
+                            var doubleFunc = MakeDelegate<Func<double, double, double, double>>(relatedMethodInfo);
+                            return MakeFunction(intFunc, doubleFunc);
+                        }
+                        else
+                        {
+                            // int, int, int => int
+                            return MakeFunction(intFunc);
+                        }
+                    }
                     else if (returnType == typeof(double) && CheckParams(parameterInfos))
                     {
                         // void => double
@@ -165,7 +182,7 @@ namespace TEGS
                     }
                     else if (returnType == typeof(double) && CheckParams<double, double, double>(parameterInfos))
                     {
-                        // double, double => double
+                        // double, double, double => double
                         var doubleFunc = MakeDelegate<Func<double, double, double, double>>(methodInfo);
 
                         if (TryFindRelatedMethod<int, int, int, int>(methodInfo, out MethodInfo relatedMethodInfo))
