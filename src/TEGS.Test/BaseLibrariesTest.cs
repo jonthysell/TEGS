@@ -210,7 +210,7 @@ namespace TEGS.Test
             NumericFunctionTest(BaseLibraries.RandomVariateLibrary(12345), new Random(12345).ExponentialVariate, nameof(RandomExtensions.ExponentialVariate));
             NumericFunctionTest(BaseLibraries.RandomVariateLibrary(12345), new Random(12345).NormalVariate, nameof(RandomExtensions.NormalVariate));
             NumericFunctionTest(BaseLibraries.RandomVariateLibrary(12345), new Random(12345).LogNormalVariate, nameof(RandomExtensions.LogNormalVariate));
-            //NumericFunctionTest(BaseLibraries.RandomVariateLibrary(12345), new Random(12345).TriangularVariate, nameof(RandomExtensions.TriangularVariate));
+            NumericFunctionTest(BaseLibraries.RandomVariateLibrary(12345), new Random(12345).TriangularVariate, nameof(RandomExtensions.TriangularVariate));
             NumericFunctionTest(BaseLibraries.RandomVariateLibrary(12345), new Random(12345).GammaVariate, nameof(RandomExtensions.GammaVariate));
             NumericFunctionTest(BaseLibraries.RandomVariateLibrary(12345), new Random(12345).BetaVariate, nameof(RandomExtensions.BetaVariate));
             //NumericFunctionTest(BaseLibraries.RandomVariateLibrary(12345), new Random(12345).ErlangVariate, nameof(RandomExtensions.ErlangVariate));
@@ -226,7 +226,8 @@ namespace TEGS.Test
         {
             CustomFunction customFunction;
 
-            Assert.IsTrue(lib.Functions.TryGetValue(functionName, out customFunction));
+            Assert.IsTrue(lib.Functions.TryGetValue(functionName, out customFunction), $"Function { functionName } not found.");
+
             foreach (var value in VariableValueTest.SimpleIntValues)
             {
                 VerifyReturnValue(() => function(value), () => customFunction(new[] { VariableValue.Parse(value) }));
@@ -237,7 +238,7 @@ namespace TEGS.Test
         {
             CustomFunction customFunction;
 
-            Assert.IsTrue(lib.Functions.TryGetValue(functionName, out customFunction));
+            Assert.IsTrue(lib.Functions.TryGetValue(functionName, out customFunction), $"Function { functionName } not found.");
 
             foreach (var value in VariableValueTest.SimpleDoubleValues)
             {
@@ -263,7 +264,8 @@ namespace TEGS.Test
         {
             CustomFunction customFunction;
 
-            Assert.IsTrue(lib.Functions.TryGetValue(functionName, out customFunction));
+            Assert.IsTrue(lib.Functions.TryGetValue(functionName, out customFunction), $"Function { functionName } not found.");
+
             foreach (var value1 in VariableValueTest.SimpleIntValues)
             {
                 foreach (var value2 in VariableValueTest.SimpleIntValues)
@@ -277,7 +279,7 @@ namespace TEGS.Test
         {
             CustomFunction customFunction;
 
-            Assert.IsTrue(lib.Functions.TryGetValue(functionName, out customFunction));
+            Assert.IsTrue(lib.Functions.TryGetValue(functionName, out customFunction), $"Function { functionName } not found.");
 
             foreach (var value1 in VariableValueTest.SimpleDoubleValues)
             {
@@ -299,6 +301,38 @@ namespace TEGS.Test
             }
         }
 
+        private static void NumericFunctionTest(SystemLibrary lib, Func<double, double, double, double> function, string functionName, bool testIntToDouble = true)
+        {
+            CustomFunction customFunction;
+
+            Assert.IsTrue(lib.Functions.TryGetValue(functionName, out customFunction), $"Function { functionName } not found.");
+
+            foreach (var value1 in VariableValueTest.SimpleDoubleValues)
+            {
+                foreach (var value2 in VariableValueTest.SimpleDoubleValues)
+                {
+                    foreach (var value3 in VariableValueTest.SimpleDoubleValues)
+                    {
+                        VerifyReturnValue(() => function(value1, value2, value3), () => customFunction(new[] { VariableValue.Parse(value1), VariableValue.Parse(value2), VariableValue.Parse(value3) }));
+                    }
+                }
+            }
+
+            if (testIntToDouble)
+            {
+                foreach (var value1 in VariableValueTest.SimpleIntValues)
+                {
+                    foreach (var value2 in VariableValueTest.SimpleIntValues)
+                    {
+                        foreach (var value3 in VariableValueTest.SimpleIntValues)
+                        {
+                            VerifyReturnValue(() => function(value1, value2, value3), () => customFunction(new[] { VariableValue.Parse(value1), VariableValue.Parse(value2), VariableValue.Parse(value3) }));
+                        }
+                    }
+                }
+            }
+        }
+
         private static void VerifyReturnValue(Func<int> function, Func<VariableValue> customFunction)
         {
             int? expected = null;
@@ -315,7 +349,7 @@ namespace TEGS.Test
             }
             catch { }
 
-            Assert.IsTrue((expected is null) == (actual is null));
+            Assert.AreEqual(expected is null, actual is null);
 
             if (expected.HasValue && actual.HasValue)
             {
@@ -340,7 +374,7 @@ namespace TEGS.Test
             }
             catch { }
 
-            Assert.IsTrue((expected is null) == (actual is null));
+            Assert.AreEqual(expected is null, actual is null);
 
             if (expected.HasValue && actual.HasValue)
             {

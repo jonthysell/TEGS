@@ -163,6 +163,23 @@ namespace TEGS
                             return MakeFunction(doubleFunc);
                         }
                     }
+                    else if (returnType == typeof(double) && CheckParams<double, double, double>(parameterInfos))
+                    {
+                        // double, double => double
+                        var doubleFunc = MakeDelegate<Func<double, double, double, double>>(methodInfo);
+
+                        if (TryFindRelatedMethod<int, int, int, int>(methodInfo, out MethodInfo relatedMethodInfo))
+                        {
+                            // double, double, double => double + int, int, int => int
+                            var intFunc = MakeDelegate<Func<int, int, int, int>>(relatedMethodInfo);
+                            return MakeFunction(intFunc, doubleFunc);
+                        }
+                        else
+                        {
+                            // double, double, double => double
+                            return MakeFunction(doubleFunc);
+                        }
+                    }
                     else if (returnType == typeof(string) && CheckParams(parameterInfos))
                     {
                         // void => string
@@ -237,6 +254,30 @@ namespace TEGS
             return false;
         }
 
+        private bool TryFindRelatedMethod<TArg0, TArg1, TArg2, TResult>(MethodInfo baseMethodInfo, out MethodInfo result)
+        {
+            foreach (MethodInfo methodInfo in GetMethods(TypeInfo))
+            {
+                if (methodInfo != baseMethodInfo && methodInfo.Name == baseMethodInfo.Name)
+                {
+                    var returnType = methodInfo.ReturnType;
+
+                    if (returnType == typeof(TResult))
+                    {
+                        var parameterInfo = methodInfo.GetParameters();
+                        if (CheckParams<TArg0, TArg1, TArg2>(parameterInfo))
+                        {
+                            result = methodInfo;
+                            return true;
+                        }
+                    }
+                }
+            }
+
+            result = default;
+            return false;
+        }
+
         private bool CheckParams(ParameterInfo[] parameterInfos)
         {
             return parameterInfos.Length == 0 ||
@@ -253,6 +294,12 @@ namespace TEGS
         {
             return (parameterInfos.Length == 2 && parameterInfos[0].ParameterType == typeof(TArg0) && parameterInfos[1].ParameterType == typeof(TArg1)) ||
                 (Instance is not null && parameterInfos.Length == 3 && parameterInfos[0].ParameterType == TypeInfo && parameterInfos[1].ParameterType == typeof(TArg0) && parameterInfos[2].ParameterType == typeof(TArg1));
+        }
+
+        private bool CheckParams<TArg0, TArg1, TArg2>(ParameterInfo[] parameterInfos)
+        {
+            return (parameterInfos.Length == 3 && parameterInfos[0].ParameterType == typeof(TArg0) && parameterInfos[1].ParameterType == typeof(TArg1) && parameterInfos[2].ParameterType == typeof(TArg2)) ||
+                (Instance is not null && parameterInfos.Length == 4 && parameterInfos[0].ParameterType == TypeInfo && parameterInfos[1].ParameterType == typeof(TArg0) && parameterInfos[2].ParameterType == typeof(TArg1) && parameterInfos[3].ParameterType == typeof(TArg2));
         }
 
         private static CustomFunction MakeFunction(Func<bool> func)
@@ -320,6 +367,19 @@ namespace TEGS
             };
         }
 
+        private static CustomFunction MakeFunction(Func<int, int, int, int> func)
+        {
+            return (args) =>
+            {
+                if (args is not null && args.Length == 3 && args[0].Type == VariableValueType.Integer && args[1].Type == VariableValueType.Integer && args[2].Type == VariableValueType.Integer)
+                {
+                    return new VariableValue(func(args[0].IntegerValue, args[1].IntegerValue, args[2].IntegerValue));
+                }
+
+                throw new ArgumentOutOfRangeException(nameof(args));
+            };
+        }
+
         private static CustomFunction MakeFunction(Func<double> func)
         {
             return (args) =>
@@ -359,6 +419,19 @@ namespace TEGS
             };
         }
 
+        private static CustomFunction MakeFunction(Func<double, double, double, double> func)
+        {
+            return (args) =>
+            {
+                if (args is not null && args.Length == 3 && args[0].IsNumber && args[1].IsNumber && args[2].IsNumber)
+                {
+                    return new VariableValue(func(args[0].AsNumber(), args[1].AsNumber(), args[2].AsNumber()));
+                }
+
+                throw new ArgumentOutOfRangeException(nameof(args));
+            };
+        }
+
         private static CustomFunction MakeFunction(Func<int, int> intFunc, Func<double, double> doubleFunc)
         {
             return (args) =>
@@ -392,6 +465,26 @@ namespace TEGS
                     else if (args[0].IsNumber && args[1].IsNumber)
                     {
                         return new VariableValue(doubleFunc(args[0].AsNumber(), args[1].AsNumber()));
+                    }
+                }
+
+                throw new ArgumentOutOfRangeException(nameof(args));
+            };
+        }
+
+        private static CustomFunction MakeFunction(Func<int, int, int, int> intFunc, Func<double, double, double, double> doubleFunc)
+        {
+            return (args) =>
+            {
+                if (args is not null && args.Length == 3)
+                {
+                    if (args[0].Type == VariableValueType.Integer && args[1].Type == VariableValueType.Integer && args[2].Type == VariableValueType.Integer)
+                    {
+                        return new VariableValue(intFunc(args[0].IntegerValue, args[1].IntegerValue, args[2].IntegerValue));
+                    }
+                    else if (args[0].IsNumber && args[1].IsNumber && args[2].IsNumber)
+                    {
+                        return new VariableValue(doubleFunc(args[0].AsNumber(), args[1].AsNumber(), args[2].AsNumber()));
                     }
                 }
 
