@@ -177,11 +177,13 @@ namespace TEGS.Test
             NumericFunctionTest(lib, Math.BitIncrement, nameof(Math.BitIncrement));
             NumericFunctionTest(lib, Math.Cbrt, nameof(Math.Cbrt));
             NumericFunctionTest(lib, Math.Ceiling, nameof(Math.Ceiling));
+            NumericFunctionTest(lib, Math.Clamp, Math.Clamp, nameof(Math.Clamp));
             NumericFunctionTest(lib, Math.CopySign, nameof(Math.CopySign));
             NumericFunctionTest(lib, Math.Cos, nameof(Math.Cos));
             NumericFunctionTest(lib, Math.Cosh, nameof(Math.Cosh));
             NumericFunctionTest(lib, Math.Exp, nameof(Math.Exp));
             NumericFunctionTest(lib, Math.Floor, nameof(Math.Floor));
+            NumericFunctionTest(lib, Math.FusedMultiplyAdd, nameof(Math.FusedMultiplyAdd));
             NumericFunctionTest(lib, Math.IEEERemainder, nameof(Math.IEEERemainder));
             NumericFunctionTest(lib, (a) => Math.Log(a), nameof(Math.Log));
             NumericFunctionTest(lib, Math.Log10, nameof(Math.Log10));
@@ -296,6 +298,30 @@ namespace TEGS.Test
                     foreach (var value2 in VariableValueTest.SimpleIntValues)
                     {
                         VerifyReturnValue(() => function(value1, value2), () => customFunction(new[] { VariableValue.Parse(value1), VariableValue.Parse(value2) }));
+                    }
+                }
+            }
+        }
+
+        private static void NumericFunctionTest(SystemLibrary lib, Func<int, int, int, int> intFunction, Func<double, double, double, double> doubleFunction, string functionName)
+        {
+            NumericFunctionTest(lib, intFunction, functionName);
+            NumericFunctionTest(lib, doubleFunction, functionName, false);
+        }
+
+        private static void NumericFunctionTest(SystemLibrary lib, Func<int, int, int, int> function, string functionName)
+        {
+            CustomFunction customFunction;
+
+            Assert.IsTrue(lib.Functions.TryGetValue(functionName, out customFunction), $"Function { functionName } not found.");
+
+            foreach (var value1 in VariableValueTest.SimpleIntValues)
+            {
+                foreach (var value2 in VariableValueTest.SimpleIntValues)
+                {
+                    foreach (var value3 in VariableValueTest.SimpleIntValues)
+                    {
+                        VerifyReturnValue(() => function(value1, value2, value3), () => customFunction(new[] { VariableValue.Parse(value1), VariableValue.Parse(value2), VariableValue.Parse(value3) }));
                     }
                 }
             }
