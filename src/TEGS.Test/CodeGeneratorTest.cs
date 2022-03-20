@@ -64,14 +64,14 @@ namespace TEGS.Test
             _metadataReferences.Add(MetadataReference.CreateFromFile(typeof(object).Assembly.Location));
             _metadataReferences.Add(MetadataReference.CreateFromFile(typeof(Console).Assembly.Location));
 
-            typeof(Graph).Assembly.GetReferencedAssemblies()
+            typeof(Console).Assembly.GetReferencedAssemblies()
             .ToList()
             .ForEach(a => _metadataReferences.Add(MetadataReference.CreateFromFile(Assembly.Load(a).Location)));
         }
 
         private static readonly CSharpParseOptions _parseOptions = CSharpParseOptions.Default.WithLanguageVersion(LanguageVersion.Latest);
         private static readonly CSharpCompilationOptions _compilationOptions = new CSharpCompilationOptions(OutputKind.ConsoleApplication, optimizationLevel: OptimizationLevel.Release);
-        private static readonly List<MetadataReference> _metadataReferences = new List<MetadataReference>();
+        private static readonly HashSet<MetadataReference> _metadataReferences = new HashSet<MetadataReference>();
 
         private static byte[] CompileCode(string code, string assemblyName)
         {
