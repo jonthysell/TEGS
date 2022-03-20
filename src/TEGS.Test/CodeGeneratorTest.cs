@@ -64,7 +64,7 @@ namespace TEGS.Test
             _metadataReferences.Add(MetadataReference.CreateFromFile(typeof(object).Assembly.Location));
             _metadataReferences.Add(MetadataReference.CreateFromFile(typeof(Console).Assembly.Location));
 
-            Assembly.GetEntryAssembly().GetReferencedAssemblies()
+            typeof(Graph).Assembly.GetReferencedAssemblies()
             .ToList()
             .ForEach(a => _metadataReferences.Add(MetadataReference.CreateFromFile(Assembly.Load(a).Location)));
         }
