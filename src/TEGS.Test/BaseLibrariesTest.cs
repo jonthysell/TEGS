@@ -203,6 +203,19 @@ namespace TEGS.Test
             NumericFunctionTest(lib, Math.Truncate, nameof(Math.Truncate));
         }
 
+        [TestMethod]
+        public void BaseLibraries_RandomVariateLibraryTest()
+        {
+            NumericFunctionTest(BaseLibraries.RandomVariateLibrary(12345), new Random(12345).UniformVariate, nameof(RandomExtensions.UniformVariate));
+            NumericFunctionTest(BaseLibraries.RandomVariateLibrary(12345), new Random(12345).ExponentialVariate, nameof(RandomExtensions.ExponentialVariate));
+            NumericFunctionTest(BaseLibraries.RandomVariateLibrary(12345), new Random(12345).NormalVariate, nameof(RandomExtensions.NormalVariate));
+            NumericFunctionTest(BaseLibraries.RandomVariateLibrary(12345), new Random(12345).LogNormalVariate, nameof(RandomExtensions.LogNormalVariate));
+            //NumericFunctionTest(BaseLibraries.RandomVariateLibrary(12345), new Random(12345).TriangularVariate, nameof(RandomExtensions.TriangularVariate));
+            NumericFunctionTest(BaseLibraries.RandomVariateLibrary(12345), new Random(12345).GammaVariate, nameof(RandomExtensions.GammaVariate));
+            NumericFunctionTest(BaseLibraries.RandomVariateLibrary(12345), new Random(12345).BetaVariate, nameof(RandomExtensions.BetaVariate));
+            //NumericFunctionTest(BaseLibraries.RandomVariateLibrary(12345), new Random(12345).ErlangVariate, nameof(RandomExtensions.ErlangVariate));
+        }
+
         private static void NumericFunctionTest(SystemLibrary lib, Func<int, int> intFunction, Func<double, double> doubleFunction, string functionName)
         {
             NumericFunctionTest(lib, intFunction, functionName);
@@ -216,10 +229,7 @@ namespace TEGS.Test
             Assert.IsTrue(lib.Functions.TryGetValue(functionName, out customFunction));
             foreach (var value in VariableValueTest.SimpleIntValues)
             {
-                var expected = function(value);
-                var actual = customFunction(new[] { VariableValue.Parse(value) });
-                Assert.AreEqual(VariableValueType.Integer, actual.Type);
-                Assert.AreEqual(expected, actual.IntegerValue);
+                VerifyReturnValue(() => function(value), () => customFunction(new[] { VariableValue.Parse(value) }));
             }
         }
 
@@ -231,20 +241,14 @@ namespace TEGS.Test
 
             foreach (var value in VariableValueTest.SimpleDoubleValues)
             {
-                var expected = function(value);
-                var actual = customFunction(new[] { VariableValue.Parse(value) });
-                Assert.AreEqual(VariableValueType.Double, actual.Type);
-                Assert.AreEqual(expected, actual.DoubleValue);
+                VerifyReturnValue(() => function(value), () => customFunction(new[] { VariableValue.Parse(value) }));
             }
 
             if (testIntToDouble)
             {
-                foreach (var value in VariableValueTest.SimpleIntValues)
+                foreach (var value in VariableValueTest.SimpleDoubleValues)
                 {
-                    var expected = function(value);
-                    var actual = customFunction(new[] { VariableValue.Parse(value) });
-                    Assert.AreEqual(VariableValueType.Double, actual.Type);
-                    Assert.AreEqual(expected, actual.DoubleValue);
+                    VerifyReturnValue(() => function(value), () => customFunction(new[] { VariableValue.Parse(value) }));
                 }
             }
         }
@@ -264,10 +268,7 @@ namespace TEGS.Test
             {
                 foreach (var value2 in VariableValueTest.SimpleIntValues)
                 {
-                    var expected = function(value1, value2);
-                    var actual = customFunction(new[] { VariableValue.Parse(value1), VariableValue.Parse(value2) });
-                    Assert.AreEqual(VariableValueType.Integer, actual.Type);
-                    Assert.AreEqual(expected, actual.IntegerValue);
+                    VerifyReturnValue(() => function(value1, value2), () => customFunction(new[] { VariableValue.Parse(value1), VariableValue.Parse(value2) }));
                 }
             }
         }
@@ -282,10 +283,7 @@ namespace TEGS.Test
             {
                 foreach (var value2 in VariableValueTest.SimpleDoubleValues)
                 {
-                    var expected = function(value1, value2);
-                    var actual = customFunction(new[] { VariableValue.Parse(value1), VariableValue.Parse(value2) });
-                    Assert.AreEqual(VariableValueType.Double, actual.Type);
-                    Assert.AreEqual(expected, actual.DoubleValue);
+                    VerifyReturnValue(() => function(value1, value2), () => customFunction(new[] { VariableValue.Parse(value1), VariableValue.Parse(value2) }));
                 }
             }
 
@@ -295,12 +293,59 @@ namespace TEGS.Test
                 {
                     foreach (var value2 in VariableValueTest.SimpleIntValues)
                     {
-                        var expected = function(value1, value2);
-                        var actual = customFunction(new[] { VariableValue.Parse(value1), VariableValue.Parse(value2) });
-                        Assert.AreEqual(VariableValueType.Double, actual.Type);
-                        Assert.AreEqual(expected, actual.DoubleValue);
+                        VerifyReturnValue(() => function(value1, value2), () => customFunction(new[] { VariableValue.Parse(value1), VariableValue.Parse(value2) }));
                     }
                 }
+            }
+        }
+
+        private static void VerifyReturnValue(Func<int> function, Func<VariableValue> customFunction)
+        {
+            int? expected = null;
+            try
+            {
+                expected = function();
+            }
+            catch { }
+
+            VariableValue? actual = null;
+            try
+            {
+                actual = customFunction();
+            }
+            catch { }
+
+            Assert.IsTrue((expected is null) == (actual is null));
+
+            if (expected.HasValue && actual.HasValue)
+            {
+                Assert.AreEqual(VariableValueType.Integer, actual.Value.Type);
+                Assert.AreEqual(expected.Value, actual.Value.IntegerValue);
+            }
+        }
+
+        private static void VerifyReturnValue(Func<double> function, Func<VariableValue> customFunction)
+        {
+            double? expected = null;
+            try
+            {
+                expected = function();
+            }
+            catch { }
+
+            VariableValue? actual = null;
+            try
+            {
+                actual = customFunction();
+            }
+            catch { }
+
+            Assert.IsTrue((expected is null) == (actual is null));
+
+            if (expected.HasValue && actual.HasValue)
+            {
+                Assert.AreEqual(VariableValueType.Double, actual.Value.Type);
+                Assert.AreEqual(expected.Value, actual.Value.DoubleValue);
             }
         }
     }

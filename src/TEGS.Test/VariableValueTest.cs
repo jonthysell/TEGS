@@ -959,8 +959,8 @@ namespace TEGS.Test
 
         public static readonly object[] ValidParseValues = new object[] { false, true, int.MinValue, -1, 0, 1, int.MaxValue, double.NegativeInfinity, double.MinValue, -1.0, 0.0, double.Epsilon, 1.0, double.MaxValue, double.PositiveInfinity, "", "test" };
 
-        public static readonly int[] SimpleIntValues = new int[] { -2, -1, 0, 1, 2 };
+        public static readonly int[] SimpleIntValues = new int[] { int.MinValue / 2, -2, -1, 0, 1, 2, int.MaxValue / 2 };
 
-        public static readonly double[] SimpleDoubleValues = new double[] { -2.0, -1.0, -0.1, 0.0, 0.1, 1.0, 2.0 };
+        public static readonly double[] SimpleDoubleValues = new double[] { double.MinValue / 2.0, -2.0, -1.0, -0.1, 0.0, 0.1, 1.0, 2.0, double.MaxValue / 2.0 };
     }
 }

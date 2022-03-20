@@ -21,7 +21,7 @@ namespace TEGS
 
         public static SystemLibrary SystemMath => new SystemLibrary(typeof(Math), ReflectionType.StandardOnly);
 
-        public static ILibrary RandomVariateLibrary(int? seed = null)
+        public static SystemLibrary RandomVariateLibrary(int? seed = null)
         {
             return new SystemLibrary(seed.HasValue ? new Random(seed.Value) : new Random(), typeof(Random), ReflectionType.ExtensionOnly, typeof(RandomExtensions));
         }
