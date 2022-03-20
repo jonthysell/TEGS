@@ -61,17 +61,27 @@ namespace TEGS.Test
 
         static CodeGeneratorTest()
         {
-            _metadataReferences.Add(MetadataReference.CreateFromFile(typeof(object).Assembly.Location));
-            _metadataReferences.Add(MetadataReference.CreateFromFile(typeof(Console).Assembly.Location));
+            var assemblyLocations = new HashSet<string>()
+            {
+                typeof(object).Assembly.Location,
+                typeof(Console).Assembly.Location,
+                typeof(Math).Assembly.Location,
+                typeof(Convert).Assembly.Location,
+            };
 
             typeof(Console).Assembly.GetReferencedAssemblies()
             .ToList()
-            .ForEach(a => _metadataReferences.Add(MetadataReference.CreateFromFile(Assembly.Load(a).Location)));
+            .ForEach(a => assemblyLocations.Add(Assembly.Load(a).Location));
+
+            foreach (var assemblyLocation in assemblyLocations)
+            {
+                _metadataReferences.Add(MetadataReference.CreateFromFile(assemblyLocation));
+            }
         }
 
         private static readonly CSharpParseOptions _parseOptions = CSharpParseOptions.Default.WithLanguageVersion(LanguageVersion.Latest);
         private static readonly CSharpCompilationOptions _compilationOptions = new CSharpCompilationOptions(OutputKind.ConsoleApplication, optimizationLevel: OptimizationLevel.Release);
-        private static readonly HashSet<MetadataReference> _metadataReferences = new HashSet<MetadataReference>();
+        private static readonly List<MetadataReference> _metadataReferences = new List<MetadataReference>();
 
         private static byte[] CompileCode(string code, string assemblyName)
         {
