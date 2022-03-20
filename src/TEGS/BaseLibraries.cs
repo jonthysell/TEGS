@@ -23,7 +23,21 @@ namespace TEGS
 
         public static SystemLibrary RandomVariateLibrary(int? seed = null)
         {
-            return new SystemLibrary(seed.HasValue ? new Random(seed.Value) : new Random(), typeof(Random), ReflectionType.ExtensionOnly, typeof(RandomExtensions));
+            var random = seed.HasValue ? new Random(seed.Value) : new Random();
+            var lib = new SystemLibrary(random, typeof(Random), ReflectionType.ExtensionOnly, typeof(RandomExtensions));
+
+            // ErlangVariate has a unique signature, not worth extratcing via reflection yet
+            lib.Functions.Add(nameof(RandomExtensions.ErlangVariate), args =>
+            {
+                if (args is not null && args.Length == 2 && args[0].Type == VariableValueType.Integer && args[1].IsNumber)
+                {
+                    return new VariableValue(random.ErlangVariate(args[0].IntegerValue, args[1].AsNumber()));
+                }
+
+                throw new ArgumentOutOfRangeException(nameof(args));
+            });
+
+            return lib;
         }
 
         public static ScriptingHost MakeBaseScriptingHost(int? seed = null)

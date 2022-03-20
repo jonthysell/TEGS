@@ -215,7 +215,25 @@ namespace TEGS.Test
             NumericFunctionTest(BaseLibraries.RandomVariateLibrary(12345), new Random(12345).TriangularVariate, nameof(RandomExtensions.TriangularVariate));
             NumericFunctionTest(BaseLibraries.RandomVariateLibrary(12345), new Random(12345).GammaVariate, nameof(RandomExtensions.GammaVariate));
             NumericFunctionTest(BaseLibraries.RandomVariateLibrary(12345), new Random(12345).BetaVariate, nameof(RandomExtensions.BetaVariate));
-            //NumericFunctionTest(BaseLibraries.RandomVariateLibrary(12345), new Random(12345).ErlangVariate, nameof(RandomExtensions.ErlangVariate));
+
+            // ErlangVariate has a unique signature, not worth creating a NumericFunctionTest override yet
+            CustomFunction customFunction;
+            var lib = BaseLibraries.RandomVariateLibrary(12345);
+            Assert.IsTrue(lib.Functions.TryGetValue(nameof(RandomExtensions.ErlangVariate), out customFunction), $"Function { nameof(RandomExtensions.ErlangVariate) } not found.");
+
+            var function = new Random(12345).ErlangVariate;
+            for (int value1 = -3; value1 < 3; value1++)
+            {
+                foreach (var value2 in VariableValueTest.SimpleDoubleValues)
+                {
+                    VerifyReturnValue(() => function(value1, value2), () => customFunction(new[] { VariableValue.Parse(value1), VariableValue.Parse(value2) }));
+                }
+
+                foreach (var value2 in VariableValueTest.SimpleIntValues)
+                {
+                    VerifyReturnValue(() => function(value1, value2), () => customFunction(new[] { VariableValue.Parse(value1), VariableValue.Parse(value2) }));
+                }
+            }
         }
 
         private static void NumericFunctionTest(SystemLibrary lib, Func<int, int> intFunction, Func<double, double> doubleFunction, string functionName)
