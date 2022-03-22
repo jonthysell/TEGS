@@ -73,9 +73,7 @@ namespace TEGS.Test
             Assert.IsTrue(lib.Functions.TryGetValue(nameof(StringLibrary.Length), out customFunction));
             foreach (var value in VariableValueTest.ValidStringValues)
             {
-                var actual = customFunction(new[] { new VariableValue(value) });
-                Assert.AreEqual(VariableValueType.Integer, actual.Type);
-                Assert.AreEqual(value.Length, actual.IntegerValue);
+                VerifyReturnValue(() => value.Length, () => customFunction(new[] { new VariableValue(value) }));
             }
             testedKeys.Add(nameof(StringLibrary.Length));
 
@@ -88,45 +86,49 @@ namespace TEGS.Test
             var lib = BaseLibraries.ConvertLibrary;
             var testedKeys = new HashSet<string>();
 
+            var testValues = new object[] { -1, 0, 1, false, true, -1.0, 0.0, 1.0, "-1", "0", "1", "-1.0", "0.0", "1.0", bool.FalseString, bool.TrueString };
+
             CustomFunction customFunction;
 
             Assert.IsTrue(lib.Functions.TryGetValue(nameof(ConvertLibrary.ToBoolean), out customFunction));
-            foreach (var value in new object[] { -1, 0, 1, false, true, -1.0, 0.0, 1.0, bool.FalseString, bool.TrueString })
+            foreach (var value in testValues)
             {
-                var expected = Convert.ToBoolean(value);
-                var actual = customFunction(new[] { VariableValue.Parse(value) });
-                Assert.AreEqual(VariableValueType.Boolean, actual.Type);
-                Assert.AreEqual(expected, actual.BooleanValue);
+                VerifyReturnValue(() => Convert.ToBoolean(value), () => customFunction(new[] { VariableValue.Parse(value) }));
             }
             testedKeys.Add(nameof(ConvertLibrary.ToBoolean));
 
             Assert.IsTrue(lib.Functions.TryGetValue(nameof(ConvertLibrary.ToInteger), out customFunction));
-            foreach (var value in new object[] { -1, 0, 1, false, true, -1.0, 0.0, 1.0, "-1", "0", "1" })
+            foreach (var value in testValues)
             {
-                var expected = Convert.ToInt32(value);
-                var actual = customFunction(new[] { VariableValue.Parse(value) });
-                Assert.AreEqual(VariableValueType.Integer, actual.Type);
-                Assert.AreEqual(expected, actual.IntegerValue);
+                VerifyReturnValue(() => Convert.ToInt32(value), () => customFunction(new[] { VariableValue.Parse(value) }));
+            }
+            foreach (var str in new[] { "0", "1", "10", "100", "255" })
+            {
+                foreach (var intBase in new[] { 2, 8, 10, 16 })
+                {
+                    VerifyReturnValue(() => Convert.ToInt32(str, intBase), () => customFunction(new[] { VariableValue.Parse(str), VariableValue.Parse(intBase) }));
+                }
             }
             testedKeys.Add(nameof(ConvertLibrary.ToInteger));
 
             Assert.IsTrue(lib.Functions.TryGetValue(nameof(ConvertLibrary.ToDouble), out customFunction));
-            foreach (var value in new object[] { -1, 0, 1, false, true, -1.0, 0.0, 1.0, "-1", "0", "1", "-1.0", "0.0", "1.0" })
+            foreach (var value in testValues)
             {
-                var expected = Convert.ToDouble(value);
-                var actual = customFunction(new[] { VariableValue.Parse(value) });
-                Assert.AreEqual(VariableValueType.Double, actual.Type);
-                Assert.AreEqual(expected, actual.DoubleValue);
+                VerifyReturnValue(() => Convert.ToDouble(value), () => customFunction(new[] { VariableValue.Parse(value) }));
             }
             testedKeys.Add(nameof(ConvertLibrary.ToDouble));
 
             Assert.IsTrue(lib.Functions.TryGetValue(nameof(ConvertLibrary.ToString), out customFunction));
-            foreach (var value in new object[] { -1, 0, 1, false, true, -1.0, 0.0, 1.0, "-1", "0", "1", "-1.0", "0.0", "1.0", bool.FalseString, bool.TrueString })
+            foreach (var value in testValues)
             {
-                var expected = Convert.ToString(value);
-                var actual = customFunction(new[] { VariableValue.Parse(value) });
-                Assert.AreEqual(VariableValueType.String, actual.Type);
-                Assert.AreEqual(expected, actual.StringValue);
+                VerifyReturnValue(() => Convert.ToString(value), () => customFunction(new[] { VariableValue.Parse(value) }));
+            }
+            foreach (var intValue in new[] { 0, 1, 10, 100, 255 })
+            {
+                foreach (var intBase in new[] { 2, 8, 10, 16 })
+                {
+                    VerifyReturnValue(() => Convert.ToString(intValue, intBase), () => customFunction(new[] { VariableValue.Parse(intValue), VariableValue.Parse(intBase) }));
+                }
             }
             testedKeys.Add(nameof(ConvertLibrary.ToString));
 
@@ -419,6 +421,31 @@ namespace TEGS.Test
             testedKeys.Add(functionName);
         }
 
+        private static void VerifyReturnValue(Func<bool> function, Func<VariableValue> customFunction)
+        {
+            bool? expected = null;
+            try
+            {
+                expected = function();
+            }
+            catch { }
+
+            VariableValue? actual = null;
+            try
+            {
+                actual = customFunction();
+            }
+            catch { }
+
+            Assert.AreEqual(expected is null, actual is null);
+
+            if (expected.HasValue && actual.HasValue)
+            {
+                Assert.AreEqual(VariableValueType.Boolean, actual.Value.Type);
+                Assert.AreEqual(expected.Value, actual.Value.BooleanValue);
+            }
+        }
+
         private static void VerifyReturnValue(Func<int> function, Func<VariableValue> customFunction)
         {
             int? expected = null;
@@ -466,6 +493,31 @@ namespace TEGS.Test
             {
                 Assert.AreEqual(VariableValueType.Double, actual.Value.Type);
                 Assert.AreEqual(expected.Value, actual.Value.DoubleValue);
+            }
+        }
+
+        private static void VerifyReturnValue(Func<string> function, Func<VariableValue> customFunction)
+        {
+            string expected = null;
+            try
+            {
+                expected = function();
+            }
+            catch { }
+
+            VariableValue? actual = null;
+            try
+            {
+                actual = customFunction();
+            }
+            catch { }
+
+            Assert.AreEqual(expected is null, actual is null);
+
+            if (expected is not null && actual.HasValue)
+            {
+                Assert.AreEqual(VariableValueType.String, actual.Value.Type);
+                Assert.AreEqual(expected, actual.Value.StringValue);
             }
         }
     }

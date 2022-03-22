@@ -32,18 +32,25 @@ namespace TEGS
         [LibraryFunction]
         public static VariableValue ToInteger(VariableValue[] args)
         {
-            if (args is not null && args.Length == 1)
+            if (args is not null )
             {
-                switch (args[0].Type)
+                if (args.Length == 1)
                 {
-                    case VariableValueType.Boolean:
-                        return new VariableValue(Convert.ToInt32(args[0].BooleanValue));
-                    case VariableValueType.Integer:
-                        return new VariableValue(Convert.ToInt32(args[0].IntegerValue));
-                    case VariableValueType.Double:
-                        return new VariableValue(Convert.ToInt32(args[0].DoubleValue));
-                    case VariableValueType.String:
-                        return new VariableValue(Convert.ToInt32(args[0].StringValue));
+                    switch (args[0].Type)
+                    {
+                        case VariableValueType.Boolean:
+                            return new VariableValue(Convert.ToInt32(args[0].BooleanValue));
+                        case VariableValueType.Integer:
+                            return new VariableValue(Convert.ToInt32(args[0].IntegerValue));
+                        case VariableValueType.Double:
+                            return new VariableValue(Convert.ToInt32(args[0].DoubleValue));
+                        case VariableValueType.String:
+                            return new VariableValue(Convert.ToInt32(args[0].StringValue));
+                    }
+                }
+                else if (args.Length == 2 && args[0].Type == VariableValueType.String && args[1].Type == VariableValueType.Integer)
+                {
+                    return new VariableValue(Convert.ToInt32(args[0].StringValue, args[1].IntegerValue));
                 }
             }
 
@@ -74,18 +81,25 @@ namespace TEGS
         [LibraryFunction]
         public static VariableValue ToString(VariableValue[] args)
         {
-            if (args is not null && args.Length == 1)
+            if (args is not null)
             {
-                switch (args[0].Type)
+                if (args.Length == 1)
                 {
-                    case VariableValueType.Boolean:
-                        return new VariableValue(Convert.ToString(args[0].BooleanValue));
-                    case VariableValueType.Integer:
-                        return new VariableValue(Convert.ToString(args[0].IntegerValue));
-                    case VariableValueType.Double:
-                        return new VariableValue(Convert.ToString(args[0].DoubleValue));
-                    case VariableValueType.String:
-                        return new VariableValue(Convert.ToString(args[0].StringValue));
+                    switch (args[0].Type)
+                    {
+                        case VariableValueType.Boolean:
+                            return new VariableValue(Convert.ToString(args[0].BooleanValue));
+                        case VariableValueType.Integer:
+                            return new VariableValue(Convert.ToString(args[0].IntegerValue));
+                        case VariableValueType.Double:
+                            return new VariableValue(Convert.ToString(args[0].DoubleValue));
+                        case VariableValueType.String:
+                            return new VariableValue(Convert.ToString(args[0].StringValue));
+                    }
+                }
+                else if (args.Length == 2 && args[0].Type == VariableValueType.Integer && args[1].Type == VariableValueType.Integer)
+                {
+                    return new VariableValue(Convert.ToString(args[0].IntegerValue, args[1].IntegerValue));
                 }
             }
 
