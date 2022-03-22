@@ -15,16 +15,16 @@ namespace TEGS
 
         public static SystemLibrary SystemString => new SystemLibrary(typeof(string), ReflectionType.StandardConstants);
 
-        public static AttributedLibrary StringLibrary => new AttributedLibrary(typeof(StringLibrary));
+        public static AttributedLibrary StringLibrary => new AttributedLibrary(typeof(StringLibrary), ReflectionType.StandardMethods);
 
-        public static AttributedLibrary ConvertLibrary => new AttributedLibrary(typeof(ConvertLibrary));
+        public static AttributedLibrary ConvertLibrary => new AttributedLibrary(typeof(ConvertLibrary), ReflectionType.StandardMethods);
 
         public static SystemLibrary SystemMath => new SystemLibrary(typeof(Math), ReflectionType.StandardOnly);
 
         public static SystemLibrary RandomVariateLibrary(int? seed = null)
         {
             var random = seed.HasValue ? new Random(seed.Value) : new Random();
-            var lib = new SystemLibrary(random, typeof(Random), ReflectionType.ExtensionOnly, typeof(RandomExtensions));
+            var lib = new SystemLibrary(random, typeof(Random), ReflectionType.ExtensionMethods, typeof(RandomExtensions));
 
             // ErlangVariate has a unique signature, not worth extracting via reflection yet
             lib.Functions.Add(nameof(RandomExtensions.ErlangVariate), args =>

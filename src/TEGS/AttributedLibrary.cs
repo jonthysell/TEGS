@@ -35,7 +35,7 @@ namespace TEGS
     {
         #region Constructors
 
-        public AttributedLibrary([DynamicallyAccessedMembers(RequiredMemberTypes)] Type type) : base(type, ReflectionType.All, null) { }
+        public AttributedLibrary([DynamicallyAccessedMembers(RequiredMemberTypes)] Type type, ReflectionType reflectionType = ReflectionType.All) : base(type, reflectionType, null) { }
 
         #endregion
 
