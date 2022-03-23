@@ -444,7 +444,7 @@ namespace TEGS.CLI
                 writer(Truncate(e.Clock.ToString(), columnWidth));
 
                 writer(separator);
-                writer(Truncate(e.Vertex.Name.ToString(), columnWidth));
+                writer(Truncate(e.Vertex.Name, columnWidth));
 
                 for (int i = 0; i < e.TraceExpressions.Count; i++)
                 {
