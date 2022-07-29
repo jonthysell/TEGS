@@ -22,4 +22,8 @@
     </None>
   </ItemGroup>
 
+  <ItemGroup Condition="!$(AssemblyName.EndsWith('Test'))">
+    <InternalsVisibleTo Include="$(AssemblyName).Test" />
+  </ItemGroup>
+
 </Project>
