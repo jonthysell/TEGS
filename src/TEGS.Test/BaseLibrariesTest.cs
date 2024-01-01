@@ -47,6 +47,10 @@ namespace TEGS.Test
             ConstantTest(lib, testedKeys, nameof(double.NaN), double.NaN);
             ConstantTest(lib, testedKeys, nameof(double.NegativeInfinity), double.NegativeInfinity);
             ConstantTest(lib, testedKeys, nameof(double.PositiveInfinity), double.PositiveInfinity);
+            ConstantTest(lib, testedKeys, nameof(double.NegativeZero), double.NegativeZero);
+            ConstantTest(lib, testedKeys, nameof(double.E), double.E);
+            ConstantTest(lib, testedKeys, nameof(double.Pi), double.Pi);
+            ConstantTest(lib, testedKeys, nameof(double.Tau), double.Tau);
 
             VerifyAllItemsTested(lib, testedKeys);
         }
